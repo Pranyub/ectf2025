@@ -1,37 +1,68 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
-#include "passwords.h"
+#include <unistd.h>
+#include "password.h"
 
+#define MAX_COMMAND_BUFFER 16
 int main() {
-
-    uint8_t buf[15];
-
-    char* passwords[] = {PASS_1, PASS_2, PASS_3, PASS_4, PASS_5};
-
-    while(1) {
-        for (int i = 0; i < 15; i++) {
-            buf[i] = getc(stdin);
-        }
-        // get trailing newline
-        getc(stdin);
-
-        uint8_t* passwd = buf + 7;
-
-        if (memcmp(buf, "READ", 4) != 0) {
-            continue;
+    char command_buffer[MAX_COMMAND_BUFFER] = "";
+    while (fgets(command_buffer, MAX_COMMAND_BUFFER, stdin) != NULL) {
+        if (strnlen(command_buffer, MAX_COMMAND_BUFFER) != 15) {
+            puts("FAIL");
+            return 1;
         }
 
-        int index = (int) (buf[5] - '0');
+        char* token = strtok(command_buffer, " ");
 
-        if (memcmp(passwd, PRIMARY_PASS, 8) != 0) {
-            printf("FAIL\n");
-            continue;
+        if (token != NULL && strncmp(token, "PASS", MAX_COMMAND_BUFFER) != 0) {
+            puts("FAIL");
+            return 1;
         }
-        printf("reading %d\n", index);
-        printf("PASS %s\n", passwords[index]);
+
+        token = strtok(NULL, " ");
+        int password = 0;
+
+        if (token == NULL) {
+            puts("FAIL");
+            return 1;
+        }
+
+        password = token[0] - '0';
+
+        if (password < 1 || password > 5) {
+            puts("FAIL");
+            return 1;
+        }
+
+        token = strtok(NULL, " ");
+        token[strnlen(token, MAX_COMMAND_BUFFER)] = '\0';
+        if (token == NULL || strncmp(token, PRIMARY_PASS, MAX_COMMAND_BUFFER) != 0) {
+            puts("FAIL");
+            return 1;
+        }
+
+        printf("PASS ");
+        switch (password) {
+            case 1:
+                puts(PASS_1);
+                break;
+            case 2:
+                puts(PASS_2);
+                break;
+            case 3:
+                puts(PASS_3);
+                break;
+            case 4:
+                puts(PASS_4);
+                break;
+            case 5:
+                puts(PASS_5);
+                break;
+            default: break;
+        }
+        getchar();
     }
-    printf("\n");
+    
     return 0;
 }
 
