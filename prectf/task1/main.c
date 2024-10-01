@@ -33,7 +33,6 @@ int main() {
             continue;
         }
 
-
         // validate
         if (buffer[6] != ' ' || buffer[15] != '\n' || strncmp("READ ", buffer, 5) || strncmp(PRIMARY_PASS, buffer+7, 8)) {
             printf("FAIL\n");
