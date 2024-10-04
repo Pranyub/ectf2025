@@ -9,7 +9,7 @@
 #define PASS_5 "fifth password"
 
 #define PRIMARY_PASS "supersec"
-
+//hello
 #define BUFFER_LEN 17
 
 char strcontains(char* str, char c) {
