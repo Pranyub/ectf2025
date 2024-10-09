@@ -10,7 +10,7 @@ all: task1
 
 task1: $(SOURCE)
 	mkdir -p $(OUTPATH)
-	gcc $(SOURCE) -o $(OUTPATH)/$(OUT) $(CFLAGS)
+	gcc $(SOURCE) -g -o $(OUTPATH)/$(OUT) $(CFLAGS)
 
 clean:
 	rm -rf $(OUTPATH)
