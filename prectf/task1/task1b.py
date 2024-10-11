@@ -31,7 +31,7 @@ def replace_address(filename, address):
     my_elf.save("ch31_modified") 
 
 
-method = int(input("Enter 1 for searchString and 2 for address: "))
+method = int(input("Enter 1 for searchString and 2 for address: "), 16)
 user_input = input("Enter the filename: ")
 
 if(method == 1):
@@ -41,4 +41,4 @@ if(method == 1):
 elif method == 2:
     address = int(input("Enter the address: "))
 
-    replace_address(filename, address)
+    replace_address(user_input, address)
