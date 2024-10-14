@@ -2,6 +2,8 @@
 
 import argparse
 import socket
+import subprocess
+import os
 
 SERVER = '172.24.57.165'
 PORT = 12345
@@ -18,12 +20,16 @@ def main():
     args = parser.parse_args()
 
     if args.command == 'flash':
-        send_file(args.file, args.address)
+        parse_flash(args.file, args.address)
 
-def send_file(file_path, address):
+def parse_flash(file_path, address):
 
     if not file_path:
         print('error: --file not set')
+        return
+
+    if int(address) not in range(0, 7):
+        print('bad address')
         return
 
     # Open the file in binary mode
@@ -48,6 +54,7 @@ def send_file(file_path, address):
         response = client_socket.recv(4096)
         print(response.decode())
 
+        print(f'Flash success! run `load_serial {address}` to initialize `/dev/ttyPICO{address}`')
     finally:
         # Close the client socket
         client_socket.close()
