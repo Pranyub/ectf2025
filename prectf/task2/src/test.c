@@ -10,7 +10,7 @@ int main() {
     bi_decl(bi_program_description("This is a test binary."));
     bi_decl(bi_1pin_with_name(LED_PIN, "On-board LED"));
 
-    stdio_init_all();
+    stdio_init_all();  // IMPORTANT
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -18,7 +18,7 @@ int main() {
         gpio_put(LED_PIN, 0);
         sleep_ms(250);
         gpio_put(LED_PIN, 1);
-        puts("Hello World\n");
+        puts("Hello Geeoon!!!!\n");
         sleep_ms(1000);
     }
 }
