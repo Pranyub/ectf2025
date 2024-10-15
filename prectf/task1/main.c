@@ -1,82 +1,49 @@
 #include <stdio.h>
-#include <stdint.h>
-#include <string.h>
 #include "passwords.h"
+#include <stdint.h>
 
-int main() {
+// Processes user input 
+int process_in() {
+    return 0; 
+}
 
-    uint8_t buf[15];
+// Stores password 
+int store_password() {
+    return 0; 
+}
 
-    char* passwords[] = {PASS_1, PASS_2, PASS_3, PASS_4, PASS_5};
+// Generates user menu 
+int usr_menu() {
+    // User choice
+    int usr_choice; 
+    uint8_t pass[16]; 
+    printf("Select an option ('1' or '2'): \n"); 
+    printf("    - 1. Enter a new password\n"); 
+    printf("    - 2. Log-In\n");
+    printf("Choice: ");
 
-    while(1) {
-        for (int i = 0; i < 15; i++) {
-            buf[i] = getc(stdin);
-        }
-        // get trailing newline
-        getc(stdin);
+    // Get user data
+    scanf("%d", &usr_choice);
 
-        uint8_t* passwd = buf + 7;
-
-        if (memcmp(buf, "READ", 4) != 0) {
-            continue;
-        }
-
-        int index = (int) (buf[5] - '0');
-
-        if (memcmp(passwd, PRIMARY_PASS, 8) != 0) {
-            printf("FAIL\n");
-            continue;
-        }
-        printf("reading %d\n", index);
-        printf("PASS %s\n", passwords[index]);
+    switch (usr_choice) {
+        case 1:
+            printf("bruh 1\n");
+            break;
+        case 2:
+            printf("bruh 2\n");
+            break;
+        default:
+            printf("bro what did you do\n");
     }
-    printf("\n");
-    return 0;
+
+    // for (int i = 0; i < 16; i++) {
+    //     pass[i] = getc(stdin); 
+    // }
+
+    return 0; 
 }
 
 int main() {
-    char buffer[BUFFER_LEN];
-    while (1) {
-        // get input
-        if (fgets(buffer, BUFFER_LEN, stdin) == NULL) exit(0);
-
-        // consume up until newline
-        if (!strcontains(buffer, '\n')) {
-            char secbuf[BUFFER_LEN];
-            do {
-                if (fgets(secbuf, BUFFER_LEN, stdin) == NULL) exit(1);
-            } while (!strcontains(secbuf, '\n'));
-            printf("FAIL\n");
-            continue;
-        }
-
-
-        // validate
-        if (buffer[6] != ' ' || buffer[15] != '\n' || strncmp("READ ", buffer, 5) || strncmp(PRIMARY_PASS, buffer+7, 8)) {
-            printf("FAIL\n");
-            continue;
-        }
-        // fetch password
-        switch (buffer[5]) {
-            case '1':
-                printf("PASS " PASS_1 "\n");
-                break;
-            case '2':
-                printf("PASS " PASS_2 "\n");
-                break;
-            case '3':
-                printf("PASS " PASS_3 "\n");
-                break;
-            case '4':
-                printf("PASS " PASS_4 "\n");
-                break;
-            case '5':
-                printf("PASS " PASS_5 "\n");
-                break;
-            default:
-                printf("FAIL\n");
-                continue;
-        }
-    }
+    usr_menu(); 
+    return 0; 
 }
