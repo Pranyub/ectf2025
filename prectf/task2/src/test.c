@@ -19,15 +19,15 @@ int main() {
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
     while (1) {
-        // gpio_put(LED_PIN, 0);
-        // sleep_ms(250);
-        // gpio_put(LED_PIN, 1);
+        gpio_put(LED_PIN, 0);
+        sleep_ms(250);
+        gpio_put(LED_PIN, 1);
 
-        char buffer[MAX_COMMAND_BUFFER] = "";        
-        if (read(0, buffer, MAX_COMMAND_BUFFER) != MAX_COMMAND_BUFFER) {
-            fprintf(stderr, "Error reading.");
-            return 1;
-        }
-        printf("You put: %s", buffer);
+        char buffer[MAX_COMMAND_BUFFER] = "";
+        // if (read(0, buffer, MAX_COMMAND_BUFFER) != MAX_COMMAND_BUFFER) {
+        //     return 1;
+        // }
+        // printf("You put: %s", buffer);
+        fprintf(stderr, "Testing fprintf to stderr: string - %s | character - %c | decimal - %d\n", "test", 'A', 100);
     }
 }
