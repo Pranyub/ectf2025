@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "password.h"
+#include "passwords.h"
 
 #define MAX_COMMAND_BUFFER 16
 int main() {
