@@ -33,10 +33,11 @@ int main() {
             if (command_length >= MAX_COMMAND_BUFFER - 2) break;
         }
         command_buffer[command_length + 1] = '\0';  // terminate input
+        
         printf("\nYour command of length %d is: \"%s\"\n", command_length, command_buffer);
 
-        // reset the command
-        memset(command_buffer, '\0', MAX_COMMAND_BUFFER);  // not needed
+        // reset the command buffer and length
+        memset(command_buffer, '\0', MAX_COMMAND_BUFFER);  // not needed, but added just in case
         command_length = 0;
     }
 }
