@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
+// #include "pico/pico_mem_ops.h"  // for pico memset
 #include "example.h"
 
 #define MAX_COMMAND_BUFFER 13  // string length capped at 12, extra for null
@@ -18,26 +19,29 @@ int main() {
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    // sleep_ms(250);  // makes sure stdio_init_all has finished
+    sleep_ms(250);
+    stdio_flush();  // flush output
+    while (stdio_getchar_timeout_us(10)) {}  // clear input buffer
+
     while (1) {
         char command_buffer[MAX_COMMAND_BUFFER] = "";
         int command_length = 0;
 
-        // clear stdin
-        // parse input for command
-        for (char c = getchar(); c != '\n' && c != EOF; c = getchar(), command_length++) {
+        for (char c = stdio_getchar(); c != '\n' && c != EOF; c = stdio_getchar(), command_length++) {
             command_buffer[command_length] = c;
             printf("%c", c);
-            if (command_length >= MAX_COMMAND_BUFFER) {
-                break;
-            }
+            if (command_length >= MAX_COMMAND_BUFFER - 2) break;
         }
-        command_buffer[command_length] = '\0';  // terminate input
-        printf("You said: %s\n", command_buffer);
+        command_buffer[command_length + 1] = '\0';  // terminate input
+        printf("\nYour command of length %d is: \"%s\"\n", command_length, command_buffer);
 
         // reset the command
         memset(command_buffer, '\0', MAX_COMMAND_BUFFER);  // not needed
         command_length = 0;
-        printf("Starting over again\n");
     }
 }
+
+// usbclient flash --file test.elf --address 5
+// load_serial 5
+// load_serial 1
+// sudo minicom -D /dev/ttyPICO1 115200
