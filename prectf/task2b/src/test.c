@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>  // for memset
+#include <string.h>
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
