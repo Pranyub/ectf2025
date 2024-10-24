@@ -1,5 +1,5 @@
 #ifndef PASSWORD_H
-#define PASSWORD_h
+#define PASSWORD_H
 
 #define PASS_1 "first password"
 #define PASS_2 "second password"
