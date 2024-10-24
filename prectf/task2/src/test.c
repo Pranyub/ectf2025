@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
+#include "pico/unique_id.h"
 #include "example.h"
 
 const uint LED_PIN = 25;
@@ -14,11 +15,14 @@ int main() {
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
+
+    pico_unique_board_id_t id;
+    pico_get_unique_board_id(&id);
     while (1) {
-        gpio_put(LED_PIN, 0);
-        sleep_ms(250);
-        gpio_put(LED_PIN, 1);
-        puts("Hello World\n");
-        sleep_ms(1000);
+        for (int len = 0; len < 8; len++) {
+            printf("%02X", id.id[len]);
+        }
+        char c = getchar();
+        printf("You said: %c\n", c);
     }
 }
