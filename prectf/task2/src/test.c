@@ -5,9 +5,11 @@
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
 // #include "pico/pico_mem_ops.h"  // for pico memset
-#include "example.h"
+// #include "example.h"  // for testing
+#include "passwords.h"
 
 #define MAX_COMMAND_BUFFER 13  // string length capped at 12, extra for null
+#define PASSWORD_LENGTH 8  // primary pass length
 
 const uint LED_PIN = 25;
 
@@ -17,8 +19,9 @@ const uint LED_PIN = 25;
  * @param password where the extracted password should be stored 
  * @return the password to be fetched, 1-5 inclusive.  Or -1 if there was an
  *              error parsing the command.
- * @pre \p command is 12 characters long and null terminated
- * @post
+ * @pre \p command is 12 characters long and null terminated.
+ * @pre \p password is a valid string with a buffer size of 9.
+ * @post \p password now stores a null terminated string.
  */
 int parse_command(const char* command, char* password);
 
@@ -37,31 +40,65 @@ int main() {
     while (1) {
         char command_buffer[MAX_COMMAND_BUFFER] = "";
         int command_length = 0;
+
+        // get characters from input and store in buffer
         for (char c = stdio_getchar(); c != '\n' && c != '\r' && c != EOF; c = stdio_getchar()) {
+            // check for backspace
+            if (c == '\b') {
+                printf("\b");
+                command_length--;
+                continue;
+            }
             command_buffer[command_length] = c;
             printf("%c", c);
             command_length++;
             if (command_length >= MAX_COMMAND_BUFFER - 1) break;
         }
-        puts("\n");
+        puts("");  // newline
         command_buffer[command_length + 1] = '\0';  // terminate input
-        // printf("\nYour command of length %d is: \"%s\"\n", command_length, command_buffer);
+        
 
-        if (command_length != 12) {
-            printf("\nFAIL: %d\n", command_length);
+        char password[PASSWORD_LENGTH + 1] = "";
+        int index = parse_command(command_buffer, password);
+        if (command_length != 12 ||
+            strncmp(password, PRIMARY_PASS, PASSWORD_LENGTH) != 0) {
+            index = -1;  // causes the default case in the switch
         }
 
-
-        // reset the command buffer and length
-        memset(command_buffer, '\0', MAX_COMMAND_BUFFER);  // not needed, but added just in case
-        command_length = 0;
+        switch (index) {
+            case 1:
+                printf("P %s\n", PASS_1);
+                break;
+            case 2:
+                printf("P %s\n", PASS_2);
+                break;
+            case 3:
+                printf("P %s\n", PASS_3);
+                break;
+            case 4:
+                printf("P %s\n", PASS_4);
+                break;
+            case 5:
+                printf("P %s\n", PASS_5);
+                break;
+            default:
+                puts("FAIL");
+        }
     }
 }
 
 int parse_command(const char* command, char* password) {
+    if (strnlen(command, MAX_COMMAND_BUFFER) != 12 ||
+        command[0] != 'R' ||
+        command[1] != ' ' ||
+        command[3] != ' ') return -1;
+
+    int index = command[2] - '0';
+    if (index < 1 || index > 5) return -1;
+    strncpy(password, &(command[4]), PASSWORD_LENGTH);
+    return index;
 }
 
 // usbclient flash --file test.elf --address 5
 // load_serial 5
-// load_serial 1
-// sudo minicom -D /dev/ttyPICO1 115200
+// sudo minicom -D /dev/ttyPICO5 115200
