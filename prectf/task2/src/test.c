@@ -42,7 +42,7 @@ int main() {
         for (char c = stdio_getchar(); c != '\n' && c != '\r' && c != EOF; c = stdio_getchar()) {
             // check for backspace
             if (c == '\b') {
-                printf("\b");
+                printf("\b \b");  // backspace and clear character
                 command_length--;
                 continue;
             }
