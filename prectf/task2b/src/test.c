@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>  // for uint8_t
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
+#include "tiny_aes/aes.h"  // tiny aes
 #include "key.h"
 
 #define MAX_COMMAND_BUFFER 35  // string length capped at 34, extra for null
@@ -33,7 +35,7 @@ int get_command(char* buffer, int max_length);
  * @pre \p message is of length MAX_MESSAGE_LENGTH.
  * @post \p message now stores the message encoded as hex.
  */
-int parse_command(const char* command, unsigned char* message);
+int parse_command(const char* command, uint8_t* message);
 
 /**
  * @brief converts an ASCII character representing a hex character to decimal.
@@ -60,12 +62,40 @@ int main() {
         int command_length = get_command(command_buffer, MAX_COMMAND_BUFFER);
         puts("");  // newline
         
-        unsigned char message[MESSAGE_LENGTH];
+        uint8_t message[MESSAGE_LENGTH];
         if (parse_command(command_buffer, message) != 0) {
             puts("Error parsing the command.");
             continue;
         }
-        // message now contains the message as a series of hex numbers
+        
+        // create key from string
+        uint8_t key[16];
+        for (int i = 0; i < (MESSAGE_LENGTH * 2) - 1; i += 2) {
+            // convert char to decimal
+            int sixteenths_place = 0;
+            int ones_place = 0;
+            if ((sixteenths_place = char_to_decimal(AES_128_KEY[i])) == -1 ||
+                (ones_place = char_to_decimal(AES_128_KEY[i+1])) == -1) return -1;
+            key[(i) / 2] = (uint8_t)(sixteenths_place * 16 + ones_place);
+        }
+
+        // initialize AES context
+        struct AES_ctx aes_ctx;
+        AES_init_ctx(&aes_ctx, key);
+
+        // something below here causes the picos to get bricked
+        puts("Before:");
+        for (int i = 0; i < MESSAGE_LENGTH; i++) {
+            printf("%x", message[i]);
+        }
+        puts("");
+        // encrypt
+        AES_ECB_encrypt(&aes_ctx, message);
+        printf("R ");
+        for (int i = 0; i < MESSAGE_LENGTH; i++) {
+            printf("%x", message[i]);
+        }
+        puts("");
     }
 }
 
@@ -89,7 +119,7 @@ int get_command(char* buffer, int max_length) {
     return command_length;
 }
 
-int parse_command(const char* command, unsigned char* message) {
+int parse_command(const char* command, uint8_t* message) {
     // check formatting
     if (strnlen(command, MAX_COMMAND_BUFFER) != MAX_COMMAND_BUFFER - 1 ||
         command[0] != 'S' ||
@@ -103,14 +133,14 @@ int parse_command(const char* command, unsigned char* message) {
         int ones_place = 0;
         if ((sixteenths_place = char_to_decimal(command[i])) == -1 ||
             (ones_place = char_to_decimal(command[i+1])) == -1) return -1;
-        message[(i - START_INDEX) / 2] = (char)(sixteenths_place * 16 + ones_place);
+        message[(i - START_INDEX) / 2] = (uint8_t)(sixteenths_place * 16 + ones_place);
     }
     puts("");
     return 0;
 }
 
 int char_to_decimal(char character) {
-    // 0 - 9
+    // 0-9
     if (character - '0' >= 0 && character - '9' <= 0) return character - '0';
     // a-f
     if (character - 'a' >= 0 && character - 'f' <= 0) return character - 'a' + 10;
