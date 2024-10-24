@@ -12,15 +12,17 @@ const uint LED_PIN = 25;
 
 /**
  * @brief Parses a command
- * @param command the command to be parsed.
- * @param password where the extracted password should be stored 
- * @return the password to be fetched, 1-5 inclusive.  Or -1 if there was an
- *              error parsing the command.
- * @pre \p command is 12 characters long and null terminated.
- * @pre \p password is a valid string with a buffer size of 9.
- * @post \p password now stores a null terminated string.
+ * @param buffer where the command should be stored.
+ * @param max_length the maximum length of the command.
+ * @param print whether or not to display the characters typed;
+ *          non zero is true.
+ * @return the length of the command typed.
+ * @pre \p buffer is at least of length max_length + 1
+ * @pre \p max_length is not less than 0
+ * @post \p buffer now stores the command typed up to max_length
+ *          plus the null terminator.
  */
-int parse_command(const char* command, char* password);
+int get_command(char* buffer, int max_length);
 
 int main() {
     bi_decl(bi_program_description("This binary is for task2b."));
@@ -36,25 +38,32 @@ int main() {
 
     while (1) {
         char command_buffer[MAX_COMMAND_BUFFER] = "";
-        int command_length = 0;
-
-        // get characters from input and store in buffer
-        for (char c = stdio_getchar(); c != '\n' && c != '\r' && c != EOF; c = stdio_getchar()) {
-            // check for backspace
-            if (c == '\b') {
-                printf("\b \b");  // backspace and clear character
-                command_length--;
-                continue;
-            }
-            command_buffer[command_length] = c;
-            printf("%c", c);
-            command_length++;
-            if (command_length >= MAX_COMMAND_BUFFER - 1) break;
-        }
-        puts("");  // newline
-        command_buffer[command_length + 1] = '\0';  // terminate input
         
+        int command_length = get_command(command_buffer, MAX_COMMAND_BUFFER);
+        puts("");  // newline
+        
+        printf("You said: %s\n", command_buffer);
     }
+}
+
+int get_command(char* buffer, int max_length) {
+    int command_length = 0;
+    for (char c = stdio_getchar(); c != '\n' && c != '\r' && c != EOF; c = stdio_getchar()) {
+        // check for backspace
+        if (c == '\b') {
+            printf("\b \b");  // backspace and clear character
+            command_length--;
+            continue;
+        }
+        buffer[command_length] = c;
+        if (max_length) {
+            printf("%c", c);
+        }
+        command_length++;
+        if (command_length >= MAX_COMMAND_BUFFER - 1) break;
+    }
+    buffer[command_length + 1] = '\0';  // terminate input
+    return command_length;
 }
 
 // usbclient flash --file test.elf --address 5
