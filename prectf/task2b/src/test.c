@@ -84,7 +84,7 @@ int main() {
         AES_init_ctx(&aes_ctx, key);
 
         // something below here causes the picos to get bricked
-        puts("Before:");
+        puts("Before: ");
         for (int i = 0; i < MESSAGE_LENGTH; i++) {
             printf("%x", message[i]);
         }
