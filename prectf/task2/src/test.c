@@ -1,11 +1,8 @@
 #include <stdio.h>
-// #include <unistd.h>
 #include <string.h>  // for memset
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
-// #include "pico/pico_mem_ops.h"  // for pico memset
-// #include "example.h"  // for testing
 #include "passwords.h"
 
 #define MAX_COMMAND_BUFFER 13  // string length capped at 12, extra for null
