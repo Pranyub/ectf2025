@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import socket
 import threading
 import tempfile
@@ -8,24 +10,15 @@ MAX_FILE_SIZE = 20 * 1024 * 1024  # 5MB
 FINISH_MAGIC = b'FINISHMAGICFINISHMAGIC'+b'FINISHMAGIC92944838'
 
 shorthand = {
-    4: 'ABE3747F7B62ED78',
-    6: '0FA10586986596B1',
-    2: '8081BA7854452112',
-    5: '8D4C20BE3FA69534',
+    4: '8081BA7854452112',
     1: '9CC1F3509B614BDB',
-    0: '7243898FD1AE65B2',
-    3: 'B3170728920898E1'
+    2: '7243898FD1AE65B2',
+    6: 'B3170728920898E1',
+    3: 'ABE3747F7B62ED78',
+    5: '8D4C20BE3FA69534',
+    2: '0FA10586986596B1',
+    7: '7ED67CFF1CDC2823'
 }
-
-devices = {
-    'ABE3747F7B62ED78': '/dev/ttyACM4',
-    '0FA10586986596B1': '/dev/ttyACM6',
-    '8081BA7854452112': '/dev/ttyACM2',
-    '8D4C20BE3FA69534': '/dev/ttyACM5',
-    '9CC1F3509B614BDB': '/dev/ttyACM1',
-    '7243898FD1AE65B2': '/dev/ttyACM0',
-    'B3170728920898E1': '/dev/ttyACM3'
-    }
 
 def list_connected_picos():
     try:
