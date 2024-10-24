@@ -28,7 +28,7 @@ def parse_flash(file_path, address):
         print('error: --file not set')
         return
 
-    if int(address) not in range(0, 7):
+    if int(address) not in range(0, 9):
         print('bad address')
         return
 
