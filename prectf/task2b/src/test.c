@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdint.h>  // for uint8_t
+#include <stdint.h>  // uint8_t
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
@@ -17,12 +17,12 @@ const uint LED_PIN = 25;
  * @param buffer where the command should be stored.
  * @param max_length the maximum length of the command.
  * @param print whether or not to display the characters typed;
- *          non zero is true.
+ *              non zero is true.
  * @return the length of the command typed.
  * @pre \p buffer is at least of length \p max_length + 1
  * @pre \p max_length is not less than 0
  * @post \p buffer now stores the command typed up to max_length characters
- *          plus the null terminator.
+ *       plus the null terminator.
  */
 int get_command(char* buffer, int max_length);
 
