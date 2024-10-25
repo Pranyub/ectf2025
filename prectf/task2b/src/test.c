@@ -4,7 +4,7 @@
 #include "pico/stdlib.h"
 #include "hardware/gpio.h"
 #include "pico/binary_info.h"
-#include "tiny_aes/aes.h"  // tiny aes
+#include "aes.h"  // tiny aes
 #include "key.h"
 
 #define MAX_COMMAND_BUFFER 35  // string length capped at 34, extra for null
@@ -67,24 +67,17 @@ int main() {
             puts("Error parsing the command.");
             continue;
         }
-        
-        // delete this block after debugging
-        {
-            puts("Before: ");  
-            for (int i = 0; i < MESSAGE_LENGTH; i++) {
-                printf("%x", message[i]);
-            }
-            puts("");
-        }
 
         // something below here causes the picos to get bricked
         uint8_t* key = (uint8_t*)AES_128_KEY;
-        // initialize AES context
+        // // initialize AES context
         struct AES_ctx aes_ctx;
         AES_init_ctx(&aes_ctx, key);
 
-        // encrypt
+        // // encrypt
         AES_ECB_encrypt(&aes_ctx, message);
+        
+        // print output
         printf("R ");
         for (int i = 0; i < MESSAGE_LENGTH; i++) {
             printf("%x", message[i]);
@@ -129,7 +122,6 @@ int parse_command(const char* command, uint8_t* message) {
             (ones_place = char_to_decimal(command[i+1])) == -1) return -1;
         message[(i - START_INDEX) / 2] = (uint8_t)(sixteenths_place * 16 + ones_place);
     }
-    puts("");
     return 0;
 }
 
@@ -141,6 +133,6 @@ int char_to_decimal(char character) {
     return -1;  // not a hex character
 }
 
-// usbclient flash --file test.elf --address 5
-// load_serial 5
-// sudo minicom -D /dev/ttyPICO5 115200
+// usbclient flash --file test.elf --address 3
+// load_serial 3
+// sudo minicom -D /dev/ttyPICO3 115200
