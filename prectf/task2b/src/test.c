@@ -68,10 +68,6 @@ int main() {
             continue;
         }
         
-        uint8_t* key = (uint8_t*)AES_128_KEY;
-
-
-
         // delete this block after debugging
         {
             puts("Before: ");  
@@ -82,6 +78,7 @@ int main() {
         }
 
         // something below here causes the picos to get bricked
+        uint8_t* key = (uint8_t*)AES_128_KEY;
         // initialize AES context
         struct AES_ctx aes_ctx;
         AES_init_ctx(&aes_ctx, key);
