@@ -70,16 +70,22 @@ int main() {
         
         uint8_t* key = (uint8_t*)AES_128_KEY;
 
+
+
+        // delete this block after debugging
+        {
+            puts("Before: ");  
+            for (int i = 0; i < MESSAGE_LENGTH; i++) {
+                printf("%x", message[i]);
+            }
+            puts("");
+        }
+
+        // something below here causes the picos to get bricked
         // initialize AES context
         struct AES_ctx aes_ctx;
         AES_init_ctx(&aes_ctx, key);
 
-        // something below here causes the picos to get bricked
-        puts("Before: ");
-        for (int i = 0; i < MESSAGE_LENGTH; i++) {
-            printf("%x", message[i]);
-        }
-        puts("");
         // encrypt
         AES_ECB_encrypt(&aes_ctx, message);
         printf("R ");
