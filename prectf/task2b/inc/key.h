@@ -1,6 +1,5 @@
 #ifndef KEY_H
 #define KEY_H
 
-#define AES_128_KEY "Who knew AES could be so fast???"
-
+#define AES_128_KEY "AES is very fast"  // must be 16 bytes
 #endif

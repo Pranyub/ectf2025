@@ -68,16 +68,7 @@ int main() {
             continue;
         }
         
-        // create key from string
-        uint8_t key[16];
-        for (int i = 0; i < (MESSAGE_LENGTH * 2) - 1; i += 2) {
-            // convert char to decimal
-            int sixteenths_place = 0;
-            int ones_place = 0;
-            if ((sixteenths_place = char_to_decimal(AES_128_KEY[i])) == -1 ||
-                (ones_place = char_to_decimal(AES_128_KEY[i+1])) == -1) return -1;
-            key[(i) / 2] = (uint8_t)(sixteenths_place * 16 + ones_place);
-        }
+        uint8_t* key = (uint8_t*)AES_128_KEY;
 
         // initialize AES context
         struct AES_ctx aes_ctx;
