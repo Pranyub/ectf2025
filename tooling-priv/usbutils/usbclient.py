@@ -8,6 +8,8 @@ import os
 SERVER = '172.24.57.165'
 PORT = 12345
 
+NUM_BOARDS = 3
+
 FINISH_MAGIC = b'FINISHMAGICFINISHMAGICFINISHMAGIC92944838'
 
 def main():
@@ -21,6 +23,36 @@ def main():
 
     if args.command == 'flash':
         parse_flash(args.file, args.address)
+    elif args.command == 'gdbserver':
+        start_gdbserver(args.address)
+
+def start_gdbserver(address):
+    if int(address) not in range(0, NUM_BOARDS):
+        print('bad address')
+        return
+
+    # Create a TCP/IP socket
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        # Connect to the server
+        client_socket.connect((SERVER, PORT))
+
+        command = b'SGDB ' + address.encode() + b' blah'
+
+        client_socket.sendall(command)
+        client_socket.sendall(FINISH_MAGIC)
+
+        data = client_socket.recv(1024)  # Adjust buffer size as needed
+        print(data.decode())  # Print the output received from the server
+
+        while True:
+            data = client_socket.recv(1024)  # Adjust buffer size as needed
+            if not data:  # If there's no more data, break
+                break
+    finally:
+        # Close the client socket
+        client_socket.close()
 
 def parse_flash(file_path, address):
 
@@ -28,7 +60,7 @@ def parse_flash(file_path, address):
         print('error: --file not set')
         return
 
-    if int(address) not in range(0, 9):
+    if int(address) not in range(0, NUM_BOARDS):
         print('bad address')
         return
 
@@ -43,7 +75,7 @@ def parse_flash(file_path, address):
         # Connect to the server
         client_socket.connect((SERVER, PORT))
 
-        command = b'FLSH ' + address.encode() + b' ' + file_data
+        command = b'OOCD ' + address.encode() + b' ' + file_data
 
         # Send the file data
         client_socket.sendall(command)
@@ -53,8 +85,7 @@ def parse_flash(file_path, address):
         # Receive echoed data from the server
         response = client_socket.recv(4096)
         print(response.decode())
-
-        print(f'Flash success! run `load_serial {address}` to initialize `/dev/ttyPICO{address}`')
+        #print(f'Flash success! run `load_serial {address}` to initialize `/dev/ttyPICO{address}`')
     finally:
         # Close the client socket
         client_socket.close()
