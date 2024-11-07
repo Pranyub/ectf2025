@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "passwords.h": "c"
+    },
+    "cmake.sourceDirectory": "/home/camhar05/ectf2025/prectf/leetcode"
+}
