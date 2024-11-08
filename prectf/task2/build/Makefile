@@ -189,14 +189,14 @@ pioasmBuild/fast:
 	$(MAKE) -f pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/pioasmBuild.dir/build.make pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/pioasmBuild.dir/build
 .PHONY : pioasmBuild/fast
 
-common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o: common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj: common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i: common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
 
@@ -216,14 +216,14 @@ common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.o: common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj: common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i: common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
 
@@ -243,14 +243,14 @@ common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.o: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
 
@@ -270,14 +270,14 @@ common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.o: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i: common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
 
@@ -297,14 +297,14 @@ common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.o: common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj: common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i: common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
 
@@ -324,14 +324,14 @@ common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.o: common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj: common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i: common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
 
@@ -351,14 +351,14 @@ common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.o: common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj: common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i: common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
 
@@ -378,14 +378,14 @@ common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.o: common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj: common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i: common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
 
@@ -405,14 +405,14 @@ common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.o: common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj: common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i: common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
 
@@ -432,14 +432,14 @@ common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.o: common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj: common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i: common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
 
@@ -459,14 +459,14 @@ common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.o: common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj: common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i: common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
 
@@ -486,14 +486,14 @@ common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/class/video/video_device.o: common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/video/video_device.obj: common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/video/video_device.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/video/video_device.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.o
+common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
 
 common/pico-sdk/lib/tinyusb/src/class/video/video_device.i: common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
 
@@ -513,14 +513,14 @@ common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
 
-common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.o: common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o
+common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj: common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.o
+common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
 
 common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i: common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
 
@@ -540,14 +540,14 @@ common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
 
-common/pico-sdk/lib/tinyusb/src/device/usbd.o: common/pico-sdk/lib/tinyusb/src/device/usbd.c.o
+common/pico-sdk/lib/tinyusb/src/device/usbd.obj: common/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/device/usbd.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd.c.o
+common/pico-sdk/lib/tinyusb/src/device/usbd.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
 
 common/pico-sdk/lib/tinyusb/src/device/usbd.i: common/pico-sdk/lib/tinyusb/src/device/usbd.c.i
 
@@ -567,14 +567,14 @@ common/pico-sdk/lib/tinyusb/src/device/usbd.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd.c.s
 
-common/pico-sdk/lib/tinyusb/src/device/usbd_control.o: common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o
+common/pico-sdk/lib/tinyusb/src/device/usbd_control.obj: common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd_control.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd_control.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.o
+common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
 
 common/pico-sdk/lib/tinyusb/src/device/usbd_control.i: common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
 
@@ -594,14 +594,14 @@ common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
 
-common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.o
+common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
 
 common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
 
@@ -621,14 +621,14 @@ common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
 
-common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.o
+common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
 
 common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i: common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
 
@@ -648,14 +648,14 @@ common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
 
-common/pico-sdk/lib/tinyusb/src/tusb.o: common/pico-sdk/lib/tinyusb/src/tusb.c.o
+common/pico-sdk/lib/tinyusb/src/tusb.obj: common/pico-sdk/lib/tinyusb/src/tusb.c.obj
 
-.PHONY : common/pico-sdk/lib/tinyusb/src/tusb.o
+.PHONY : common/pico-sdk/lib/tinyusb/src/tusb.obj
 
 # target to build an object file
-common/pico-sdk/lib/tinyusb/src/tusb.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/tusb.c.o
-.PHONY : common/pico-sdk/lib/tinyusb/src/tusb.c.o
+common/pico-sdk/lib/tinyusb/src/tusb.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/tusb.c.obj
+.PHONY : common/pico-sdk/lib/tinyusb/src/tusb.c.obj
 
 common/pico-sdk/lib/tinyusb/src/tusb.i: common/pico-sdk/lib/tinyusb/src/tusb.c.i
 
@@ -675,14 +675,14 @@ common/pico-sdk/lib/tinyusb/src/tusb.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/lib/tinyusb/src/tusb.c.s
 .PHONY : common/pico-sdk/lib/tinyusb/src/tusb.c.s
 
-common/pico-sdk/src/common/hardware_claim/claim.o: common/pico-sdk/src/common/hardware_claim/claim.c.o
+common/pico-sdk/src/common/hardware_claim/claim.obj: common/pico-sdk/src/common/hardware_claim/claim.c.obj
 
-.PHONY : common/pico-sdk/src/common/hardware_claim/claim.o
+.PHONY : common/pico-sdk/src/common/hardware_claim/claim.obj
 
 # target to build an object file
-common/pico-sdk/src/common/hardware_claim/claim.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/hardware_claim/claim.c.o
-.PHONY : common/pico-sdk/src/common/hardware_claim/claim.c.o
+common/pico-sdk/src/common/hardware_claim/claim.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/hardware_claim/claim.c.obj
+.PHONY : common/pico-sdk/src/common/hardware_claim/claim.c.obj
 
 common/pico-sdk/src/common/hardware_claim/claim.i: common/pico-sdk/src/common/hardware_claim/claim.c.i
 
@@ -702,14 +702,14 @@ common/pico-sdk/src/common/hardware_claim/claim.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/hardware_claim/claim.c.s
 .PHONY : common/pico-sdk/src/common/hardware_claim/claim.c.s
 
-common/pico-sdk/src/common/pico_sync/critical_section.o: common/pico-sdk/src/common/pico_sync/critical_section.c.o
+common/pico-sdk/src/common/pico_sync/critical_section.obj: common/pico-sdk/src/common/pico_sync/critical_section.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_sync/critical_section.o
+.PHONY : common/pico-sdk/src/common/pico_sync/critical_section.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_sync/critical_section.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/critical_section.c.o
-.PHONY : common/pico-sdk/src/common/pico_sync/critical_section.c.o
+common/pico-sdk/src/common/pico_sync/critical_section.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/critical_section.c.obj
+.PHONY : common/pico-sdk/src/common/pico_sync/critical_section.c.obj
 
 common/pico-sdk/src/common/pico_sync/critical_section.i: common/pico-sdk/src/common/pico_sync/critical_section.c.i
 
@@ -729,14 +729,14 @@ common/pico-sdk/src/common/pico_sync/critical_section.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/critical_section.c.s
 .PHONY : common/pico-sdk/src/common/pico_sync/critical_section.c.s
 
-common/pico-sdk/src/common/pico_sync/lock_core.o: common/pico-sdk/src/common/pico_sync/lock_core.c.o
+common/pico-sdk/src/common/pico_sync/lock_core.obj: common/pico-sdk/src/common/pico_sync/lock_core.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_sync/lock_core.o
+.PHONY : common/pico-sdk/src/common/pico_sync/lock_core.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_sync/lock_core.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/lock_core.c.o
-.PHONY : common/pico-sdk/src/common/pico_sync/lock_core.c.o
+common/pico-sdk/src/common/pico_sync/lock_core.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/lock_core.c.obj
+.PHONY : common/pico-sdk/src/common/pico_sync/lock_core.c.obj
 
 common/pico-sdk/src/common/pico_sync/lock_core.i: common/pico-sdk/src/common/pico_sync/lock_core.c.i
 
@@ -756,14 +756,14 @@ common/pico-sdk/src/common/pico_sync/lock_core.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/lock_core.c.s
 .PHONY : common/pico-sdk/src/common/pico_sync/lock_core.c.s
 
-common/pico-sdk/src/common/pico_sync/mutex.o: common/pico-sdk/src/common/pico_sync/mutex.c.o
+common/pico-sdk/src/common/pico_sync/mutex.obj: common/pico-sdk/src/common/pico_sync/mutex.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_sync/mutex.o
+.PHONY : common/pico-sdk/src/common/pico_sync/mutex.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_sync/mutex.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/mutex.c.o
-.PHONY : common/pico-sdk/src/common/pico_sync/mutex.c.o
+common/pico-sdk/src/common/pico_sync/mutex.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/mutex.c.obj
+.PHONY : common/pico-sdk/src/common/pico_sync/mutex.c.obj
 
 common/pico-sdk/src/common/pico_sync/mutex.i: common/pico-sdk/src/common/pico_sync/mutex.c.i
 
@@ -783,14 +783,14 @@ common/pico-sdk/src/common/pico_sync/mutex.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/mutex.c.s
 .PHONY : common/pico-sdk/src/common/pico_sync/mutex.c.s
 
-common/pico-sdk/src/common/pico_sync/sem.o: common/pico-sdk/src/common/pico_sync/sem.c.o
+common/pico-sdk/src/common/pico_sync/sem.obj: common/pico-sdk/src/common/pico_sync/sem.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_sync/sem.o
+.PHONY : common/pico-sdk/src/common/pico_sync/sem.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_sync/sem.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/sem.c.o
-.PHONY : common/pico-sdk/src/common/pico_sync/sem.c.o
+common/pico-sdk/src/common/pico_sync/sem.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/sem.c.obj
+.PHONY : common/pico-sdk/src/common/pico_sync/sem.c.obj
 
 common/pico-sdk/src/common/pico_sync/sem.i: common/pico-sdk/src/common/pico_sync/sem.c.i
 
@@ -810,14 +810,14 @@ common/pico-sdk/src/common/pico_sync/sem.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_sync/sem.c.s
 .PHONY : common/pico-sdk/src/common/pico_sync/sem.c.s
 
-common/pico-sdk/src/common/pico_time/time.o: common/pico-sdk/src/common/pico_time/time.c.o
+common/pico-sdk/src/common/pico_time/time.obj: common/pico-sdk/src/common/pico_time/time.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_time/time.o
+.PHONY : common/pico-sdk/src/common/pico_time/time.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_time/time.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/time.c.o
-.PHONY : common/pico-sdk/src/common/pico_time/time.c.o
+common/pico-sdk/src/common/pico_time/time.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/time.c.obj
+.PHONY : common/pico-sdk/src/common/pico_time/time.c.obj
 
 common/pico-sdk/src/common/pico_time/time.i: common/pico-sdk/src/common/pico_time/time.c.i
 
@@ -837,14 +837,14 @@ common/pico-sdk/src/common/pico_time/time.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/time.c.s
 .PHONY : common/pico-sdk/src/common/pico_time/time.c.s
 
-common/pico-sdk/src/common/pico_time/timeout_helper.o: common/pico-sdk/src/common/pico_time/timeout_helper.c.o
+common/pico-sdk/src/common/pico_time/timeout_helper.obj: common/pico-sdk/src/common/pico_time/timeout_helper.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_time/timeout_helper.o
+.PHONY : common/pico-sdk/src/common/pico_time/timeout_helper.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_time/timeout_helper.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/timeout_helper.c.o
-.PHONY : common/pico-sdk/src/common/pico_time/timeout_helper.c.o
+common/pico-sdk/src/common/pico_time/timeout_helper.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/timeout_helper.c.obj
+.PHONY : common/pico-sdk/src/common/pico_time/timeout_helper.c.obj
 
 common/pico-sdk/src/common/pico_time/timeout_helper.i: common/pico-sdk/src/common/pico_time/timeout_helper.c.i
 
@@ -864,14 +864,14 @@ common/pico-sdk/src/common/pico_time/timeout_helper.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_time/timeout_helper.c.s
 .PHONY : common/pico-sdk/src/common/pico_time/timeout_helper.c.s
 
-common/pico-sdk/src/common/pico_util/datetime.o: common/pico-sdk/src/common/pico_util/datetime.c.o
+common/pico-sdk/src/common/pico_util/datetime.obj: common/pico-sdk/src/common/pico_util/datetime.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_util/datetime.o
+.PHONY : common/pico-sdk/src/common/pico_util/datetime.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_util/datetime.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/datetime.c.o
-.PHONY : common/pico-sdk/src/common/pico_util/datetime.c.o
+common/pico-sdk/src/common/pico_util/datetime.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/datetime.c.obj
+.PHONY : common/pico-sdk/src/common/pico_util/datetime.c.obj
 
 common/pico-sdk/src/common/pico_util/datetime.i: common/pico-sdk/src/common/pico_util/datetime.c.i
 
@@ -891,14 +891,14 @@ common/pico-sdk/src/common/pico_util/datetime.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/datetime.c.s
 .PHONY : common/pico-sdk/src/common/pico_util/datetime.c.s
 
-common/pico-sdk/src/common/pico_util/pheap.o: common/pico-sdk/src/common/pico_util/pheap.c.o
+common/pico-sdk/src/common/pico_util/pheap.obj: common/pico-sdk/src/common/pico_util/pheap.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_util/pheap.o
+.PHONY : common/pico-sdk/src/common/pico_util/pheap.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_util/pheap.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/pheap.c.o
-.PHONY : common/pico-sdk/src/common/pico_util/pheap.c.o
+common/pico-sdk/src/common/pico_util/pheap.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/pheap.c.obj
+.PHONY : common/pico-sdk/src/common/pico_util/pheap.c.obj
 
 common/pico-sdk/src/common/pico_util/pheap.i: common/pico-sdk/src/common/pico_util/pheap.c.i
 
@@ -918,14 +918,14 @@ common/pico-sdk/src/common/pico_util/pheap.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/pheap.c.s
 .PHONY : common/pico-sdk/src/common/pico_util/pheap.c.s
 
-common/pico-sdk/src/common/pico_util/queue.o: common/pico-sdk/src/common/pico_util/queue.c.o
+common/pico-sdk/src/common/pico_util/queue.obj: common/pico-sdk/src/common/pico_util/queue.c.obj
 
-.PHONY : common/pico-sdk/src/common/pico_util/queue.o
+.PHONY : common/pico-sdk/src/common/pico_util/queue.obj
 
 # target to build an object file
-common/pico-sdk/src/common/pico_util/queue.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/queue.c.o
-.PHONY : common/pico-sdk/src/common/pico_util/queue.c.o
+common/pico-sdk/src/common/pico_util/queue.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/queue.c.obj
+.PHONY : common/pico-sdk/src/common/pico_util/queue.c.obj
 
 common/pico-sdk/src/common/pico_util/queue.i: common/pico-sdk/src/common/pico_util/queue.c.i
 
@@ -945,14 +945,14 @@ common/pico-sdk/src/common/pico_util/queue.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/common/pico_util/queue.c.s
 .PHONY : common/pico-sdk/src/common/pico_util/queue.c.s
 
-common/pico-sdk/src/rp2350/pico_platform/platform.o: common/pico-sdk/src/rp2350/pico_platform/platform.c.o
+common/pico-sdk/src/rp2350/pico_platform/platform.obj: common/pico-sdk/src/rp2350/pico_platform/platform.c.obj
 
-.PHONY : common/pico-sdk/src/rp2350/pico_platform/platform.o
+.PHONY : common/pico-sdk/src/rp2350/pico_platform/platform.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2350/pico_platform/platform.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2350/pico_platform/platform.c.o
-.PHONY : common/pico-sdk/src/rp2350/pico_platform/platform.c.o
+common/pico-sdk/src/rp2350/pico_platform/platform.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2350/pico_platform/platform.c.obj
+.PHONY : common/pico-sdk/src/rp2350/pico_platform/platform.c.obj
 
 common/pico-sdk/src/rp2350/pico_platform/platform.i: common/pico-sdk/src/rp2350/pico_platform/platform.c.i
 
@@ -972,14 +972,14 @@ common/pico-sdk/src/rp2350/pico_platform/platform.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2350/pico_platform/platform.c.s
 .PHONY : common/pico-sdk/src/rp2350/pico_platform/platform.c.s
 
-common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.o: common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o
+common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.obj: common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.o
+common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.i: common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.i
 
@@ -999,14 +999,14 @@ common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.c.s
 
-common/pico-sdk/src/rp2_common/hardware_clocks/clocks.o: common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o
+common/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj: common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_clocks/clocks.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.o
+common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_clocks/clocks.i: common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
 
@@ -1026,14 +1026,14 @@ common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
 
-common/pico-sdk/src/rp2_common/hardware_divider/divider.o: common/pico-sdk/src/rp2_common/hardware_divider/divider.c.o
+common/pico-sdk/src/rp2_common/hardware_divider/divider.obj: common/pico-sdk/src/rp2_common/hardware_divider/divider.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_divider/divider.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_divider/divider.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_divider/divider.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_divider/divider.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_divider/divider.c.o
+common/pico-sdk/src/rp2_common/hardware_divider/divider.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_divider/divider.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_divider/divider.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_divider/divider.i: common/pico-sdk/src/rp2_common/hardware_divider/divider.c.i
 
@@ -1053,14 +1053,14 @@ common/pico-sdk/src/rp2_common/hardware_divider/divider.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_divider/divider.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_divider/divider.c.s
 
-common/pico-sdk/src/rp2_common/hardware_flash/flash.o: common/pico-sdk/src/rp2_common/hardware_flash/flash.c.o
+common/pico-sdk/src/rp2_common/hardware_flash/flash.obj: common/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_flash/flash.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_flash/flash.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_flash/flash.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_flash/flash.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_flash/flash.c.o
+common/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_flash/flash.i: common/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
 
@@ -1080,14 +1080,14 @@ common/pico-sdk/src/rp2_common/hardware_flash/flash.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
 
-common/pico-sdk/src/rp2_common/hardware_gpio/gpio.o: common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
+common/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj: common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_gpio/gpio.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.o
+common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_gpio/gpio.i: common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
 
@@ -1107,14 +1107,14 @@ common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
 
-common/pico-sdk/src/rp2_common/hardware_irq/irq.o: common/pico-sdk/src/rp2_common/hardware_irq/irq.c.o
+common/pico-sdk/src/rp2_common/hardware_irq/irq.obj: common/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_irq/irq.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_irq/irq.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq.c.o
+common/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_irq/irq.i: common/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
 
@@ -1134,23 +1134,23 @@ common/pico-sdk/src/rp2_common/hardware_irq/irq.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
 
-common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.o: common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o
+common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj: common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.o
-
-common/pico-sdk/src/rp2_common/hardware_pll/pll.o: common/pico-sdk/src/rp2_common/hardware_pll/pll.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/hardware_pll/pll.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_pll/pll.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_pll/pll.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_pll/pll.c.o
+common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
+
+common/pico-sdk/src/rp2_common/hardware_pll/pll.obj: common/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/hardware_pll/pll.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_pll/pll.i: common/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
 
@@ -1170,14 +1170,14 @@ common/pico-sdk/src/rp2_common/hardware_pll/pll.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 
-common/pico-sdk/src/rp2_common/hardware_sync/sync.o: common/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
+common/pico-sdk/src/rp2_common/hardware_sync/sync.obj: common/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_sync/sync.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_sync/sync.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_sync/sync.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_sync/sync.c.o
+common/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_sync/sync.i: common/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
 
@@ -1197,14 +1197,14 @@ common/pico-sdk/src/rp2_common/hardware_sync/sync.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
 
-common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.o: common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o
+common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.obj: common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.o
+common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.i: common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.i
 
@@ -1224,14 +1224,14 @@ common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.c.s
 
-common/pico-sdk/src/rp2_common/hardware_ticks/ticks.o: common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o
+common/pico-sdk/src/rp2_common/hardware_ticks/ticks.obj: common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_ticks/ticks.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_ticks/ticks.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.o
+common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_ticks/ticks.i: common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.i
 
@@ -1251,14 +1251,14 @@ common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_ticks/ticks.c.s
 
-common/pico-sdk/src/rp2_common/hardware_timer/timer.o: common/pico-sdk/src/rp2_common/hardware_timer/timer.c.o
+common/pico-sdk/src/rp2_common/hardware_timer/timer.obj: common/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_timer/timer.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_timer/timer.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_timer/timer.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_timer/timer.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_timer/timer.c.o
+common/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_timer/timer.i: common/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
 
@@ -1278,14 +1278,14 @@ common/pico-sdk/src/rp2_common/hardware_timer/timer.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
 
-common/pico-sdk/src/rp2_common/hardware_uart/uart.o: common/pico-sdk/src/rp2_common/hardware_uart/uart.c.o
+common/pico-sdk/src/rp2_common/hardware_uart/uart.obj: common/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_uart/uart.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_uart/uart.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_uart/uart.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_uart/uart.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_uart/uart.c.o
+common/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_uart/uart.i: common/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
 
@@ -1305,14 +1305,14 @@ common/pico-sdk/src/rp2_common/hardware_uart/uart.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
 
-common/pico-sdk/src/rp2_common/hardware_vreg/vreg.o: common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o
+common/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj: common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_vreg/vreg.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.o
+common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_vreg/vreg.i: common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
 
@@ -1332,14 +1332,14 @@ common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
 
-common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.o: common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o
+common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj: common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.o
+common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i: common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
 
@@ -1359,14 +1359,14 @@ common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
 
-common/pico-sdk/src/rp2_common/hardware_xosc/xosc.o: common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o
+common/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj: common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/hardware_xosc/xosc.o
+.PHONY : common/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o
-.PHONY : common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.o
+common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
 
 common/pico-sdk/src/rp2_common/hardware_xosc/xosc.i: common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
 
@@ -1386,14 +1386,14 @@ common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
 .PHONY : common/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
 
-common/pico-sdk/src/rp2_common/pico_atomic/atomic.o: common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o
+common/pico-sdk/src/rp2_common/pico_atomic/atomic.obj: common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_atomic/atomic.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_atomic/atomic.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.o
+common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.obj
 
 common/pico-sdk/src/rp2_common/pico_atomic/atomic.i: common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.i
 
@@ -1413,23 +1413,23 @@ common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_atomic/atomic.c.s
 
-common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.o: common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o
+common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj: common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.o
-
-common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.o: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.o
+common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
+
+common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
 
 common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
 
@@ -1449,14 +1449,14 @@ common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
 
-common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.o: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o
+common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.obj: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.o
+common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.obj
 
 common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.i: common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.i
 
@@ -1476,14 +1476,14 @@ common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.c.s
 
-common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.o: common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o
+common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.obj: common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.o
+common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.obj
 
 common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.i: common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.i
 
@@ -1503,23 +1503,23 @@ common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.c.s
 
-common/pico-sdk/src/rp2_common/pico_crt0/crt0.o: common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o
+common/pico-sdk/src/rp2_common/pico_crt0/crt0.obj: common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_crt0/crt0.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.o
-
-common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.o: common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_crt0/crt0.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.o
+common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_crt0/crt0.S.obj
+
+common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.obj: common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.obj
 
 common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.i: common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.i
 
@@ -1539,14 +1539,14 @@ common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.cpp.s
 
-common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.o: common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.o
+common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.obj: common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.o
+common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.obj
 
 common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.i: common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.i
 
@@ -1566,41 +1566,41 @@ common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.c.s
 
-common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.o: common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.o
+common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.obj: common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.o
-
-common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.o: common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.o
+common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.S.obj
 
-common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.o: common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.o
+common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.obj: common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.o
-
-common/pico-sdk/src/rp2_common/pico_double/double_math.o: common/pico-sdk/src/rp2_common/pico_double/double_math.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_math.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_double/double_math.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_math.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_math.c.o
+common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.S.obj
+
+common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.obj: common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.S.obj
+
+common/pico-sdk/src/rp2_common/pico_double/double_math.obj: common/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_math.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_double/double_math.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
 
 common/pico-sdk/src/rp2_common/pico_double/double_math.i: common/pico-sdk/src/rp2_common/pico_double/double_math.c.i
 
@@ -1620,23 +1620,23 @@ common/pico-sdk/src/rp2_common/pico_double/double_math.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_math.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_double/double_math.c.s
 
-common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.o: common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.o
+common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.obj: common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.o
-
-common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o: common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.o
+common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.S.obj
+
+common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj: common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
 
 common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i: common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
 
@@ -1656,23 +1656,23 @@ common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
 
-common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.o: common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.o
+common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.obj: common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.o
-
-common/pico-sdk/src/rp2_common/pico_float/float_math.o: common/pico-sdk/src/rp2_common/pico_float/float_math.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_math.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_float/float_math.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_math.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_math.c.o
+common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.S.obj
+
+common/pico-sdk/src/rp2_common/pico_float/float_math.obj: common/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_math.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_float/float_math.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
 
 common/pico-sdk/src/rp2_common/pico_float/float_math.i: common/pico-sdk/src/rp2_common/pico_float/float_math.c.i
 
@@ -1692,23 +1692,23 @@ common/pico-sdk/src/rp2_common/pico_float/float_math.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_math.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_float/float_math.c.s
 
-common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.o: common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.o
+common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.obj: common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.o
-
-# target to build an object file
-common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.o
-
-common/pico-sdk/src/rp2_common/pico_malloc/malloc.o: common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o
-
-.PHONY : common/pico-sdk/src/rp2_common/pico_malloc/malloc.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.o
+common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.S.obj
+
+common/pico-sdk/src/rp2_common/pico_malloc/malloc.obj: common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.obj
+
+.PHONY : common/pico-sdk/src/rp2_common/pico_malloc/malloc.obj
+
+# target to build an object file
+common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.obj
 
 common/pico-sdk/src/rp2_common/pico_malloc/malloc.i: common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.i
 
@@ -1728,14 +1728,14 @@ common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_malloc/malloc.c.s
 
-common/pico-sdk/src/rp2_common/pico_platform_panic/panic.o: common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o
+common/pico-sdk/src/rp2_common/pico_platform_panic/panic.obj: common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_platform_panic/panic.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_platform_panic/panic.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.o
+common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.obj
 
 common/pico-sdk/src/rp2_common/pico_platform_panic/panic.i: common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.i
 
@@ -1755,14 +1755,14 @@ common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_platform_panic/panic.c.s
 
-common/pico-sdk/src/rp2_common/pico_printf/printf.o: common/pico-sdk/src/rp2_common/pico_printf/printf.c.o
+common/pico-sdk/src/rp2_common/pico_printf/printf.obj: common/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_printf/printf.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_printf/printf.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_printf/printf.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_printf/printf.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_printf/printf.c.o
+common/pico-sdk/src/rp2_common/pico_printf/printf.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
 
 common/pico-sdk/src/rp2_common/pico_printf/printf.i: common/pico-sdk/src/rp2_common/pico_printf/printf.c.i
 
@@ -1782,14 +1782,14 @@ common/pico-sdk/src/rp2_common/pico_printf/printf.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_printf/printf.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_printf/printf.c.s
 
-common/pico-sdk/src/rp2_common/pico_runtime/runtime.o: common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o
+common/pico-sdk/src/rp2_common/pico_runtime/runtime.obj: common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime/runtime.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime/runtime.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.o
+common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
 
 common/pico-sdk/src/rp2_common/pico_runtime/runtime.i: common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
 
@@ -1809,14 +1809,14 @@ common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
 
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.o: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.obj: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.obj
 
 common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.i: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.i
 
@@ -1836,14 +1836,14 @@ common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.c.s
 
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.o: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.obj: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.obj
 
 common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.i: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.i
 
@@ -1863,14 +1863,14 @@ common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.c.s
 
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.o: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.obj: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.o
+common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.obj
 
 common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.i: common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.i
 
@@ -1890,14 +1890,14 @@ common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.c.s
 
-common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.o: common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o
+common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.obj: common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.o
+common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.obj
 
 common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.i: common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.i
 
@@ -1917,14 +1917,14 @@ common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdio/stdio.o: common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o
+common/pico-sdk/src/rp2_common/pico_stdio/stdio.obj: common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio/stdio.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio/stdio.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.o
+common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdio/stdio.i: common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
 
@@ -1944,14 +1944,14 @@ common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.o: common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.obj: common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.i: common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i
 
@@ -1971,14 +1971,14 @@ common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.o: common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj: common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i: common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
 
@@ -1998,14 +1998,14 @@ common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.o: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
 
@@ -2025,14 +2025,14 @@ common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.o: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.o
+common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i: common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
 
@@ -2052,14 +2052,14 @@ common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
 
-common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.o: common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
+common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj: common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.o
+common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
 
 common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i: common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
 
@@ -2079,14 +2079,14 @@ common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
 
-common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.o: common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o
+common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj: common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
 
-.PHONY : common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.o
+.PHONY : common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj
 
 # target to build an object file
-common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o
-.PHONY : common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.o
+common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
+.PHONY : common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
 
 common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i: common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
 
@@ -2106,14 +2106,95 @@ common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s:
 	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
 .PHONY : common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
 
-src/test.o: src/test.c.o
+inc/bearssl/src/symcipher/aes_big_cbcenc.obj: inc/bearssl/src/symcipher/aes_big_cbcenc.c.obj
 
-.PHONY : src/test.o
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.obj
 
 # target to build an object file
-src/test.c.o:
-	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/test.c.o
-.PHONY : src/test.c.o
+inc/bearssl/src/symcipher/aes_big_cbcenc.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_cbcenc.c.obj
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.c.obj
+
+inc/bearssl/src/symcipher/aes_big_cbcenc.i: inc/bearssl/src/symcipher/aes_big_cbcenc.c.i
+
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.i
+
+# target to preprocess a source file
+inc/bearssl/src/symcipher/aes_big_cbcenc.c.i:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_cbcenc.c.i
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.c.i
+
+inc/bearssl/src/symcipher/aes_big_cbcenc.s: inc/bearssl/src/symcipher/aes_big_cbcenc.c.s
+
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.s
+
+# target to generate assembly for a file
+inc/bearssl/src/symcipher/aes_big_cbcenc.c.s:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_cbcenc.c.s
+.PHONY : inc/bearssl/src/symcipher/aes_big_cbcenc.c.s
+
+inc/bearssl/src/symcipher/aes_big_enc.obj: inc/bearssl/src/symcipher/aes_big_enc.c.obj
+
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.obj
+
+# target to build an object file
+inc/bearssl/src/symcipher/aes_big_enc.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_enc.c.obj
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.c.obj
+
+inc/bearssl/src/symcipher/aes_big_enc.i: inc/bearssl/src/symcipher/aes_big_enc.c.i
+
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.i
+
+# target to preprocess a source file
+inc/bearssl/src/symcipher/aes_big_enc.c.i:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_enc.c.i
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.c.i
+
+inc/bearssl/src/symcipher/aes_big_enc.s: inc/bearssl/src/symcipher/aes_big_enc.c.s
+
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.s
+
+# target to generate assembly for a file
+inc/bearssl/src/symcipher/aes_big_enc.c.s:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_big_enc.c.s
+.PHONY : inc/bearssl/src/symcipher/aes_big_enc.c.s
+
+inc/bearssl/src/symcipher/aes_common.obj: inc/bearssl/src/symcipher/aes_common.c.obj
+
+.PHONY : inc/bearssl/src/symcipher/aes_common.obj
+
+# target to build an object file
+inc/bearssl/src/symcipher/aes_common.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_common.c.obj
+.PHONY : inc/bearssl/src/symcipher/aes_common.c.obj
+
+inc/bearssl/src/symcipher/aes_common.i: inc/bearssl/src/symcipher/aes_common.c.i
+
+.PHONY : inc/bearssl/src/symcipher/aes_common.i
+
+# target to preprocess a source file
+inc/bearssl/src/symcipher/aes_common.c.i:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_common.c.i
+.PHONY : inc/bearssl/src/symcipher/aes_common.c.i
+
+inc/bearssl/src/symcipher/aes_common.s: inc/bearssl/src/symcipher/aes_common.c.s
+
+.PHONY : inc/bearssl/src/symcipher/aes_common.s
+
+# target to generate assembly for a file
+inc/bearssl/src/symcipher/aes_common.c.s:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/inc/bearssl/src/symcipher/aes_common.c.s
+.PHONY : inc/bearssl/src/symcipher/aes_common.c.s
+
+src/test.obj: src/test.c.obj
+
+.PHONY : src/test.obj
+
+# target to build an object file
+src/test.c.obj:
+	$(MAKE) -f CMakeFiles/test.dir/build.make CMakeFiles/test.dir/src/test.c.obj
+.PHONY : src/test.c.obj
 
 src/test.i: src/test.c.i
 
@@ -2147,220 +2228,229 @@ help:
 	@echo "... bs2_default"
 	@echo "... cyw43_driver_picow_cyw43_bus_pio_spi_pio_h"
 	@echo "... pioasmBuild"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/class/video/video_device.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/class/video/video_device.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/video/video_device.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/class/video/video_device.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd_control.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd_control.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd_control.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/device/usbd_control.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s"
-	@echo "... common/pico-sdk/lib/tinyusb/src/tusb.o"
+	@echo "... common/pico-sdk/lib/tinyusb/src/tusb.obj"
 	@echo "... common/pico-sdk/lib/tinyusb/src/tusb.i"
 	@echo "... common/pico-sdk/lib/tinyusb/src/tusb.s"
-	@echo "... common/pico-sdk/src/common/hardware_claim/claim.o"
+	@echo "... common/pico-sdk/src/common/hardware_claim/claim.obj"
 	@echo "... common/pico-sdk/src/common/hardware_claim/claim.i"
 	@echo "... common/pico-sdk/src/common/hardware_claim/claim.s"
-	@echo "... common/pico-sdk/src/common/pico_sync/critical_section.o"
+	@echo "... common/pico-sdk/src/common/pico_sync/critical_section.obj"
 	@echo "... common/pico-sdk/src/common/pico_sync/critical_section.i"
 	@echo "... common/pico-sdk/src/common/pico_sync/critical_section.s"
-	@echo "... common/pico-sdk/src/common/pico_sync/lock_core.o"
+	@echo "... common/pico-sdk/src/common/pico_sync/lock_core.obj"
 	@echo "... common/pico-sdk/src/common/pico_sync/lock_core.i"
 	@echo "... common/pico-sdk/src/common/pico_sync/lock_core.s"
-	@echo "... common/pico-sdk/src/common/pico_sync/mutex.o"
+	@echo "... common/pico-sdk/src/common/pico_sync/mutex.obj"
 	@echo "... common/pico-sdk/src/common/pico_sync/mutex.i"
 	@echo "... common/pico-sdk/src/common/pico_sync/mutex.s"
-	@echo "... common/pico-sdk/src/common/pico_sync/sem.o"
+	@echo "... common/pico-sdk/src/common/pico_sync/sem.obj"
 	@echo "... common/pico-sdk/src/common/pico_sync/sem.i"
 	@echo "... common/pico-sdk/src/common/pico_sync/sem.s"
-	@echo "... common/pico-sdk/src/common/pico_time/time.o"
+	@echo "... common/pico-sdk/src/common/pico_time/time.obj"
 	@echo "... common/pico-sdk/src/common/pico_time/time.i"
 	@echo "... common/pico-sdk/src/common/pico_time/time.s"
-	@echo "... common/pico-sdk/src/common/pico_time/timeout_helper.o"
+	@echo "... common/pico-sdk/src/common/pico_time/timeout_helper.obj"
 	@echo "... common/pico-sdk/src/common/pico_time/timeout_helper.i"
 	@echo "... common/pico-sdk/src/common/pico_time/timeout_helper.s"
-	@echo "... common/pico-sdk/src/common/pico_util/datetime.o"
+	@echo "... common/pico-sdk/src/common/pico_util/datetime.obj"
 	@echo "... common/pico-sdk/src/common/pico_util/datetime.i"
 	@echo "... common/pico-sdk/src/common/pico_util/datetime.s"
-	@echo "... common/pico-sdk/src/common/pico_util/pheap.o"
+	@echo "... common/pico-sdk/src/common/pico_util/pheap.obj"
 	@echo "... common/pico-sdk/src/common/pico_util/pheap.i"
 	@echo "... common/pico-sdk/src/common/pico_util/pheap.s"
-	@echo "... common/pico-sdk/src/common/pico_util/queue.o"
+	@echo "... common/pico-sdk/src/common/pico_util/queue.obj"
 	@echo "... common/pico-sdk/src/common/pico_util/queue.i"
 	@echo "... common/pico-sdk/src/common/pico_util/queue.s"
-	@echo "... common/pico-sdk/src/rp2350/pico_platform/platform.o"
+	@echo "... common/pico-sdk/src/rp2350/pico_platform/platform.obj"
 	@echo "... common/pico-sdk/src/rp2350/pico_platform/platform.i"
 	@echo "... common/pico-sdk/src/rp2350/pico_platform/platform.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_boot_lock/boot_lock.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_clocks/clocks.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_clocks/clocks.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_clocks/clocks.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_divider/divider.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_divider/divider.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_divider/divider.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_divider/divider.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_flash/flash.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_flash/flash.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_flash/flash.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_flash/flash.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_gpio/gpio.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_gpio/gpio.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_gpio/gpio.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.o"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_pll/pll.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_pll/pll.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_pll/pll.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_pll/pll.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_sync/sync.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_sync/sync.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_sync/sync.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_sync/sync.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_sync_spin_lock/sync_spin_lock.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_ticks/ticks.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_ticks/ticks.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_ticks/ticks.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_ticks/ticks.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_timer/timer.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_timer/timer.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_timer/timer.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_timer/timer.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_uart/uart.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_uart/uart.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_uart/uart.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_uart/uart.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_vreg/vreg.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_vreg/vreg.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_vreg/vreg.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s"
-	@echo "... common/pico-sdk/src/rp2_common/hardware_xosc/xosc.o"
+	@echo "... common/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_xosc/xosc.i"
 	@echo "... common/pico-sdk/src/rp2_common/hardware_xosc/xosc.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_atomic/atomic.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_atomic/atomic.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_atomic/atomic.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_atomic/atomic.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_bootrom/bootrom_lock.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_clib_interface/newlib_interface.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_crt0/crt0.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_crt0/crt0.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_cxx_options/new_delete.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_divider/divider_compiler.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_math.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_aeabi_dcp.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_conv_m33.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_fma_dcp.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_math.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_math.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_math.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_double/double_sci_m33.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_math.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_conv_m33.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_math.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_math.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_math.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.o"
-	@echo "... common/pico-sdk/src/rp2_common/pico_malloc/malloc.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_float/float_sci_m33_vfp.obj"
+	@echo "... common/pico-sdk/src/rp2_common/pico_malloc/malloc.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_malloc/malloc.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_malloc/malloc.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_platform_panic/panic.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_platform_panic/panic.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_platform_panic/panic.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_platform_panic/panic.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_printf/printf.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_printf/printf.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_printf/printf.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_printf/printf.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_runtime/runtime.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_runtime/runtime.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime/runtime.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime/runtime.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_clocks.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_runtime_init/runtime_init_stack_guard.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_standard_binary_info/standard_binary_info.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdio/stdio.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdio/stdio.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio/stdio.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio/stdio.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s"
-	@echo "... common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.o"
+	@echo "... common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj"
 	@echo "... common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i"
 	@echo "... common/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s"
-	@echo "... src/test.o"
+	@echo "... inc/bearssl/src/symcipher/aes_big_cbcenc.obj"
+	@echo "... inc/bearssl/src/symcipher/aes_big_cbcenc.i"
+	@echo "... inc/bearssl/src/symcipher/aes_big_cbcenc.s"
+	@echo "... inc/bearssl/src/symcipher/aes_big_enc.obj"
+	@echo "... inc/bearssl/src/symcipher/aes_big_enc.i"
+	@echo "... inc/bearssl/src/symcipher/aes_big_enc.s"
+	@echo "... inc/bearssl/src/symcipher/aes_common.obj"
+	@echo "... inc/bearssl/src/symcipher/aes_common.i"
+	@echo "... inc/bearssl/src/symcipher/aes_common.s"
+	@echo "... src/test.obj"
 	@echo "... src/test.i"
 	@echo "... src/test.s"
 .PHONY : help
