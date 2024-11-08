@@ -1,4 +1,4 @@
-from targets import PicoTarget
+from targets import PicoTarget, HardwareTarget
 import angr
 import archinfo
 import capstone
@@ -62,8 +62,17 @@ class GadgetSolver:
         t = self.target
         for addr in funcs:
             func = t.proj.kb.functions.get(addr)
-            print(func.name)
-            self.function_of_interest(func)
+            if self.function_of_interest(func):
+                print(f'candidate: {func.name}')
+
+    def nop_hook(self, state):
+        print('nop hook!!')
+        state.regs.pc = state.regs.lr
+    
+    def zero_hook(self, state):
+        state.regs.r0 = 0
+        return self.nop_hook(state)
+
 
 # Solver for stack frame shift category of problems
 class FrameshiftSolver(GadgetSolver):
@@ -74,9 +83,22 @@ class FrameshiftSolver(GadgetSolver):
             capstone.arm.ARM_INS_POP,
         }
 
+    def add_fn_hooks(self, hooks):
+        project = self.target.proj
+        for func_addr in self.trace_function():
+            print(f'hooking {hex(func_addr)}')
+            project.hook(func_addr, self.nop_hook, length=4)
+
     def function_of_interest(self, func) -> bool:
         for block in func.blocks:
             for insn in block.capstone.insns:
                 if insn.id in self.glitch_targets:
                     return True
         return False
+
+    def run(self):
+        project = self.target.proj
+        self.simgr = project.factory.simgr(self.target.entry)
+        #self.simgr.run()
+        while len(self.simgr.active) == 1:
+            self.simgr.step()
