@@ -1,0 +1,9 @@
+[package]
+name = "hello"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[target.arm-unknown-linux-gnueabihf]
+linker = "arm-none-eabi-gcc"
