@@ -16,8 +16,6 @@ const uint LED_PIN = 25;
  * @brief Stores a command into a buffer
  * @param buffer where the command should be stored.
  * @param max_length the maximum length of the command.
- * @param print whether or not to display the characters typed;
- *              non zero is true.
  * @return the length of the command typed.
  * @pre \p buffer is at least of length \p max_length + 1
  * @pre \p max_length is not less than 0
@@ -55,7 +53,7 @@ int main() {
     gpio_set_dir(LED_PIN, GPIO_OUT);
     sleep_ms(250);
     stdio_flush();  // flush output
-    while (stdio_getchar_timeout_us(10)) {}  // clear input buffer
+    //while (stdio_getchar_timeout_us(10)) {}  // clear input buffer, doesn't work on new system
 
     while (1) {
         char command_buffer[MAX_COMMAND_BUFFER] = "";
@@ -113,7 +111,7 @@ int parse_command(const char* command, uint8_t* message) {
         command[1] != ' ') return -1;
     const int START_INDEX = 2;  // the index where the message starts
 
-    // loop through first character for each message
+    // loop through first character for each pair of hex characters
     for (int i = START_INDEX; i < MAX_COMMAND_BUFFER - 1; i += 2) {
         // convert char to decimal
         int sixteenths_place = 0;
