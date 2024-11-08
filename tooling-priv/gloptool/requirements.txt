@@ -1,5 +1,4 @@
 angr==9.2.102
-angr_targets.egg==info
 archinfo==9.2.102
 avatar2==1.4.7
 capstone==5.0.0.post1
