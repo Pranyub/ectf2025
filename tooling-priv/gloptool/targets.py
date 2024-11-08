@@ -1,28 +1,30 @@
 import angr
 import archinfo
-from avatar2 import Avatar, TargetStates
+from avatar2 import Avatar, TargetStates, archs
 from angr_targets import AvatarGDBConcreteTarget
 import logging
 import sys
-import pickle
+import serial
 
 class HardwareTarget:
-    def __init__(self, ip='victoryrd', port=3330, serial='/dev/ttyPICO0', baud=115200):
+    def __init__(self, ip='victoryrd', port=3330, com='/dev/ttyPICO0', baud=115200):
         self.ip = ip
         self.port = port
-        self.serial = serial
-        self.baud = baud
 
-        self.avatar = Avatar(arch=archinfo.ArchARM())
-        self.gdb_target = self.avatar.add_target(AvatarGDBConcreteTarget,
-                            gdb_ip=self.ip, gdb_port=self.port)
-        self.avatar.init_targets()
+        self.avatar = AvatarGDBConcreteTarget(
+            architecture=archs.arm.ARM,
+            gdbserver_ip=self.ip,
+            gdbserver_port=self.port
+        )
+
+        self.ser = serial.Serial(com, baud)
 
 class PicoTarget:
     def __init__(self, binary, concrete_target=None, cached_cfg=None):
 
         # sram memory regions
         self.sram = [range(0x20000000, 0x20080000)]
+        self.rom = [range(0x00000000, 0x1FFFFFFF)]
 
         # Set up concrete target if given
         if concrete_target != None:
@@ -36,12 +38,21 @@ class PicoTarget:
             binary,
             concrete_target=self.gdb_target,
             load_options={'auto_load_libs': False},
-            arch='ARMCortexM'
+            arch='ARMCortexM',
         )
+
+        # Copy some data from .code to 0x00000000
+        # ??? wtf is at 0x00000000
+        data = self.proj.loader.memory.load(0x10000000, 0x1000)
+        self.proj.loader.memory.add_backer(0x0000000, data)
+
+        #for entry in self.rom:
+        #    self.proj.loader.memory.add_backer(min(entry),  max(entry))
 
         entry_options={angr.options.ZERO_FILL_UNCONSTRAINED_MEMORY, angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS}
         self.entry = self.proj.factory.entry_state(add_options=entry_options)
-        self.entry.inspect.b('mem_read', when=angr.BP_AFTER, action=self.read_hook)
+
+        #self.entry.inspect.b('mem_read', when=angr.BP_AFTER, action=self.read_hook)
 
         self.simgr = self.proj.factory.simulation_manager(self.entry)
         self.cfg = self.proj.analyses.CFGFast()
@@ -57,7 +68,7 @@ class PicoTarget:
     def run_concrete(self, state=None):
         if self.avatar == None:
             return
-        
+
         if state == None:
             state = self.entry
         
@@ -77,5 +88,6 @@ class PicoTarget:
         self.simgr.run(n=100)
 
     def read_hook(self, state):
+        read_addr = state.inspect.mem_read_address
         logging.info(f'read_hook')
-        print(f'here')
+        print(f'here: {read_addr} {state.regs.pc}')
