@@ -1,0 +1,30 @@
+password: password
+
+to flash
+  - usbclient flash --file test.elf --address 0
+  - load_serial 0
+  - sudo minicom -D /dev/ttyPICO0 115200
+
+TODO
+  - get task 2a working
+  - write a fuzzable binary
+  - get Rust working
+
+sudo apt-get install automake autoconf
+git clone https://github.com/AFLplusplus/AFLplusplus.git
+cd AFLplusplus
+make distrib
+sudo make install
+cd unicorn_mode
+./build_unicorn_support.sh
+
+[open ghidra]
+find start,end address
+
+cd src
+pip install capstone unicornafl pwntools
+mkdir input
+
+echo core | sudo tee /proc/sys/kernel/core_pattern
+/home/pyondan/AFLplusplus/afl-fuzz -U -m none -i ./input -o ./output -- python3 fuzz.py @@
+

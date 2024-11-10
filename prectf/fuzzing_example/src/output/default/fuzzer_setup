@@ -1,0 +1,7 @@
+# environment variables:
+AFL_CUSTOM_INFO_PROGRAM=python3
+AFL_CUSTOM_INFO_PROGRAM_ARGV=fuzz.py @@
+AFL_CUSTOM_INFO_OUT=./output/default
+AFL_DEBUG=1
+# command line:
+'/home/pyondan/AFLplusplus/afl-fuzz' '-U' '-m' 'none' '-i' './input' '-o' './output' '--' 'python3' 'fuzz.py' '@@'

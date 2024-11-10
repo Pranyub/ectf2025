@@ -67,5 +67,7 @@ void task_2b(void) {
 int main() {
     bi_decl(bi_program_description("Task 2 Solution"));
     stdio_init_all();
-    task_2b();
+
+    puts("running dpyon's code");
+    task_2a();
 }
