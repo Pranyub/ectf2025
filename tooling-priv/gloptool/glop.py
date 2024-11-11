@@ -1,5 +1,6 @@
 from targets import PicoTarget, HardwareTarget
 import angr
+import pyvex
 import archinfo
 import capstone
 
@@ -57,6 +58,7 @@ class GadgetSolver:
 
         return set(ret)
 
+    # Annotates functions
     def annotate_instrs(self):
         funcs = self.trace_function()
         t = self.target
@@ -98,7 +100,10 @@ class FrameshiftSolver(GadgetSolver):
 
     def run(self):
         project = self.target.proj
+        self.target.entry.regs.pc = self.target.cfg.kb.functions.get('main').addr
+        self.target.entry.regs.sp = self.target.initial_sp
+
         self.simgr = project.factory.simgr(self.target.entry)
-        #self.simgr.run()
-        while len(self.simgr.active) == 1:
-            self.simgr.step()
+        self.simgr.run()
+        #while len(self.simgr.active) == 1:
+        #    self.simgr.step()
