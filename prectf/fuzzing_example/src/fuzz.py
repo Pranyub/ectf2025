@@ -13,9 +13,10 @@ from pwn import *
 # Path to the file containing the binary to emulate
 BINARY_FILE = '/home/pyondan/ectf2025/prectf/fuzzing_example/build/test.elf'
 
-# Memory map for the code to be tested
-MAIN = 0x1000031c
+MAIN_CALL_WIFI_PROCESS_RESPONSE = 0x1000032e
 MAIN_END = 0x10000338
+
+WIFI_PROCESS_RESPONSE = 0x100002ac
 
 CODE_ADDRESS = 0x10000000
 STACK_ADDRESS = 0x00200000  # Address of the stack (arbitrarily chosen)
@@ -41,10 +42,18 @@ def unicorn_debug_instruction(uc, address, size, user_data):
                 fn = address - 4 + ctypes.c_int(int(cs_opstr[1:], 16)).value
                 print(f'--- CALL {hex(fn)} ---')
 
-                if fn == STDIO_INIT_ALL or fn == WIFI_RECV or fn == __WRAP_PRINTF:
+                if fn == STDIO_INIT_ALL or fn == WIFI_RECV:
                     current = uc.reg_read(UC_ARM_REG_PC)
                     print(f'--- RET (skipping function {hex(fn)}) ---')
                     uc.reg_write(UC_ARM_REG_PC, current + 4 + 1)
+                if fn == __WRAP_PRINTF:
+                    # special case: it ends in "bx lr" so we must ret from current func
+                    uc.reg_write(UC_ARM_REG_PC, uc.reg_read(UC_ARM_REG_LR))
+                    print('B'*100)
+                    print(hex(uc.reg_read(UC_ARM_REG_LR)))
+                    print(hex(address))
+                    print('B'*100)
+
 
         if ('pop' in cs_mnemonic and 'pc' in cs_opstr) or (cs_mnemonic == 'bx' and cs_opstr == 'lr'):
             print('--- RET ---')
@@ -146,7 +155,7 @@ def main():
     uc.mem_write(CODE_ADDRESS, code)
 
     # Set the program counter to the start of the code
-    start_address = MAIN
+    start_address = MAIN_CALL_WIFI_PROCESS_RESPONSE
     end_address = MAIN_END
     uc.reg_write(UC_ARM_REG_PC, start_address+1)
 
