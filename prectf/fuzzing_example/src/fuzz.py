@@ -49,11 +49,6 @@ def unicorn_debug_instruction(uc, address, size, user_data):
                 if fn == __WRAP_PRINTF:
                     # special case: it ends in "bx lr" so we must ret from current func
                     uc.reg_write(UC_ARM_REG_PC, uc.reg_read(UC_ARM_REG_LR))
-                    print('B'*100)
-                    print(hex(uc.reg_read(UC_ARM_REG_LR)))
-                    print(hex(address))
-                    print('B'*100)
-
 
         if ('pop' in cs_mnemonic and 'pc' in cs_opstr) or (cs_mnemonic == 'bx' and cs_opstr == 'lr'):
             print('--- RET ---')
@@ -115,6 +110,7 @@ def main():
 
     uc = Uc(UC_ARCH_ARM, UC_MODE_THUMB)
 
+    # TODO: make option to get rid of prints
     if args.trace:
         # uc.hook_add(UC_HOOK_BLOCK, unicorn_debug_block)
         uc.hook_add(UC_HOOK_CODE, unicorn_debug_instruction)
@@ -191,7 +187,7 @@ def main():
         force_crash(e)
 
     # Start the fuzzer.
-    # uc_afl_fuzz(uc=uc, input_file=args.input_file, place_input_callback=place_input_callback, exits=[end_address])
+    uc_afl_fuzz(uc=uc, input_file=args.input_file, place_input_callback=place_input_callback, exits=[end_address])
 
 if __name__ == "__main__":
     main()
