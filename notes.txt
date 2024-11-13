@@ -28,3 +28,7 @@ mkdir input
 echo core | sudo tee /proc/sys/kernel/core_pattern
 /home/pyondan/AFLplusplus/afl-fuzz -U -m none -i ./input -o ./output -- python3 fuzz.py @@
 
+
+AFL_DEBUG=1 /home/pyondan/AFLplusplus/afl-fuzz -U -m none -i ./input -o ./output -- python3 fuzz.py --trace @@
+or alternatively
+/home/pyondan/AFLplusplus/afl-fuzz -U -m none -i ./input -o ./output -- python3 fuzz.py --trace @@
