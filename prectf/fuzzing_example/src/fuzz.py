@@ -181,7 +181,7 @@ def main():
 
     # Start the forkserver
     try:
-        uc.emu_start(uc.reg_read(UC_ARM_REG_PC)+1, end_address, timeout=0, count=0)
+        uc.emu_start(uc.reg_read(UC_ARM_REG_PC)+1, end_address, timeout=0, count=1)
     except UcError as e:
         print("Execution failed with error: {}", e)
         force_crash(e)
