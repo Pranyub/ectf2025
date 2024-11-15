@@ -45,6 +45,38 @@ class MemoryRegion:
     def not_impl(self):
         raise Exception('not yet implemented')
 
+class PL011_UART_MemoryRegion(MemoryRegion):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
+        super().__init__(start, size, mmio, name, use_concrete)
+        self.register_offsets = {
+            0x00: 'DR',
+            0x18: 'FR',
+            0x24: 'IBRD',
+            0x28: 'FBRD',
+            0x2c: 'LCR_H',
+            0x30: 'CR',
+            0x38: 'IMSC',
+            0x48: 'DMACR'
+        }
+    
+    def read(self, state, addr, size=4):
+        assert size == 4
+        offset = self.start - addr
+        if offset in self.register_offsets:
+            print(f"Read of UART{self.register_offsets[offset]} register at address {addr}")
+        else:
+            print(f"Read of unknown UART register at address {addr}")
+        return
+
+    def write(self, state, addr, data):
+        offset = self.start - addr
+        if offset in self.register_offsets:
+            print(f"Write to UART{self.register_offsets[offset]} register at address {addr}: {data}")
+        else:
+            print(f"Write to unknown UAR register at address {addr}: {data}")
+        return
+
+
 class Pico_Timer(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???'):
         super().__init__(start, size, mmio, name)
@@ -71,7 +103,7 @@ class HardwareTarget:
     def __init__(self, ip='victoryrd', port=3330, com='/dev/ttyPICO0', baud=115200, config='serial'):
         self.ip = ip
         self.port = port
-        self.ser = serial.Serial(com, baud)
+        # self.ser = serial.Serial(com, baud)
         self.config = config
         self.lock = Lock()
 
@@ -146,8 +178,8 @@ class PicoTarget:
             MemoryRegion(0x40058000, 0x8000, mmio=True, name="PLL_USB_BASE", use_concrete=False),
             MemoryRegion(0x40060000, 0x8000, mmio=True, name="ACCESSCTRL_BASE", use_concrete=False),
             MemoryRegion(0x40068000, 0x8000, mmio=True, name="BUSCTRL_BASE", use_concrete=False),
-            MemoryRegion(0x40070000, 0x8000, mmio=True, name="UART0_BASE", use_concrete=False),
-            MemoryRegion(0x40078000, 0x8000, mmio=True, name="UART1_BASE", use_concrete=False),
+            PL011_UART_MemoryRegion(0x40070000, 0x8000, mmio=True, name="UART0_BASE", use_concrete=False),
+            PL011_UART_MemoryRegion(0x40078000, 0x8000, mmio=True, name="UART1_BASE", use_concrete=False),
             MemoryRegion(0x40080000, 0x8000, mmio=True, name="SPI0_BASE"),
             MemoryRegion(0x40088000, 0x8000, mmio=True, name="SPI1_BASE"),
             MemoryRegion(0x40090000, 0x8000, mmio=True, name="I2C0_BASE"),
@@ -268,6 +300,7 @@ class PicoTarget:
             return
 
         print(f'mmio read: {hex(addr)} {region.name}')
+        region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
             read_bytes = self.concrete_target.read_memory(addr, 4)
@@ -288,6 +321,7 @@ class PicoTarget:
             return
 
         print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
             self.concrete_target.write_memory(addr, write_data)
