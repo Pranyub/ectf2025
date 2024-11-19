@@ -49,31 +49,39 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: 'DR',
-            0x18: 'FR',
-            0x24: 'IBRD',
-            0x28: 'FBRD',
-            0x2c: 'LCR_H',
-            0x30: 'CR',
-            0x38: 'IMSC',
-            0x48: 'DMACR'
+            0x00: 'DR',  # write to transmit, emulate
+            0x18: 'FR',  # read to check if transmission complete, emulate
+            0x24: 'IBRD',  # baud rate
+            0x28: 'FBRD',  # baud rate
+            0x2c: 'LCR_H',  # data frame format
+            0x30: 'CR',  # enable/disable UART
+            0x38: 'IMSC',  # enable/disable interrupts
+            0x48: 'DMACR'  # enable/disable DMA
         }
+        self.sends = []
+        self.enabled = True
+    
+    def __DR(self, data):
+        print("\"Sending\" 0x{data:x} over UART")
+        send.append(data)
+    
+    def __FR(self): return False
     
     def read(self, state, addr, size=4):
         assert size == 4
-        offset = self.start - addr
+        offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of UART{self.register_offsets[offset]} register at address {addr}")
+            print(f"Read of UART{self.register_offsets[offset]} register")
         else:
-            print(f"Read of unknown UART register at address {addr}")
+            print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x}")
         return
 
     def write(self, state, addr, data):
-        offset = self.start - addr
+        offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to UART{self.register_offsets[offset]} register at address {addr}: {data}")
+            print(f"Write to UART{self.register_offsets[offset]} register: 0x{data:x}")
         else:
-            print(f"Write to unknown UAR register at address {addr}: {data}")
+            print(f"Write to unknown UAR register at address 0x{addr:x}: 0x{data:x}")
         return
 
 
