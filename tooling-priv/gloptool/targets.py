@@ -58,14 +58,16 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             0x38: 'IMSC',  # enable/disable interrupts
             0x48: 'DMACR'  # enable/disable DMA
         }
-        self.sends = []
+        self.sent = []
+        self.received = []
         self.enabled = True
     
-    def __DR(self, data):
+    def __DR_write(self, data):
         print("\"Sending\" 0x{data:x} over UART")
         send.append(data)
     
-    def __FR(self): return False
+    def __FR_read(self):
+        return 0x00
     
     def read(self, state, addr, size=4):
         assert size == 4
@@ -157,6 +159,17 @@ class HardwareTarget:
         else:    
             raise Exception(f'config {self.config} is not yet implemented')
         self.lock.release()
+
+
+class SimStateMemoryRegion(angr.SimStatePlugin):
+    def __init__(self, regions):
+        super(SimStateMemoryRegion, self).__init__()
+        self.regions = regions
+    
+    @angr.SimStatePlugin.memo
+    def copy(self, memo):
+        return SimStateMemoryRegion(self.regions)
+
 class PicoTarget:
 
     def __init__(self, binary, concrete_target=None, cached_cfg=None):
@@ -165,9 +178,9 @@ class PicoTarget:
         self.sram = MemoryRegion(0x20000000, 0x82000, mmio=False, name='SRAM', use_concrete=False)
         self.rom = MemoryRegion(0x00000000, 0x1FFFFFFF, mmio=False, name='ROM', use_concrete=False)
 
-        self.regions = [self.sram, self.rom]
+        regions = [self.sram, self.rom]
 
-        self.regions += [
+        regions += [
             # AHB regions
             MemoryRegion(0x40000000, 0x8000, mmio=True, name="SYSINFO_BASE"),
             MemoryRegion(0x40008000, 0x8000, mmio=True, name="SYSCFG_BASE"),
@@ -252,6 +265,9 @@ class PicoTarget:
         self.entry.inspect.b('mem_read', when=angr.BP_BEFORE, action=self.read_hook)
         self.entry.inspect.b('mem_write', when=angr.BP_BEFORE, action=self.write_hook)
 
+        # simstateplugins
+        self.entry.register_plugin('memory_regions_plugin', SimStateMemoryRegion(regions))
+        
         self.simgr = self.proj.factory.simulation_manager(self.entry)
         self.cfg = self.proj.analyses.CFGFast()
 
@@ -261,9 +277,10 @@ class PicoTarget:
         self.initial_sp = int.from_bytes(self.vector_table[0:4], byteorder='little')
         self.reset_vector = int.from_bytes(self.vector_table[4:8], byteorder='little')
 
+
     # Returns region of address or none if address is not mapped
     def get_region(self, addr):
-        for region in self.regions:
+        for region in self.simgr.active[0].memory_regions_plugin.regions:
             if region.has(addr):
                 return region
         
