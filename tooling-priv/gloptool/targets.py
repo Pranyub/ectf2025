@@ -105,7 +105,7 @@ class HardwareTarget:
         self.port = port
         # self.ser = serial.Serial(com, baud)
         self.config = config
-        self.lock = Lock()
+        self.lock = Lock() # angr is multithreaded, so we need to make sure interactions with the physical board are atomic
 
         if config == 'gdb':
             self.avatar = AvatarGDBConcreteTarget(
@@ -118,8 +118,6 @@ class HardwareTarget:
             if self.avatar.is_running():
                 self.avatar.stop()
 
-        
-
     def read_memory(self, address, nbytes, **kwargs):
         self.lock.acquire()
         if self.config == 'gdb':
@@ -129,7 +127,6 @@ class HardwareTarget:
             cmd = HardwareTarget.CMD_MAGIC + HardwareTarget.CMD_READ_MEM + struct.pack('>I', address)
             self.ser.write(cmd.ljust(HardwareTarget.CMD_SIZE))
             resp = self.ser.read(HardwareTarget.CMD_SIZE)
-            #print(resp.hex())
             #assert resp[0] == HardwareTarget.RESP_MAGIC and resp[1] == HardwareTarget.CMD_READ_MEM
             ret = resp[2:6]
         
