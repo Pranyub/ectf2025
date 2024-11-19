@@ -24,12 +24,12 @@ int main() {
     bi_decl(bi_1pin_with_name(LED_PIN, "On-board LED"));
 
     stdio_init_all(); // DO NOT REMOVE. All user code should be after this
-    while(1) {
+    target();
+    for(int i = 0; i < 10; i++) {
         int d = getchar();
         printf("target is %p %c\n", target, d);
         
     }
-    target();
 
     while (1) {
         target();
