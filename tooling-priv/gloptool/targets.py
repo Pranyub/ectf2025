@@ -49,12 +49,12 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: 'DR',  # write to transmit, emulate
-            0x18: 'FR',  # read to check if transmission complete, emulate
+            0x00: 'DR',  # data register
+            0x18: 'FR',  # flag register
             0x24: 'IBRD',  # baud rate
             0x28: 'FBRD',  # baud rate
             0x2c: 'LCR_H',  # data frame format
-            0x30: 'CR',  # enable/disable UART
+            0x30: 'CR',  # control register
             0x38: 'IMSC',  # enable/disable interrupts
             0x48: 'DMACR'  # enable/disable DMA
         }
@@ -64,10 +64,22 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     
     def __DR_write(self, data):
         print("\"Sending\" 0x{data:x} over UART")
-        send.append(data)
+        self.send.append(data)
+    
+    def __DR_read(self):
+        data = 0x0000
+        print("\"Reading\" 0x{data:x} over UART")
+        self.received.append(data)
     
     def __FR_read(self):
-        return 0x00
+        # make sure bits 5 and 7 are zero when sending
+        # bit 4 indicates the receive FIFO is empty.
+        return 0x0000
+
+    def __CR_read(self):
+        # bit 9 indicates that the receiver is on.
+        # UARTEN should be enabled
+        return 0x0000
     
     def read(self, state, addr, size=4):
         assert size == 4
