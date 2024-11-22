@@ -46,46 +46,103 @@ class MemoryRegion:
         raise Exception('not yet implemented')
 
 class PL011_UART_MemoryRegion(MemoryRegion):
-    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True, initial_fr=0b0000000000000000):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: 'DR',  # data register
-            0x18: 'FR',  # flag register
-            0x24: 'IBRD',  # baud rate
-            0x28: 'FBRD',  # baud rate
-            0x2c: 'LCR_H',  # data frame format
-            0x30: 'CR',  # control register
-            0x38: 'IMSC',  # enable/disable interrupts
-            0x48: 'DMACR'  # enable/disable DMA
+            0x00: ('DR', self.__DR_read, self.__DR_write),  # data register
+            0x18: ('FR', self.__FR_read, self.__FR_write),  # flag register
+            0x24: ('IBRD', self.__IBRD_read, self.__IBRD_write),  # baud rate
+            0x28: ('FBRD', self.__FBRD_read, self.__FBRD_write),  # baud rate
+            0x2c: ('LCR_H', self.__LCR_H_read, self.__LCR_H_write),  # data frame format
+            0x30: ('CR', self.__CR_read, self.__CR_write),  # control register
+            0x38: ('IMSC', self.__IMSC_read, self.__IMSC_write),  # enable/disable interrupts
+            0x48: ('DMACR', self.__DMARC_read, self.__DMARC_write)  # enable/disable DMA
         }
         self.sent = []
         self.received = []
-        self.enabled = True
-    
-    def __DR_write(self, data):
-        print("\"Sending\" 0x{data:x} over UART")
-        self.send.append(data)
-    
-    def __DR_read(self):
-        data = 0x0000
-        print("\"Reading\" 0x{data:x} over UART")
-        self.received.append(data)
-    
-    def __FR_read(self):
+        self.FR = initial_fr
+
+    def set_fr(self, data):
+        self.FR = data
+
+    def __update_FR(self, state):
         # make sure bits 5 and 7 are zero when sending
         # bit 4 indicates the receive FIFO is empty.
-        return 0x0000
+        # bit 0: CTS: clear to send, 
+        # bit 1: DSR: data set ready, 
+        # bit 2: DCD: data carrier detect, 
+        # bit 3: BUSY: UART busy, 
+        # bit 4: RXFE: receive FIFO empty, 
+        # bit 5: TXFE: transmit FIFO full, 
+        # bit 6: RXFF: receive FIFO full, 
+        # bit 7: TXFE: transmit FIFO empty, 
+        # bit 8: RI: ring indicator, 
+        # bits 9-15: leave as 0
+        addr = self.base + 0x18
 
-    def __CR_read(self):
-        # bit 9 indicates that the receiver is on.
-        # UARTEN should be enabled
-        return 0x0000
+        output = self.FR
+        print(f"Flag register: {current:x}")
+        out_mask = 0b1111111110000000
+        state.memory.store(addr, output & out_mask)
     
+    def __DR_read(self, state, addr):
+        print(f"\"Reading\" 0x{data:x} over UART")
+        self.received.append(data)
+    
+    def __DR_write(self, state, addr, data):
+        print(f"\"Sending\" 0x{data:x} over UART")
+        self.sent.append(data)
+    
+    def __FR_read(self, state, addr):
+        self.__update_FR(state)
+        pass
+
+    def __FR_write(self, state, addr, data):
+        pass
+
+    def __IBRD_read(self, state, addr):
+        pass
+    
+    def __IBRD_write(self, state, addr, data):
+        pass
+
+    def __FBRD_read(self, state, addr):
+        pass
+
+    def __FBRD_write(self, state, addr, data):
+        pass
+    
+    def __LCR_H_read(self, state, addr):
+        pass
+
+    def __LCR_H_write(self, state, addr, data):
+        pass
+
+    def __CR_read(self, state, addr):
+        # bit 9 indicates that the receiver is on.
+        pass
+    
+    def __CR_write(self, state, addr, data):
+        pass
+
+    def __IMSC_read(self, state, addr):
+        pass
+
+    def __IMSC_write(self, state, addr, data):
+        pass
+
+    def __DMARC_read(self, state, addr):
+        pass
+
+    def __DMARC_write(self, state, addr, data):
+        pass
+
     def read(self, state, addr, size=4):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of UART{self.register_offsets[offset]} register")
+            print(f"Read of UART{self.register_offsets[offset][0]} register")
+            self.register_offsets[offset][1](state, addr)
         else:
             print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x}")
         return
@@ -93,7 +150,8 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     def write(self, state, addr, data):
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to UART{self.register_offsets[offset]} register: 0x{data:x}")
+            print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
+            self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"Write to unknown UAR register at address 0x{addr:x}: 0x{data:x}")
         return
@@ -341,7 +399,7 @@ class PicoTarget:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        debug_stack_trace(state, depth=1)
+        debug_stack_trace(state, depth=1)  # TODO: uncomment before commit
 
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
