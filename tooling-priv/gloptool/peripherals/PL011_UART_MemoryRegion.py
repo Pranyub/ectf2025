@@ -1,3 +1,5 @@
+import claripy
+
 from .MemoryRegion import MemoryRegion
 
 class PL011_UART_MemoryRegion(MemoryRegion):
@@ -38,7 +40,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
         output = output & out_mask
         print(f"Flag register: {output:x}")
-        state.memory.store(addr, output)
+        state.memory.store(addr, claripy.BVV(output, 16), endness='big')
         self.read_write_hook_active = False
     
     def __DR_read(self, state, addr):
