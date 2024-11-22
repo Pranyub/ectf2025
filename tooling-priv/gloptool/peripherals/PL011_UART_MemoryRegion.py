@@ -1,5 +1,3 @@
-import angr
-
 from .MemoryRegion import MemoryRegion
 
 class PL011_UART_MemoryRegion(MemoryRegion):
