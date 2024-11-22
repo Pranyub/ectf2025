@@ -18,6 +18,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.read_write_hook_active = False
         self.sent = []
         self.received = []
+        
 
     def __update_FR(self, state, data=None):
         # bit 0: CTS: clear to send, complement of nUARTCTS, not sure what is should be
@@ -39,7 +40,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             output = data
         out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
         output = output & out_mask
-        print(f"Flag register: {output:x}")
+        print(f"Flag register: {output:b}")
         state.memory.store(addr, claripy.BVV(output, 16), endness='big')
         self.read_write_hook_active = False
     
@@ -54,23 +55,28 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.__update_FR(state)
     
     def __FR_read(self, state, addr):
-        # don't really mean anyting, so we do nothing
         pass
 
     def __FR_write(self, state, addr, data):
+        # this probably should never get called
         self.__update_FR(state, data)
+        print("!!!!!!!!!!!!!!!!!!!!!!!! WRITE TO UART FLAG REGISTER !!!!!!!!!!!!!!!!!!!!!!!!")
         pass
 
     def __IBRD_read(self, state, addr):
+        # reading the integer part of the clock speed
         pass
     
     def __IBRD_write(self, state, addr, data):
+        # setting the integer part of the clock speed
         pass
 
     def __FBRD_read(self, state, addr):
+        # reading the fractional part of the clock speed
         pass
 
     def __FBRD_write(self, state, addr, data):
+        # writing the fractional part of the clock speed
         pass
     
     def __LCR_H_read(self, state, addr):
