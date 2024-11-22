@@ -21,31 +21,8 @@ def debug_stack_trace(state, depth=3):
         if depth == 0:
             return
 
-# Represents a single MMIO Register
-class MMIORegister:
-        def __init__(self, name, read_fn=None, write_fn=None):
-            self.read_fn = read_fn
-            self.write_fn = write_fn
-            self.name = name
-
-        def read(self, addr):
-            if self.read_fn:
-                return self.read_fn(addr)
-            return '\x00\x00\x00\x00'
-        
-        def write(self, addr, data):
-            if self.write_fn:
-                return self.write_fn(addr, data)
-
-        def __str__(self):
-            return self.name
-
-        def __repr__(self):
-            return self.__str__()
-
 # Abstract class representing mmio region
 class MemoryRegion:
-
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         self.bounds = range(start, start + size)
         self.base = start
@@ -72,14 +49,14 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: MMIORegister('DR', self.__DR_read, self.__DR_write),  # data register
-            0x18: MMIORegister('FR', self.__FR_read, self.__FR_write),  # flag register
-            0x24: MMIORegister('IBRD'),                                 # baud rate
-            0x28: MMIORegister('FBRD'),                                 # baud rate
-            0x2c: MMIORegister('LCR_H'),                                # data frame format
-            0x30: MMIORegister('CR'),                                   # control register
-            0x38: MMIORegister('IMSC'),                                 # enable/disable interrupts
-            0x48: MMIORegister('DMACR'),                                # enable/disable DMA
+            0x00: 'DR',  # data register
+            0x18: 'FR',  # flag register
+            0x24: 'IBRD',  # baud rate
+            0x28: 'FBRD',  # baud rate
+            0x2c: 'LCR_H',  # data frame format
+            0x30: 'CR',  # control register
+            0x38: 'IMSC',  # enable/disable interrupts
+            0x48: 'DMACR'  # enable/disable DMA
         }
         self.sent = []
         self.received = []
@@ -87,7 +64,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     
     def __DR_write(self, data):
         print("\"Sending\" 0x{data:x} over UART")
-        self.sent.append(data)
+        self.send.append(data)
     
     def __DR_read(self):
         data = 0x0000
@@ -109,7 +86,6 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         offset = addr - self.base
         if offset in self.register_offsets:
             print(f"Read of UART{self.register_offsets[offset]} register")
-            return self.register_offsets[offset].read(addr)
         else:
             print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x}")
         return
@@ -118,7 +94,6 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         offset = addr - self.base
         if offset in self.register_offsets:
             print(f"Write to UART{self.register_offsets[offset]} register: 0x{data:x}")
-            return self.register_offsets[offset].write(addr)
         else:
             print(f"Write to unknown UAR register at address 0x{addr:x}: 0x{data:x}")
         return
@@ -359,16 +334,12 @@ class PicoTarget:
             return
 
         print(f'mmio read: {hex(addr)} {region.name}')
-
-        # Get region read
-        read_bytes = region.read(state, addr)
+        region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
             read_bytes = self.concrete_target.read_memory(addr, 4)
+            state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
-
-        # Write data
-        state.memory.store(addr, read_bytes)
 
         debug_stack_trace(state, depth=1)
 
