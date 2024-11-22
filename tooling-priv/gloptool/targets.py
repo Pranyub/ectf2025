@@ -46,7 +46,7 @@ class MemoryRegion:
         raise Exception('not yet implemented')
 
 class PL011_UART_MemoryRegion(MemoryRegion):
-    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True, initial_fr=0b0000000000000000):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
             0x00: ('DR', self.__DR_read, self.__DR_write),  # data register
@@ -58,46 +58,49 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             0x38: ('IMSC', self.__IMSC_read, self.__IMSC_write),  # enable/disable interrupts
             0x48: ('DMACR', self.__DMARC_read, self.__DMARC_write)  # enable/disable DMA
         }
+        self.read_write_hook_active = False
         self.sent = []
         self.received = []
-        self.FR = initial_fr
 
-    def set_fr(self, data):
-        self.FR = data
-
-    def __update_FR(self, state):
-        # make sure bits 5 and 7 are zero when sending
-        # bit 4 indicates the receive FIFO is empty.
-        # bit 0: CTS: clear to send, 
-        # bit 1: DSR: data set ready, 
-        # bit 2: DCD: data carrier detect, 
-        # bit 3: BUSY: UART busy, 
-        # bit 4: RXFE: receive FIFO empty, 
-        # bit 5: TXFE: transmit FIFO full, 
-        # bit 6: RXFF: receive FIFO full, 
-        # bit 7: TXFE: transmit FIFO empty, 
-        # bit 8: RI: ring indicator, 
+    def __update_FR(self, state, data=None):
+        # bit 0: CTS: clear to send, complement of nUARTCTS, not sure what is should be
+        # bit 1: DSR: data set ready, complement of nUARTDSR, not sure what it should be
+        # bit 2: DCD: data carrier detect, complement of nUARTDCD, not sure what it should be
+        # bit 3: BUSY: UART busy, should always be 0 for emulation
+        # bit 4: RXFE: receive FIFO empty, should always be 1 for emulation
+        # bit 5: TXFE: transmit FIFO full, should always be 0 for emulation
+        # bit 6: RXFF: receive FIFO full, should always be 0 for emulation
+        # bit 7: TXFE: transmit FIFO empty, should always be 1 for emulation
+        # bit 8: RI: ring indicator, complement of nUARTRI, not sure what it should be
         # bits 9-15: leave as 0
+        if self.read_write_hook_active:  # prevents infinite recursion
+            return
+        self.read_write_hook_active = True
         addr = self.base + 0x18
-
-        output = self.FR
-        print(f"Flag register: {current:x}")
-        out_mask = 0b1111111110000000
-        state.memory.store(addr, output & out_mask)
+        output = 0b0000100110000000
+        if data:
+            output = data
+        out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
+        print(f"Flag register: {self.FR:x}")
+        state.memory.store(addr, self.FR)
+        self.read_write_hook_active = False
     
     def __DR_read(self, state, addr):
         print(f"\"Reading\" 0x{data:x} over UART")
         self.received.append(data)
+        self.__update_FR(state)
     
     def __DR_write(self, state, addr, data):
         print(f"\"Sending\" 0x{data:x} over UART")
         self.sent.append(data)
+        self.__update_FR(state)
     
     def __FR_read(self, state, addr):
-        self.__update_FR(state)
+        # don't really mean anyting, so we do nothing
         pass
 
     def __FR_write(self, state, addr, data):
+        self.__update_FR(state, data)
         pass
 
     def __IBRD_read(self, state, addr):
@@ -399,7 +402,7 @@ class PicoTarget:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        debug_stack_trace(state, depth=1)  # TODO: uncomment before commit
+        # debug_stack_trace(state, depth=1)  # TODO: uncomment before commit
 
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
