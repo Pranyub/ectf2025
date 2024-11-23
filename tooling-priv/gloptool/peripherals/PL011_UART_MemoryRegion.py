@@ -18,7 +18,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.read_write_hook_active = False
         self.sent = []
         self.received = []
-        
+
 
     def __update_FR(self, state, data=None):
         # bit 0: CTS: clear to send, complement of nUARTCTS, not sure what is should be
@@ -58,7 +58,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         pass
 
     def __FR_write(self, state, addr, data):
-        # this probably should never get called
+        # TODO: not sure why it is writing to the flag register, need to research
         self.__update_FR(state, data)
         print("!!!!!!!!!!!!!!!!!!!!!!!! WRITE TO UART FLAG REGISTER !!!!!!!!!!!!!!!!!!!!!!!!")
         pass
