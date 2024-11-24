@@ -3,7 +3,8 @@ import claripy
 from .MemoryRegion import MemoryRegion
 
 class PL011_UART_MemoryRegion(MemoryRegion):
-    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True, baud_rate=115200, base_clock=48000000):
+        # baud and clock need to be changed depending on the hardware being emulated
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
             0x00: ('DR', self.__DR_read, self.__DR_write),  # data register
@@ -15,9 +16,27 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             0x38: ('IMSC', self.__IMSC_read, self.__IMSC_write),  # enable/disable interrupts
             0x48: ('DMACR', self.__DMARC_read, self.__DMARC_write)  # enable/disable DMA
         }
+        self.baud_rate = baud_rate
+        self.base_clock = base_clock
         self.read_write_hook_active = False
+
         self.sent = []
         self.received = []
+
+    def __read_state(self, state, addr, length):
+        if self.read_write_hook_active:  # prevents infinite recursion
+            return None
+        self.read_write_hook_active = True
+        output = state.memory.load(addr, length)
+        self.read_write_hook_active = False
+        return output
+
+    def __write_state(self, state, addr, data):
+        if self.read_write_hook_active:  # prevents infinite recursion
+            return
+        self.read_write_hook_active = True
+        state.memory.store(addr, data, endness='big')
+        self.read_write_hook_active = False
 
 
     def __update_FR(self, state, data=None):
@@ -31,9 +50,6 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         # bit 7: TXFE: transmit FIFO empty, should always be 1 for emulation
         # bit 8: RI: ring indicator, complement of nUARTRI, not sure what it should be
         # bits 9-15: leave as 0
-        if self.read_write_hook_active:  # prevents infinite recursion
-            return
-        self.read_write_hook_active = True
         addr = self.base + 0x18
         output = 0b0000100110000000
         if data:
@@ -41,8 +57,15 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
         output = output & out_mask
         print(f"Flag register: {output:b}")
-        state.memory.store(addr, claripy.BVV(output, 16), endness='big')
-        self.read_write_hook_active = False
+        self.__write_state(state, addr, claripy.BVV(output, 16))
+
+    def __update_baud_rates(self, rate, clock):
+        print(f"Setting baud rate to {rate} with clock speed of {clock}")
+        divisor = int(4 * clock / rate)
+        fraction = (divisor & 0x3f)
+        integer = (divisor >> 6) & 0xffff
+        self.__write_state(state, 0x24, claripy.BVV(integer, 16))
+        self.__write_state(state, 0x28, claripy.BVV(fraction, 6))
     
     def __DR_read(self, state, addr):
         print(f"\"Reading\" 0x{data:x} over UART")
