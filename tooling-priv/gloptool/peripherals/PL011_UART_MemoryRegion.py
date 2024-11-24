@@ -81,25 +81,25 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         pass
 
     def __FR_write(self, state, addr, data):
-        # TODO: not sure why it is writing to the flag register, need to research
         self.__update_FR(state, data)
-        print("!!!!!!!!!!!!!!!!!!!!!!!! WRITE TO UART FLAG REGISTER !!!!!!!!!!!!!!!!!!!!!!!!")
-        pass
 
     def __IBRD_read(self, state, addr):
         # reading the integer part of the clock speed
-        pass
+        self.__update_baud_rates(state, self.baud_rate, self.base_clock)
     
     def __IBRD_write(self, state, addr, data):
         # setting the integer part of the clock speed
+        print("Write to integer baud rate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
         pass
 
     def __FBRD_read(self, state, addr):
         # reading the fractional part of the clock speed
+        self.__update_baud_rates(state, self.baud_rate, self.base_clock)
         pass
 
     def __FBRD_write(self, state, addr, data):
         # writing the fractional part of the clock speed
+        print("Write to fractional baud rate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
         pass
     
     def __LCR_H_read(self, state, addr):
