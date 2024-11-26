@@ -3,7 +3,7 @@ import claripy
 from .MemoryRegion import MemoryRegion
 
 class PL011_UART_MemoryRegion(MemoryRegion):
-    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True, baud_rate=115200, base_clock=48000000):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         # baud and clock need to be changed depending on the hardware being emulated
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
@@ -16,11 +16,9 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             0x38: ('IMSC', self.__IMSC_read, self.__IMSC_write),  # enable/disable interrupts
             0x48: ('DMACR', self.__DMARC_read, self.__DMARC_write)  # enable/disable DMA
         }
-        self.baud_rate = baud_rate
-        self.base_clock = base_clock
         self.read_write_hook_active = False
 
-        self.sent = []
+        self.sent = b''
         self.received = []
 
     def __read_state(self, state, addr, length):
@@ -37,7 +35,6 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.read_write_hook_active = True
         state.memory.store(addr, data, endness='big')
         self.read_write_hook_active = False
-
 
     def __update_FR(self, state, data=None):
         # bit 0: CTS: clear to send, complement of nUARTCTS, not sure what is should be
@@ -56,26 +53,19 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             output = data
         out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
         output = output & out_mask
-        print(f"Flag register: {output:b}")
+        # print(f"Flag register: {output:b}")
         self.__write_state(state, addr, claripy.BVV(output, 16))
-
-    def __update_baud_rates(self, rate, clock):
-        print(f"Setting baud rate to {rate} with clock speed of {clock}")
-        divisor = int(4 * clock / rate)
-        fraction = (divisor & 0x3f)
-        integer = (divisor >> 6) & 0xffff
-        self.__write_state(state, 0x24, claripy.BVV(integer, 16))
-        self.__write_state(state, 0x28, claripy.BVV(fraction, 6))
     
     def __DR_read(self, state, addr):
-        print(f"\"Reading\" 0x{data:x} over UART")
+        # print(f"\"Reading\" 0x{data:x} over UART")
         self.received.append(data)
         self.__update_FR(state)
     
     def __DR_write(self, state, addr, data):
-        print(f"\"Sending\" 0x{data:x} over UART")
-        self.sent.append(data)
+        # print(f"\"Sending\" 0x{data:x} over UART")
+        self.sent += data.to_bytes(1, 'big')
         self.__update_FR(state)
+        print(f"UART STREAM: {self.sent.decode('utf-8')}")
     
     def __FR_read(self, state, addr):
         pass
@@ -85,21 +75,20 @@ class PL011_UART_MemoryRegion(MemoryRegion):
 
     def __IBRD_read(self, state, addr):
         # reading the integer part of the clock speed
-        self.__update_baud_rates(state, self.baud_rate, self.base_clock)
+        pass
     
     def __IBRD_write(self, state, addr, data):
         # setting the integer part of the clock speed
-        print("Write to integer baud rate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+        print("Setting the integer baud rate")
         pass
 
     def __FBRD_read(self, state, addr):
         # reading the fractional part of the clock speed
-        self.__update_baud_rates(state, self.baud_rate, self.base_clock)
         pass
 
     def __FBRD_write(self, state, addr, data):
         # writing the fractional part of the clock speed
-        print("Write to fractional baud rate!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1")
+        print("Write to fractional baud rate")
         pass
     
     def __LCR_H_read(self, state, addr):
@@ -131,17 +120,19 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of UART{self.register_offsets[offset][0]} register")
+            # print(f"Read of UART{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
-            print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x}")
+            pass
+            # print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x}")
         return
 
     def write(self, state, addr, data):
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
+            # print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
-            print(f"Write to unknown UAR register at address 0x{addr:x}: 0x{data:x}")
+            # print(f"Write to unknown UAR register at address 0x{addr:x}: 0x{data:x}")
+            pass
         return

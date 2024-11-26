@@ -237,7 +237,7 @@ class PicoTarget:
         elif not region.mmio:
             return
 
-        print(f'mmio read: {hex(addr)} {region.name}')
+        # print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:

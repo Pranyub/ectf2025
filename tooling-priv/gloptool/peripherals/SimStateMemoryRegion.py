@@ -1,4 +1,5 @@
 import angr
+import copy
 
 class SimStateMemoryRegion(angr.SimStatePlugin):
     def __init__(self, regions):
@@ -7,4 +8,4 @@ class SimStateMemoryRegion(angr.SimStatePlugin):
     
     @angr.SimStatePlugin.memo
     def copy(self, memo):
-        return SimStateMemoryRegion(self.regions)
+        return SimStateMemoryRegion(copy.deepcopy(self.regions))
