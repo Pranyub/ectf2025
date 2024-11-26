@@ -20,8 +20,8 @@ class GadgetSolver:
         self.target = target        # Target class
 
     # Adds a new glitch to the state
-    def attempt_glitch(self, state):
-        pass
+    def attempt_glitch(self, state, addr):
+        (self.target.proj.hook(addr, length=2)(self.nop_hook))(state)
 
     # Returns true if the current block has an instruction that may be a vulnerable glitch target
     def criteria_hint(self, state):
