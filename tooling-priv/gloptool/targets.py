@@ -177,12 +177,13 @@ class PicoTarget:
 
         entry_options={angr.options.SYMBOL_FILL_UNCONSTRAINED_MEMORY, angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS}
         self.entry = self.proj.factory.entry_state(add_options=entry_options)
+        
+        # simstateplugins
+        self.entry.register_plugin('memory_regions_plugin', SimStateMemoryRegion(regions))
 
         self.entry.inspect.b('mem_read', when=angr.BP_BEFORE, action=self.read_hook)
         self.entry.inspect.b('mem_write', when=angr.BP_BEFORE, action=self.write_hook)
 
-        # simstateplugins
-        self.entry.register_plugin('memory_regions_plugin', SimStateMemoryRegion(regions))
         
         self.simgr = self.proj.factory.simulation_manager(self.entry)
         self.cfg = self.proj.analyses.CFGFast()
@@ -195,8 +196,8 @@ class PicoTarget:
 
 
     # Returns region of address or none if address is not mapped
-    def get_region(self, addr):
-        for region in self.simgr.active[0].memory_regions_plugin.regions:
+    def get_region(self, state, addr):
+        for region in state.memory_regions_plugin.regions:
             if region.has(addr):
                 return region
         
@@ -230,14 +231,14 @@ class PicoTarget:
     def read_hook(self, state):
         read_addr = state.inspect.mem_read_address
         addr = state.solver.eval(read_addr)
-        region = self.get_region(addr)
+        region = self.get_region(state, addr)
         if not region:
             print(f'mmio read: {hex(addr)} unmapped region')
             return
         elif not region.mmio:
             return
 
-        # print(f'mmio read: {hex(addr)} {region.name}')
+        print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -251,7 +252,7 @@ class PicoTarget:
         write_addr = state.inspect.mem_write_address
         write_data = state.solver.eval(state.inspect.mem_write_expr)
         addr = state.solver.eval(write_addr)
-        region = self.get_region(addr)
+        region = self.get_region(state, addr)
         if not region:
             print(f'mmio write: {hex(addr)} unmapped region')
             return
