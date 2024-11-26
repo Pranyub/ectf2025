@@ -17,9 +17,18 @@ class PL011_UART_MemoryRegion(MemoryRegion):
             0x48: ('DMACR', self.__DMARC_read, self.__DMARC_write)  # enable/disable DMA
         }
         self.read_write_hook_active = False
-
         self.sent = b''
-        self.received = []
+        self.received = b''
+        self.isReceiving = True  # when False, we are transmitting
+        self.send_buffer = ""
+    
+    def send_characters(self, state, characters):
+        self.isReceiving = False
+        self.__update_FR(state)
+        self.send_buffer += characters
+        for character in characters:
+            print(f"Sending {character}")
+        send_buffer = ""
 
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -27,7 +36,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.read_write_hook_active = True
         output = state.memory.load(addr, length)
         self.read_write_hook_active = False
-        return output
+        return state.solver.eval(output)
 
     def __write_state(self, state, addr, data):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -40,7 +49,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         # bit 0: CTS: clear to send, complement of nUARTCTS, not sure what is should be
         # bit 1: DSR: data set ready, complement of nUARTDSR, not sure what it should be
         # bit 2: DCD: data carrier detect, complement of nUARTDCD, not sure what it should be
-        # bit 3: BUSY: UART busy, should always be 0 for emulation
+        # bit 3: BUSY: UART busy, should always be 0 for receiving
         # bit 4: RXFE: receive FIFO empty, should always be 1 for emulation
         # bit 5: TXFE: transmit FIFO full, should always be 0 for emulation
         # bit 6: RXFF: receive FIFO full, should always be 0 for emulation
@@ -48,7 +57,13 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         # bit 8: RI: ring indicator, complement of nUARTRI, not sure what it should be
         # bits 9-15: leave as 0
         addr = self.base + 0x18
-        output = 0b0000100110000000
+        output = None
+
+        if self.isReceiving:
+            output = 0b0000100110000000
+        else:
+            output = 0b0000100110000000
+
         if data:
             output = data
         out_mask = 0b1111111110000000  # used to prevent remaining bits from being set
@@ -57,15 +72,20 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         self.__write_state(state, addr, claripy.BVV(output, 16))
     
     def __DR_read(self, state, addr):
-        # print(f"\"Reading\" 0x{data:x} over UART")
-        self.received.append(data)
+        # print(f"\"Reading\" over UART")
+        data = self.__read_state(state, addr, 1)
+        if data is None:
+            return
+        print(f"!!!!!!!!!!!!!!!!!!! {data:x} !!!!!!!!!!!!!!!!!!!")
+        self.received += data.to_bytes(1, 'big')
+        print(f"UART -> DEVICE: {self.received.decode('utf-8')}")
         self.__update_FR(state)
     
     def __DR_write(self, state, addr, data):
         # print(f"\"Sending\" 0x{data:x} over UART")
         self.sent += data.to_bytes(1, 'big')
         self.__update_FR(state)
-        print(f"UART STREAM: {self.sent.decode('utf-8')}")
+        print(f"DEVICE -> UART: {self.sent.decode('utf-8')}")
     
     def __FR_read(self, state, addr):
         pass
