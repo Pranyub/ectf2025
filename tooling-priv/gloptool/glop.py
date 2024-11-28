@@ -21,7 +21,10 @@ class GadgetSolver:
 
     # Adds a new glitch to the state
     def attempt_glitch(self, state, addr):
-        (self.target.proj.hook(addr, length=2)(self.nop_hook))(state)
+        if addr & 1: # Thumb mode, instr length is 2
+            (self.target.proj.hook(addr, length=2)(self.nop_hook))(state)
+        else: # regular ARMv7 mode, instr length is 4
+            (self.target.proj.hook(addr, length=4)(self.nop_hook))(state)
 
     # Returns true if the current block has an instruction that may be a vulnerable glitch target
     def criteria_hint(self, state):
