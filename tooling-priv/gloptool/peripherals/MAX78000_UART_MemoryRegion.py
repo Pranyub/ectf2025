@@ -50,11 +50,11 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             return
         self.read_write_hook_active = True
         value = claripy.BVV(data, 32)  # pad to 4 bytes, the length of each register
-        state.memory.store(addr, data, endness=state.arch.memory_endness)
+        state.memory.store(addr, value, endness=state.arch.memory_endness)
         self.read_write_hook_active = False
     
     # control flags
-    def __CTRL_read(self, state, addr, length):
+    def __CTRL_read(self, state, addr):
         # bit (name access): purpose
         # 31-23 (- DNM): reserved, set to 0
         # 22 (desm R/W): Low Power UART only, set to 0
@@ -83,7 +83,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         pass
 
     # status register
-    def __STATUS_read(self, state, addr, length):
+    def __STATUS_read(self, state, addr):
         # 31-16 (- RO): reserved, set to 0
         # 15-12 (tx_lvl RO): transmit FIFO level, number of characters in the transmit FIFO, set to 0
         # 11-8 (rx_lvl RO): receive FIFO level, number of characters in the recieve FIFO, set to 0
@@ -101,48 +101,48 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # this should really never happen
         pass
 
-    def __INT_EN_read(self, state, addr, length):
+    def __INT_EN_read(self, state, addr):
         # hopefully interrupts aren't used
         pass
 
     def __INT_EN_write(self, state, addr, data):
         pass
 
-    def __INT_FL_read(self, state, addr, length):
+    def __INT_FL_read(self, state, addr):
         # hopefully interrupts aren't used
         pass
 
     def __INT_FL_write(self, state, addr, data):
         pass
     
-    def __CLKDIV_read(self, state, addr, length):
+    def __CLKDIV_read(self, state, addr):
         # might not matter
         pass
 
     def __CLKDIV_write(self, state, addr, data):
         pass
 
-    def __OSR_read(self, state, addr, length):
+    def __OSR_read(self, state, addr):
         # not needed
         pass
 
     def __OSR_write(self, state, addr, data):
         pass
 
-    def __TXPEEK_read(self, state, addr, length):
+    def __TXPEEK_read(self, state, addr):
         self.__write_state(state, addr, self.register_offsets[addr][3])
 
     def __TXPEEK_write(self, state, addr, data):
         self.__write_state(state, addr, self.register_offsets[addr][3])
 
-    def __PNR_read(self, state, addr, length):
+    def __PNR_read(self, state, addr):
         # not needed
         pass
 
     def __PNR_write(self, state, addr, data):
         pass
 
-    def __FIFO_read(self, state, addr, length):
+    def __FIFO_read(self, state, addr):
         # 31-9 (- RO): reserved
         # 8 (rx_par R): byte parity, set to 0
         # 7-0 (data R/W): reading reads the next character in the FIFO, writing adds a character to the FIFO
@@ -157,23 +157,44 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         self.received += data.to_bytes(1, 'big')
         print(f"{id(self)} MAX78000 -> UART: {self.received.decode('utf-8')}")
     
-    def __DMA_read(self, state, addr, length):
+    def __DMA_read(self, state, addr):
         # assume DMA off
         pass
         
     def __DMA_write(self, state, addr, data):
         pass
 
-    def __WKEN_read(self, state, addr, length):
+    def __WKEN_read(self, state, addr):
         # assume no wakeup
         pass
 
     def __WKEN_write(self, state, addr, data):
         pass
     
-    def __WKFL_read(self, state, addr, length):
+    def __WKFL_read(self, state, addr):
         # assume no wakeup
         pass
 
     def __WKFL_write(self, state, addr, data):
         pass
+
+    def read(self, state, addr, size=4):
+        assert size == 4
+        offset = addr - self.base
+        if offset in self.register_offsets:
+            print(f"Read of UART{self.register_offsets[offset][0]} register")
+            self.register_offsets[offset][1](state, addr)
+        else:
+            pass
+            print(f"Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x} !!!!!!!")
+        return
+    
+    def write(self, state, addr, data):
+        offset = addr - self.base
+        if offset in self.register_offsets:
+            print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
+            self.register_offsets[offset][2](state, addr, data)
+        else:
+            print(f"Write to unknown UART register at address 0x{addr:x}: 0x{data:x} !!!!!!!!!!!!!!!!!!!!!!!!")
+            pass
+        return

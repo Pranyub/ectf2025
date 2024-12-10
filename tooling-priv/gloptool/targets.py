@@ -418,7 +418,7 @@ class MAX78000Target:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        debug_stack_trace(state, depth=1)
+        # debug_stack_trace(state, depth=1)
         
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
