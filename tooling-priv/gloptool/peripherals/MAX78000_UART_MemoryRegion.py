@@ -179,6 +179,8 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         pass
 
     def read(self, state, addr, size=4):
+        if self.read_write_hook_active:
+            return
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
@@ -190,11 +192,11 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         return
     
     def write(self, state, addr, data):
+        if self.read_write_hook_active:
+            return
         offset = addr - self.base
         if offset in self.register_offsets:
             print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"Write to unknown UART register at address 0x{addr:x}: 0x{data:x} !!!!!!!!!!!!!!!!!!!!!!!!")
-            pass
-        return
