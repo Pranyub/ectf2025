@@ -7,7 +7,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: ('CTRL', self.__CR_read, self.__CR_write),
+            0x00: ('CTRL', self.__CTRL_read, self.__CTRL_write),
             0x04: ('STATUS', self.__STATUS_read, self.__STATUS_write),
             0x08: ('INT_EN', self.__INT_EN_read, self.__INT_EN_write),
             0x0C: ('INT_FL', self.__INT_FL_read, self.__INT_FL_write),
@@ -36,12 +36,12 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         if self.read_write_hook_active:  # prevents infinite recursion
             return
         self.read_write_hook_active = True
-        state.memory.store(addr, data, endness='big')
+        state.memory.store(addr, data, endness='little')
         self.read_write_hook_active = False
     
-    def __CR_read(self, state, addr, length):
+    def __CTRL_read(self, state, addr, length):
         # bit (name R/W): purpose
-        # 0-3 (rx_thd_val R/W): RX_FIFO depth, how large the receive FIFO is from 1-8
+        # 0-3 (rx_thd_val R/W): RX_FIFO depth, how large the receive FIFO is from 1-8, set to 0b1000
         # 4 (par_en R/W): 0 is disabled, 1 is enabled; set to 0
         # 5 (par_eo R/W): 0 is even, 1 is odd; set to 0
         # 6 (par_md R/W): 0 is mark, 1 is space; set to 0
@@ -55,9 +55,13 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 15 (bclken R/W): baud clock enable, set to 0
         # 16-17 (bclksrc R/W): baud clock source; corresponds to MAX78000 clock options, set to 0
         # 18 (dpfe_en R/W): parity frame error detection, set to 0
+        # 
+        # 19 (bclkrdy R): baud clock ready, set to 1
+        # 20 (ucagm R/W): UART clock auto gating???, set to 1, software needs to set this to 1 before everything works.
+        self.__write_state(state, addr, 0b10000001000000000)
         pass
 
-    def __CR_write(self, state, addr, data):
+    def __CTRL_write(self, state, addr, data):
         pass
 
     def __STATUS_read(self, state, addr, length):
