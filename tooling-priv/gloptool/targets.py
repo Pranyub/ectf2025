@@ -12,7 +12,7 @@ from peripherals.MemoryRegion import *
 from peripherals.PL011_UART_MemoryRegion import *
 from peripherals.Pico_Timer import *
 from peripherals.SimStateMemoryRegion import *
-from peripherals.MAX78000Target import *
+from peripherals.MAX78000_UART_MemoryRegion import *
 
 def debug_stack_trace(state, depth=3):
     print("Stack trace:")
