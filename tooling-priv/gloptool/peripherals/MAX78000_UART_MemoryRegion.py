@@ -20,8 +20,41 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             0x34: ('WKEN', self.__WKEN_read, self.__WKEN_write),
             0x38: ('WKFL', self.__WKFL_read, self.__WKFL_write),
         }
+        self.read_write_hook_active = False
+        self.sent = b''  # sent to the device, UART -> DEVICE
+        self.received = b''  # received from the device, DEVICE -> UART
+    
+    def __read_state(self, state, addr, length):
+        if self.read_write_hook_active:  # prevents infinite recursion
+            return None
+        self.read_write_hook_active = True
+        output = state.memory.load(addr, length)
+        self.read_write_hook_active = False
+        return state.solver.eval(output)
+
+    def __write_state(self, state, addr, data):
+        if self.read_write_hook_active:  # prevents infinite recursion
+            return
+        self.read_write_hook_active = True
+        state.memory.store(addr, data, endness='big')
+        self.read_write_hook_active = False
     
     def __CR_read(self, state, addr, length):
+        # bit (name R/W): purpose
+        # 0-3 (rx_thd_val R/W): RX_FIFO depth, how large the receive FIFO is from 1-8
+        # 4 (par_en R/W): 0 is disabled, 1 is enabled; set to 0
+        # 5 (par_eo R/W): 0 is even, 1 is odd; set to 0
+        # 6 (par_md R/W): 0 is mark, 1 is space; set to 0
+        # 7 (cts_dis R/W): 0 enabled, 1 disabled; set to 1
+        # 8 (tx_flush W1): always read as 0, but iff 1 is written, then flush the TX FIFO 
+        # 9 (rx_flush W1): always read as 0, but iff 1 is written, then flush the RX FIFO
+        # 10 (char_size R/W): values + 5 = char_size; set to 0
+        # 12 (stop_bits R/W): 0 is 1, 1 is 1.5; set to 0
+        # 13 (hfc_en R/W): hardware flow control enable, set to 0
+        # 14 (rtsdc R): idk, but set to 0
+        # 15 (bclken R/W): baud clock enable, set to 0
+        # 16-17 (bclksrc R/W): baud clock source; corresponds to MAX78000 clock options, set to 0
+        # 18 (dpfe_en R/W): parity frame error detection, set to 0
         pass
 
     def __CR_write(self, state, addr, data):
