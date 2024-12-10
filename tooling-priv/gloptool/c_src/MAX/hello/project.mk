@@ -32,3 +32,4 @@
 
 
 
+MAXIM_PATH = /common/maxim-sdk
