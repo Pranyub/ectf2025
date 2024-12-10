@@ -49,7 +49,8 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         if self.read_write_hook_active:  # prevents infinite recursion
             return
         self.read_write_hook_active = True
-        state.memory.store(addr, data, endness='little')
+        value = claripy.BVV(data, 32)  # pad to 4 bytes
+        state.memory.store(addr, data, endness=state.arch.memory_endness)
         self.read_write_hook_active = False
     
     # control flags
