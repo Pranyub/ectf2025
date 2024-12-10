@@ -246,7 +246,7 @@ class PicoTarget:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        # debug_stack_trace(state, depth=1)  # TODO: uncomment before commit
+        debug_stack_trace(state, depth=1)
 
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
@@ -267,3 +267,119 @@ class PicoTarget:
             print(f'   write using concrete target: {hex(write_data)} -> {hex(addr)}')
         debug_stack_trace(state, depth=1)
         
+
+class MAX78000Target:
+    def __init__(self, binary, concrete_target=None, cached_cfg=None):
+        # sram memory regions
+        self.sram = MemoryRegion(0x20000000, 0x3FFFFFFF, mmio=False, name='SRAM', use_concrete=False)
+        self.rom = MemoryRegion(0x00000000, 0x1FFFFFFF, mmio=False, name='ROM', use_concrete=False)
+
+        regions = [self.sram, self.rom]
+
+        # add other memory regions
+        regions += []
+
+        if concrete_target != None:
+            self.concrete_target = concrete_target
+        else:
+            self.concrete_target = None
+
+        self.proj = angr.Project(
+            binary,
+            load_options={'auto_load_libs': False},
+            arch='ARMCortexM',
+        )
+
+        # "program memory area must also contain the default system vector table and the initial settings for all system
+        # exception handlers and interrupt handlers for the CM4 core. The reset vector for the device is 0x0000 0000 and contains
+        # the device ROM code that transfers execution to user code at address 0x1000 0000."
+
+        # debug startup issues here, like on the Pico
+
+        entry_options={angr.options.SYMBOL_FILL_UNCONSTRAINED_MEMORY, angr.options.ZERO_FILL_UNCONSTRAINED_REGISTERS}
+        self.entry = self.proj.factory.entry_state(add_options=entry_options)
+        
+        # simstateplugins
+        self.entry.register_plugin('memory_regions_plugin', SimStateMemoryRegion(regions))
+
+        self.entry.inspect.b('mem_read', when=angr.BP_BEFORE, action=self.read_hook)
+        self.entry.inspect.b('mem_write', when=angr.BP_BEFORE, action=self.write_hook)
+
+        self.simgr = self.proj.factory.simulation_manager(self.entry)
+        self.cfg = self.proj.analyses.CFGFast()
+
+        # Parse initial stack pointer and reset vector
+        text_section = self.proj.loader.main_object.sections_map.get('.text')
+        self.vector_table = self.proj.loader.memory.load(text_section.min_addr, 8)
+        self.initial_sp = int.from_bytes(self.vector_table[0:4], byteorder='little')
+        self.reset_vector = int.from_bytes(self.vector_table[4:8], byteorder='little')
+
+    def get_region(self, state, addr):
+        for region in state.memory_regions_plugin.regions:
+            if region.has(addr):
+                return region
+        
+        return None
+
+    # Runs a given state on a concrete target
+    # Does nothing if there is no avatar set up
+    def run_concrete(self, state=None):
+        if self.avatar == None:
+            return
+
+        if state == None:
+            state = self.entry
+        
+        # Set regs on concrete target
+        for reg in state.arch.register_list:
+            reg_name = reg.name
+            reg_value = state.registers.load(reg_name)
+            self.gdb_target.write_register(reg_name, reg_value)
+
+        # Set memory on concrete target
+        for page_start in state.memory.changed_bytes:
+            page_size = len(state.memory.changed_bytes[page_start])
+            page_data = state. memory.load(page_start, page_size)
+            self.gdb_target.write_memory(page_start, page_data, size=page_size)
+
+    def run(self, n=1000):
+        self.simgr.run(n=n)
+
+    def read_hook(self, state):
+        read_addr = state.inspect.mem_read_address
+        addr = state.solver.eval(read_addr)
+        region = self.get_region(state, addr)
+        if not region:
+            print(f'mmio read: {hex(addr)} unmapped region')
+            return
+        elif not region.mmio:
+            return
+
+        print(f'mmio read: {hex(addr)} {region.name}')
+        region.read(state, addr)
+
+        if self.concrete_target and region.use_concrete:
+            read_bytes = self.concrete_target.read_memory(addr, 4)
+            state.memory.store(addr, read_bytes)
+            print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
+
+        debug_stack_trace(state, depth=1)
+        
+    def write_hook(self, state):
+        write_addr = state.inspect.mem_write_address
+        write_data = state.solver.eval(state.inspect.mem_write_expr)
+        addr = state.solver.eval(write_addr)
+        region = self.get_region(state, addr)
+        if not region:
+            print(f'mmio write: {hex(addr)} unmapped region')
+            return
+        elif not region.mmio:
+            return
+
+        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        region.write(state, addr, write_data)
+
+        if self.concrete_target and region.use_concrete:
+            self.concrete_target.write_memory(addr, write_data)
+            print(f'   write using concrete target: {hex(write_data)} -> {hex(addr)}')
+        debug_stack_trace(state, depth=1)
