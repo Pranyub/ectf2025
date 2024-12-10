@@ -1,4 +1,4 @@
-from targets import PicoTarget, HardwareTarget
+from targets import MAX78000Target, PicoTarget, HardwareTarget
 import angr
 import pyvex
 import archinfo
