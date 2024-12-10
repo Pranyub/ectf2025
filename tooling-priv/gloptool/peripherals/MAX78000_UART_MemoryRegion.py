@@ -26,7 +26,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             0x10: ('CLKDIV', self.__CLKDIV_read, self.__CLKDIV_write, 0),
             0x14: ('OSR', self.__OSR_read, self.__OSR_write, 0),
             0x18: ('TXPEEK', self.__TXPEEK_read, self.__TXPEEK_write, 0),
-            0x1C: ('PNR', self.__PNR_read, self.__PNR_write, 0b11),  # re-do
+            0x1C: ('PNR', self.__PNR_read, self.__PNR_write, 0b11),
             0x20: ('FIFO', self.__FIFO_read, self.__FIFO_write, 0),
             0x30: ('DMA', self.__DMA_read, self.__DMA_write, 0),
             0x34: ('WKEN', self.__WKEN_read, self.__WKEN_write, 0),
@@ -157,18 +157,21 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         print(f"{id(self)} MAX78000 -> UART: {self.received.decode('utf-8')}")
     
     def __DMA_read(self, state, addr, length):
+        # assume DMA off
         pass
-    
+        
     def __DMA_write(self, state, addr, data):
         pass
 
     def __WKEN_read(self, state, addr, length):
+        # assume no wakeup
         pass
 
     def __WKEN_write(self, state, addr, data):
         pass
     
     def __WKFL_read(self, state, addr, length):
+        # assume no wakeup
         pass
 
     def __WKFL_write(self, state, addr, data):
