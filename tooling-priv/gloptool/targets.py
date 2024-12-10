@@ -12,6 +12,7 @@ from peripherals.MemoryRegion import *
 from peripherals.PL011_UART_MemoryRegion import *
 from peripherals.Pico_Timer import *
 from peripherals.SimStateMemoryRegion import *
+from peripherals.MAX78000Target import *
 
 def debug_stack_trace(state, depth=3):
     print("Stack trace:")
@@ -271,13 +272,67 @@ class PicoTarget:
 class MAX78000Target:
     def __init__(self, binary, concrete_target=None, cached_cfg=None):
         # sram memory regions
-        self.sram = MemoryRegion(0x20000000, 0x3FFFFFFF, mmio=False, name='SRAM', use_concrete=False)
+        self.sram = MemoryRegion(0x20000000, 0x1FFFFFFF, mmio=False, name='SRAM', use_concrete=False)
         self.rom = MemoryRegion(0x00000000, 0x1FFFFFFF, mmio=False, name='ROM', use_concrete=False)
 
         regions = [self.sram, self.rom]
 
         # add other memory regions
-        regions += []
+        regions += [
+            MemoryRegion(0x400BE000, 0x03FF, mmio=True, name='SPIO'),
+            MemoryRegion(0x400C0400, 0x0000, mmio=True, name='CNN_FIFO'),
+            MemoryRegion(0x40000000, 0x03FF, mmio=True, name='GCR'),
+            MemoryRegion(0x40000400, 0x03FF, mmio=True, name='SIR'),
+            MemoryRegion(0x40000800, 0x03FF, mmio=True, name='FCR'),
+            MemoryRegion(0x40003000, 0x03FF, mmio=True, name='WDT0'),
+            MemoryRegion(0x40003C00, 0x003F, mmio=True, name='DVS'),
+            MemoryRegion(0x40004400, 0x03FF, mmio=True, name='SIMO'),
+            MemoryRegion(0x40005400, 0x03FF, mmio=True, name='TRIMSIR'),
+            MemoryRegion(0x40005800, 0x03FF, mmio=True, name='GCFR'),
+            MemoryRegion(0x40006000, 0x03FF, mmio=True, name='RTC'),
+            MemoryRegion(0x40006400, 0x03FF, mmio=True, name='WUT'),
+            MemoryRegion(0x40006800, 0x03FF, mmio=True, name='PWRSEQ'),
+            MemoryRegion(0x40006C00, 0x03FF, mmio=True, name='MCR'),
+            MemoryRegion(0x40007400, 0x03FF, mmio=True, name='AES'),
+            MemoryRegion(0x40007800, 0x03FF, mmio=True, name='AESKEY'),
+            MemoryRegion(0x40008000, 0x0FFF, mmio=True, name='GPIO0'),
+            MemoryRegion(0x40009000, 0x0FFF, mmio=True, name='GPIO1'),
+            MemoryRegion(0x4000E000, 0x0FFF, mmio=True, name='PCIF'),
+            MemoryRegion(0x4000F000, 0x0FFF, mmio=True, name='CRC'),
+            MemoryRegion(0x40010000, 0x0FFF, mmio=True, name='TMR0'),
+            MemoryRegion(0x40011000, 0x0FFF, mmio=True, name='TMR1'),
+            MemoryRegion(0x40012000, 0x0FFF, mmio=True, name='TMR2'),
+            MemoryRegion(0x40013000, 0x0FFF, mmio=True, name='TMR3'),
+            MemoryRegion(0x4001D000, 0x0FFF, mmio=True, name='I2C0'),
+            MemoryRegion(0x4001E000, 0x0FFF, mmio=True, name='I2C1'),
+            MemoryRegion(0x4001F000, 0x0FFF, mmio=True, name='I2C2'),
+            MemoryRegion(0x40028000, 0x0FFF, mmio=True, name='DMA'),
+            MemoryRegion(0x40029000, 0x03FF, mmio=True, name='FLC0'),
+            MemoryRegion(0x4002A000, 0x07FF, mmio=True, name='ICC0'),
+            MemoryRegion(0x4002A800, 0x07FF, mmio=True, name='ICC1'),
+            MemoryRegion(0x40034000, 0x0FFF, mmio=True, name='ADC'),
+            MemoryRegion(0x4003C000, 0x009F, mmio=True, name='PT'),
+            MemoryRegion(0x4003D000, 0x0FFF, mmio=True, name='OWM0'),
+            MemoryRegion(0x4003E000, 0x0FFF, mmio=True, name='SEMA'),
+            MAX78000_UART_MemoryRegion(0x40042000, 0x0FFF, mmio=True, name='UART0', use_concrete=False),
+            MAX78000_UART_MemoryRegion(0x40043000, 0x0FFF, mmio=True, name='UART1', use_concrete=False),
+            MAX78000_UART_MemoryRegion(0x40044000, 0x0FFF, mmio=True, name='UART2', use_concrete=False),
+            MemoryRegion(0x40046000, 0x1FFF, mmio=True, name='SPI1'),
+            MemoryRegion(0x4004D000, 0x0FFF, mmio=True, name='TRNG'),
+            MemoryRegion(0x40060000, 0x0FFF, mmio=True, name='I2S'),
+            MemoryRegion(0x40080000, 0x03FF, mmio=True, name='LPGCR'),
+            MemoryRegion(0x40080400, 0x01FF, mmio=True, name='GPIO2'),
+            MemoryRegion(0x40080800, 0x03FF, mmio=True, name='WDT1'),
+            MemoryRegion(0x40080C00, 0x03FF, mmio=True, name='TMR4'),
+            MemoryRegion(0x40081000, 0x03FF, mmio=True, name='TMR5'),
+            MemoryRegion(0x40081400, 0x03FF, mmio=True, name='UART3'),  # LPUART
+            MemoryRegion(0x40088000, 0x03FF, mmio=True, name='LPCMP'),
+            MemoryRegion(0x50000000, 0x000FFFFF, mmio=True, name='CNN'),
+            MemoryRegion(0x50100000, 0x003FFFFF, mmio=True, name='CNNx16_0'),
+            MemoryRegion(0x50500000, 0x003FFFFF, mmio=True, name='CNNx16_1'),
+            MemoryRegion(0x50900000, 0x003FFFFF, mmio=True, name='CNNx16_2'),
+            MemoryRegion(0x50D00000, 0x003FFFFF, mmio=True, name='CNNx16_3')
+        ]
 
         if concrete_target != None:
             self.concrete_target = concrete_target
