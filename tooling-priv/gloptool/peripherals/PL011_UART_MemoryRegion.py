@@ -92,7 +92,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         print(f"{id(self)} DEVICE -> UART: {self.received.decode('utf-8')}")
     
     def __FR_read(self, state, addr):
-        print(f"{id(self)} !!!!!!!!!!!!!!!!! The flag register is being read right now !!!!!!!!!!!!!!!!!")
+        # print(f"{id(self)} !!!!!!!!!!!!!!!!! The flag register is being read right now !!!!!!!!!!!!!!!!!")
         self.__update_FR(state)
         pass
 
@@ -148,7 +148,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of UART{self.register_offsets[offset][0]} register !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(f"Read of UART{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
             pass
@@ -158,7 +158,7 @@ class PL011_UART_MemoryRegion(MemoryRegion):
     def write(self, state, addr, data):
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x} !!!!!!!!!!!!!!!!!!!!!")
+            print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"Write to unknown UART register at address 0x{addr:x}: 0x{data:x} !!!!!!!!!!!!!!!!!!!!!!!!")
