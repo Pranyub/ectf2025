@@ -280,7 +280,7 @@ class MAX78000Target:
         # UART trigger mappings example
         triggers = {
             b'Hi\r\n': b'Hello to DEVICE',
-            b'Enter the password: ': 'supersec\r\n'
+            b'Enter the password: ': b'supersec\r\n'
         }
 
         # add other memory regions
