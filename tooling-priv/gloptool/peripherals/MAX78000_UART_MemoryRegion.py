@@ -16,7 +16,7 @@ from .MemoryRegion import MemoryRegion
 # R/W1C: read/write 1 to clear, can read, but writing 1 will clear the field to 0, writing 1 does not do anything
 # R/W1S: read/write 1 to set, can read, writing 1 works, but writing 0 does not do anything
 class MAX78000_UART_MemoryRegion(MemoryRegion):
-    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
+    def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True, trigger_mappings=None):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
             0x00: ('CTRL', self.__CTRL_read, self.__CTRL_write, 1 << 7),
@@ -33,10 +33,10 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             0x38: ('WKFL', self.__WKFL_read, self.__WKFL_write, 0),
         }
         self.read_write_hook_active = False
-        self.isReceiving = True
         self.sent = b''  # sent to the device, UART -> DEVICE
         self.received = b''  # received from the device, DEVICE -> UART
-        self.sending = "Hello, world. from UART!"  # only used for debugging the FIFO reads
+        self.trigger_mappings = trigger_mappings
+        self.sending = None
     
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -96,8 +96,8 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 1 (rx_busy RO): recieve busy, 0 not receiving, 1 sending, set to 0??
         # 0 (tx_busy RO): transmit busy, 0 not transmitting, 1 transmitting, set to 0??
         out = 0b1010000
-        if not self.isReceiving and len(self.sending) != 0:
-            out = out & ~(int(not self.isReceiving) << 4)
+        if self.sending is not None:
+            out = out & ~(1 << 4)
             out = out | (1 << 8)
         self.__write_state(state, addr, out)
 
@@ -150,20 +150,31 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 31-9 (- RO): reserved
         # 8 (rx_par R): byte parity, set to 0
         # 7-0 (data R/W): reading reads the next character in the FIFO, writing adds a character to the FIFO
-        out = ord(self.sending[0])
-        if len(self.sending) > 0:
-            self.sending = self.sending[1:]
-            pass
-        self.sent += out.to_bytes(1, 'big')
+        # iterate through trigger mappings to see what to send
+        if self.sending is None:
+            print("WARNING: device reading UART FIFO when we aren't sending anything")
+            self.__write_state(state, addr, 0)
+            return
+
+        out = self.sending[0]
+        self.sending = self.sending[1:]
+        if len(self.sending) == 0:
+            self.sending = None
+            return
+        
+        self.sent += out.to_bytes(1, 'little')
         self.__write_state(state, addr, out)
         print(f"{id(self)} UART -> MAX78000: {self.sent.decode('utf-8')}")
 
     def __FIFO_write(self, state, addr, data):
         self.received += data.to_bytes(1, 'big')
+
+        if self.sending is None:
+            for trigger in self.trigger_mappings:
+                if self.received.endswith(trigger):
+                    self.sending = self.trigger_mappings[trigger]
+                    break
         print(f"{id(self)} MAX78000 -> UART: {self.received.decode('utf-8')}")
-        if self.received == b'Hi\r\n':
-            print("STARTING TO SEND CHARACTERS")
-            self.isReceiving = False
     
     def __DMA_read(self, state, addr):
         # assume DMA off

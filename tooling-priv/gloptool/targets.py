@@ -277,6 +277,12 @@ class MAX78000Target:
 
         regions = [self.sram, self.rom]
 
+        # UART trigger mappings example
+        triggers = {
+            b'Hi\r\n': b'Hello to DEVICE',
+            b'Enter the password: ': 'supersec\r\n'
+        }
+
         # add other memory regions
         regions += [
             MemoryRegion(0x400BE000, 0x03FF, mmio=True, name='SPIO'),
@@ -314,9 +320,9 @@ class MAX78000Target:
             MemoryRegion(0x4003C000, 0x009F, mmio=True, name='PT'),
             MemoryRegion(0x4003D000, 0x0FFF, mmio=True, name='OWM0'),
             MemoryRegion(0x4003E000, 0x0FFF, mmio=True, name='SEMA'),
-            MAX78000_UART_MemoryRegion(0x40042000, 0x0FFF, mmio=True, name='UART0', use_concrete=False),
-            MAX78000_UART_MemoryRegion(0x40043000, 0x0FFF, mmio=True, name='UART1', use_concrete=False),
-            MAX78000_UART_MemoryRegion(0x40044000, 0x0FFF, mmio=True, name='UART2', use_concrete=False),
+            MAX78000_UART_MemoryRegion(0x40042000, 0x0FFF, mmio=True, name='UART0', use_concrete=False, trigger_mappings=triggers),
+            MAX78000_UART_MemoryRegion(0x40043000, 0x0FFF, mmio=True, name='UART1', use_concrete=False, trigger_mappings=triggers),
+            MAX78000_UART_MemoryRegion(0x40044000, 0x0FFF, mmio=True, name='UART2', use_concrete=False, trigger_mappings=triggers),
             MemoryRegion(0x40046000, 0x1FFF, mmio=True, name='SPI1'),
             MemoryRegion(0x4004D000, 0x0FFF, mmio=True, name='TRNG'),
             MemoryRegion(0x40060000, 0x0FFF, mmio=True, name='I2S'),
@@ -410,7 +416,7 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        print(f'mmio read: {hex(addr)} {region.name}')
+        # print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -431,7 +437,7 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        # print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
         region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
