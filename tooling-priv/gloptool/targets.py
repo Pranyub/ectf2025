@@ -14,6 +14,7 @@ from peripherals.Pico_Timer import *
 from peripherals.SimStateMemoryRegion import *
 from peripherals.MAX78000_UART_MemoryRegion import *
 from peripherals.MAX78000_TRNG_MemoryRegion import *
+from peripherals.MAX78000_AES_MemoryRegion import *
 
 def debug_stack_trace(state, depth=3):
     print("Stack trace:")
@@ -300,7 +301,7 @@ class MAX78000Target:
             MemoryRegion(0x40006400, 0x03FF, mmio=True, name='WUT'),
             MemoryRegion(0x40006800, 0x03FF, mmio=True, name='PWRSEQ'),
             MemoryRegion(0x40006C00, 0x03FF, mmio=True, name='MCR'),
-            MemoryRegion(0x40007400, 0x03FF, mmio=True, name='AES'),
+            MAX78000_AES_MemoryRegion(0x40007400, 0x03FF, mmio=True, name='AES', use_concrete=False),
             MemoryRegion(0x40007800, 0x03FF, mmio=True, name='AESKEY'),
             MemoryRegion(0x40008000, 0x0FFF, mmio=True, name='GPIO0'),
             MemoryRegion(0x40009000, 0x0FFF, mmio=True, name='GPIO1'),

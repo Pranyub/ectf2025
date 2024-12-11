@@ -6,13 +6,17 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: ("CTRL", self.__CTRL_read, self.__CTRL_write),
+            0x00: ("CTRL", self.__CTRL_read, self.__CTRL_write, 0),
             0x04: ("STATUS", self.__STATUS_read, self.__STATUS_write),
             0x08: ("INTFL", self.__INTFL_read, self.__INTFL_write),
             0x0C: ("INTEN", self.__INTEN_read, self.__INTEN_write),
             0x10: ("FIFO", self.__FIFO_read, self.__FIFO_write)
         }
         self.read_write_hook_active = False
+        self.encryption_size = 0  # multiply this value by 64 and add 128 to get # of bits
+        self.key_location = 0
+        self.input = b''
+        self.output = b''
 
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -52,10 +56,40 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
             print(f"WARNING: write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")
 
     def __CTRL_read(self, state, addr):
-        pass
+        # 31-10 (- RO): reserved
+        # 9-8 (type R/W): encryption type,
+        #   00 encryption using external key,
+        #   01 decryption using external key,
+        #   10 decryption using locally generated key,
+        #   11 reserved
+        # 7-6 (key_size R/W): encryption key size,
+        #   00 128-bit
+        #   01 192-bit
+        #   10 256-bit
+        #   11 reserved
+        # 5 (output_flush W1): flush data output FIFO, 1 write flush. set to 0
+        # 4 (input_flush W1): flush data input FIFO, 1 write flush. set to 0
+        # 3 (start W1): start AES calculation, force calculation to start, even if the FIFO is not full
+        # 2 (dma_tx_en R/W): generate DMA request when data input FIFO is empty, set to 0
+        # 1 (dma_rx_en R/W): generate DMA request when data output FIFO is full, set to 0
+        # 0 (en R/W): AES enable, set to 1
+        # NOTE: the documentation does not discuss where the external/local key is stored
+        out = self.key_location << 8
+        out = out | (self.encryption_size << 6)
+        out = out | 1
+        self.__write_state(state, addr, out)
 
     def __CTRL_write(self, state, addr, data):
-        pass
+        self.key_location = ((data & (0b11 << 8)) >> 8)
+        self.key_size = ((data & (0b11 << 6)) >> 6)
+        if data & (1 << 5) != 0:
+            self.output = b''
+        if data & (1 << 4) != 0:
+            self.input = b''
+        if data & (1 << 3) != 0:
+            pass  # start AES calculation
+        print(self.key_location)
+        print(self.key_size)
 
     def __STATUS_read(self, state, addr):
         pass
