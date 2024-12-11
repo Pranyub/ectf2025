@@ -152,7 +152,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 7-0 (data R/W): reading reads the next character in the FIFO, writing adds a character to the FIFO
         # iterate through trigger mappings to see what to send
         if self.sending is None:
-            print("WARNING: device reading UART FIFO when we aren't sending anything")
+            print(f"WARNING: device reading {self.name} FIFO when we aren't sending anything")
             self.__write_state(state, addr, 0)
             return
 
@@ -164,7 +164,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         
         self.sent += out.to_bytes(1, 'little')
         self.__write_state(state, addr, out)
-        print(f"{id(self)} UART -> MAX78000: {self.sent.decode('ascii')}")
+        print(f"{id(self)} {self.name} -> MAX78000: {self.sent.decode('ascii')}")
 
     def __FIFO_write(self, state, addr, data):
         self.received += data.to_bytes(1, 'big')
@@ -174,7 +174,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
                 if self.received.endswith(trigger):
                     self.sending = self.trigger_mappings[trigger]
                     break
-        print(f"{id(self)} MAX78000 -> UART: {self.received.decode('ascii')}")
+        print(f"{id(self)} MAX78000 -> {self.name}: {self.received.decode('ascii')}")
     
     def __DMA_read(self, state, addr):
         # assume DMA off
@@ -203,17 +203,17 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            # print(f"Read of UART{self.register_offsets[offset][0]} register")
+            # print(f"Read of {self.name}{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
-            print(f"WARNING: Read of unknown UART register at address 0x{addr:x} with an offset of 0x{offset:x} !")
+            print(f"WARNING: Read of unknown {self.name} register at address 0x{addr:x} with an offset of 0x{offset:x} !")
     
     def write(self, state, addr, data):
         if self.read_write_hook_active:
             return
         offset = addr - self.base
         if offset in self.register_offsets:
-            # print(f"Write to UART{self.register_offsets[offset][0]} register: 0x{data:x}")
+            # print(f"Write to {self.name}{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
-            print(f"WARNING: Write to unknown UART register at address 0x{addr:x}: 0x{data:x} !")
+            print(f"WARNING: Write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")

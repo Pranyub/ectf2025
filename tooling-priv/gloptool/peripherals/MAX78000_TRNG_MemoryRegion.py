@@ -9,7 +9,7 @@ class MAX78000_TRNG_MemoryRegion(MemoryRegion):
         self.register_offsets = {
             0x00: ('CTRL', self.__CTRL_read, self.__CTRL_write, 0),
             0x04: ('STATUS', self.__STATUS_read, self.__STATUS_write, 0),
-            0x08: ('DATA', self.__DATA_read, self.__STATUS_write, 0)
+            0x08: ('DATA', self.__DATA_read, self.__DATA_write, 0)
         }
         self.read_write_hook_active = False
     
@@ -68,17 +68,17 @@ class MAX78000_TRNG_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of TRNG{self.register_offsets[offset][0]} register")
+            # print(f"Read of {self.name}{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
-            print(f"WARNING: read of unknown TRNG register at address 0x{addr:x} with an offset of 0x{offset:x} !")
+            print(f"WARNING: read of unknown {self.name} register at address 0x{addr:x} with an offset of 0x{offset:x} !")
     
     def write(self, state, addr, data):
         if self.read_write_hook_active:
             return
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to TRNG{self.register_offsets[offset][0]} register: 0x{data:x}")
+            # print(f"Write to {self.name}{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
-            print(f"WARNING: write to unknown TRNG register at address 0x{addr:x}: 0x{data:x} !")
+            print(f"WARNING: write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")
