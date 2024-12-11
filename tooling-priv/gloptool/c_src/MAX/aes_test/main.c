@@ -100,7 +100,10 @@ int AES_decrypt(int asynchronous, mxc_aes_keys_t key)
     MXC_AES_Shutdown();
 
     if (memcmp(inputData, decryptedData, MXC_AES_DATA_LENGTH) != 0) {
-        printf("\nData Mismatch");
+        printf("\nData Mismatch\n");
+        for (int i = 0; i < MXC_AES_DATA_LENGTH; i++) {
+            printf("Input: 0x%x Decrypted: 0x%x\n", inputData[i], decryptedData[i]);
+        }
         return 1;
     }
 
