@@ -13,6 +13,7 @@ from peripherals.PL011_UART_MemoryRegion import *
 from peripherals.Pico_Timer import *
 from peripherals.SimStateMemoryRegion import *
 from peripherals.MAX78000_UART_MemoryRegion import *
+from peripherals.MAX78000_TRNG_MemoryRegion import *
 
 def debug_stack_trace(state, depth=3):
     print("Stack trace:")
@@ -324,7 +325,7 @@ class MAX78000Target:
             MAX78000_UART_MemoryRegion(0x40043000, 0x0FFF, mmio=True, name='UART1', use_concrete=False, trigger_mappings=triggers),
             MAX78000_UART_MemoryRegion(0x40044000, 0x0FFF, mmio=True, name='UART2', use_concrete=False, trigger_mappings=triggers),
             MemoryRegion(0x40046000, 0x1FFF, mmio=True, name='SPI1'),
-            MemoryRegion(0x4004D000, 0x0FFF, mmio=True, name='TRNG'),
+            MAX78000_TRNG_MemoryRegion(0x4004D000, 0x0FFF, mmio=True, name='TRNG', use_concrete=False),
             MemoryRegion(0x40060000, 0x0FFF, mmio=True, name='I2S'),
             MemoryRegion(0x40080000, 0x03FF, mmio=True, name='LPGCR'),
             MemoryRegion(0x40080400, 0x01FF, mmio=True, name='GPIO2'),
