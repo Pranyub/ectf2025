@@ -4,7 +4,7 @@ import archinfo
 import IPython
 
 # h = HardwareTarget(port=3330, config='gdb')
-p = MAX78000Target('./binaries/MAX/trng.elf')
+p = MAX78000Target('./binaries/MAX/delay.elf')
 f = FrameshiftSolver(p)
 #f.add_fn_hooks([])
 f.annotate_instrs()
