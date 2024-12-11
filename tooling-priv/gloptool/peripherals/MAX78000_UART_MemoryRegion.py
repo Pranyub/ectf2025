@@ -33,9 +33,10 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             0x38: ('WKFL', self.__WKFL_read, self.__WKFL_write, 0),
         }
         self.read_write_hook_active = False
+        self.isReceiving = True
         self.sent = b''  # sent to the device, UART -> DEVICE
         self.received = b''  # received from the device, DEVICE -> UART
-        self.sending = "Hello, world from UART!"  # only used for debugging the FIFO reads
+        self.sending = "Hello, world. from UART!"  # only used for debugging the FIFO reads
     
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -76,7 +77,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 4 (par_en R/W): 0 is disabled, 1 is enabled; set to 0
         # 3-0 (rx_thd_val R/W): RX_FIFO depth, how large the receive FIFO is from 1-8, set to 0b1000??
         out = 0b11 << 19
-        out = out & 0b10001000
+        out = out | 0b10001000
         self.__write_state(state, addr, out)
 
     def __CTRL_write(self, state, addr, data):
@@ -94,7 +95,10 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 3-2 (- RO): reserved, set to 0
         # 1 (rx_busy RO): recieve busy, 0 not receiving, 1 sending, set to 0??
         # 0 (tx_busy RO): transmit busy, 0 not transmitting, 1 transmitting, set to 0??
-        out = 0b101000
+        out = 0b1010000
+        if not self.isReceiving and len(self.sending) != 0:
+            out = out & ~(int(not self.isReceiving) << 4)
+            out = out | (1 << 8)
         self.__write_state(state, addr, out)
 
     def __STATUS_write(self, state, addr, data):
@@ -147,8 +151,9 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         # 8 (rx_par R): byte parity, set to 0
         # 7-0 (data R/W): reading reads the next character in the FIFO, writing adds a character to the FIFO
         out = ord(self.sending[0])
-        if len(sending) > 0:
-            sending = sending[1:]
+        if len(self.sending) > 0:
+            self.sending = self.sending[1:]
+            pass
         self.sent += out.to_bytes(1, 'big')
         self.__write_state(state, addr, out)
         print(f"{id(self)} UART -> MAX78000: {self.sent.decode('utf-8')}")
@@ -156,6 +161,9 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
     def __FIFO_write(self, state, addr, data):
         self.received += data.to_bytes(1, 'big')
         print(f"{id(self)} MAX78000 -> UART: {self.received.decode('utf-8')}")
+        if self.received == b'Hi\r\n':
+            print("STARTING TO SEND CHARACTERS")
+            self.isReceiving = False
     
     def __DMA_read(self, state, addr):
         # assume DMA off

@@ -410,7 +410,7 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        # print(f'mmio read: {hex(addr)} {region.name}')
+        print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -431,7 +431,7 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        # print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
         region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
