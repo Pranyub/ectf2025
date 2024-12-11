@@ -160,7 +160,6 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         self.sending = self.sending[1:]
         if len(self.sending) == 0:
             self.sending = None
-            return
         
         self.sent += out.to_bytes(1, 'little')
         self.__write_state(state, addr, out)
