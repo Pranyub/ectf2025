@@ -164,7 +164,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         
         self.sent += out.to_bytes(1, 'little')
         self.__write_state(state, addr, out)
-        print(f"{id(self)} UART -> MAX78000: {self.sent.decode('utf-8')}")
+        print(f"{id(self)} UART -> MAX78000: {self.sent.decode('ascii')}")
 
     def __FIFO_write(self, state, addr, data):
         self.received += data.to_bytes(1, 'big')
@@ -174,7 +174,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
                 if self.received.endswith(trigger):
                     self.sending = self.trigger_mappings[trigger]
                     break
-        print(f"{id(self)} MAX78000 -> UART: {self.received.decode('utf-8')}")
+        print(f"{id(self)} MAX78000 -> UART: {self.received.decode('ascii')}")
     
     def __DMA_read(self, state, addr):
         # assume DMA off
