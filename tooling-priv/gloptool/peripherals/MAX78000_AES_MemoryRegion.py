@@ -38,17 +38,20 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
             key = self.internal_key
 
         padded = self.input
+        print(f"Encryption size: {128 + self.encryption_size * 64}")
+        print(f"Key used: {key.hex()}")
         if len(self.input) < 16 + self.encryption_size * 8:
-            padder = padding.PKCS7(128 + self.encryption_size * 64).padder()  # documentation does not say what type of padding is used
+            padder = padding.PKCS7(128 + self.encryption_size * 64).padder()  # documentation does not say what type of padding is used, so I'm going with PKCS7
             padded = padder.update(self.input)
             padded += padder.finalize()
-        print(f"AES_Encrypt Padded PT: 0x{padded.hex()}")
+        print(f"AES_Encrypt Padded PT: {padded.hex()}")
         cipher = Cipher(algorithms.AES(key), modes.ECB())
         encryptor = cipher.encryptor()
         buf = bytearray(len(padded) + 16 + self.encryption_size * 8 - 1)
         len_encrypted = encryptor.update_into(padded, buf)
+        print(f"Len: {len_encrypted} ---- buf: {buf.hex()}")
         ct = bytes(buf[:len_encrypted]) + encryptor.finalize()
-        print(f"AES_Encrypt CT: 0x{ct.hex()}")
+        print(f"AES_Encrypt CT: {ct.hex()}")
         return ct    
 
     def __AES_decrypt(self, state):
@@ -60,13 +63,15 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
 
         cipher = Cipher(algorithms.AES(key), modes.ECB())
         decryptor = cipher.decryptor()
-        print(f"AES_Decrypt CT: 0x{self.input.hex()}")
+        print(f"AES_Decrypt CT: {self.input.hex()}")
         buf = bytearray(len(self.input) + 16 + self.encryption_size * 8 - 1)
         len_decrypted = decryptor.update_into(self.input, buf)
         padded = bytes(buf[:len_decrypted]) + decryptor.finalize()
-        print(f"AES_Decrypt Padded PT: 0x{padded.hex()}")
+        print(f"AES_Decrypt Padded PT: {padded.hex()}")
         unpadder = padding.PKCS7(128 + self.encryption_size * 64).unpadder()
         unpadded = unpadder.update(padded)
+        if len(unpadded) == 0:
+            return padded
         unpadded += unpadder.finalize()
         return unpadded
 
