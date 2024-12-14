@@ -38,20 +38,17 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
             key = self.internal_key
 
         padded = self.input
-        print(f"Encryption size: {128 + self.encryption_size * 64}")
-        print(f"Key used: {key.hex()}")
-        if len(self.input) < 16 + self.encryption_size * 8:
-            padder = padding.PKCS7(128 + self.encryption_size * 64).padder()  # documentation does not say what type of padding is used, so I'm going with PKCS7
+        if len(self.input) < 16:
+            padder = padding.PKCS7(128).padder()  # documentation does not say what type of padding is used, so I'm going with PKCS7
             padded = padder.update(self.input)
             padded += padder.finalize()
-        print(f"AES_Encrypt Padded PT: {padded.hex()}")
+        # print(f"AES_Encrypt Padded PT: {padded.hex()}")
         cipher = Cipher(algorithms.AES(key), modes.ECB())
         encryptor = cipher.encryptor()
         buf = bytearray(len(padded) + 16 + self.encryption_size * 8 - 1)
         len_encrypted = encryptor.update_into(padded, buf)
-        print(f"Len: {len_encrypted} ---- buf: {buf.hex()}")
         ct = bytes(buf[:len_encrypted]) + encryptor.finalize()
-        print(f"AES_Encrypt CT: {ct.hex()}")
+        # print(f"AES_Encrypt CT: {ct.hex()} ---- Key Used: {key.hex()}")
         return ct    
 
     def __AES_decrypt(self, state):
@@ -63,12 +60,12 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
 
         cipher = Cipher(algorithms.AES(key), modes.ECB())
         decryptor = cipher.decryptor()
-        print(f"AES_Decrypt CT: {self.input.hex()}")
+        # print(f"AES_Decrypt CT: {self.input.hex()}")
         buf = bytearray(len(self.input) + 16 + self.encryption_size * 8 - 1)
         len_decrypted = decryptor.update_into(self.input, buf)
         padded = bytes(buf[:len_decrypted]) + decryptor.finalize()
-        print(f"AES_Decrypt Padded PT: {padded.hex()}")
-        unpadder = padding.PKCS7(128 + self.encryption_size * 64).unpadder()
+        # print(f"AES_Decrypt Padded PT: {padded.hex()} ---- Key Used: {key.hex()}")
+        unpadder = padding.PKCS7(128).unpadder()
         unpadded = unpadder.update(padded)
         if len(unpadded) == 0:
             return padded
@@ -101,7 +98,7 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of {self.name}{self.register_offsets[offset][0]} register")
+            # print(f"Read of {self.name}_{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
             print(f"WARNING: read of unknown {self.name} register at address 0x{addr:x} with an offset of 0x{offset:x} !")
@@ -111,7 +108,7 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
             return
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to {self.name}{self.register_offsets[offset][0]} register: 0x{data:x}")
+            # print(f"Write to {self.name}_{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"WARNING: write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")
@@ -162,9 +159,9 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
         # 2 (input_full R): input FIFO full, 0 not full, 1 full
         # 1 (input_em R): input FIFO empty, 0 not empty, 1 empty
         # 0 (busy R): AES busy, set to 0
-        out = int(len(self.output) >= (16 + self.encryption_size * 8)) << 4
+        out = int(len(self.output) >= 16) << 4
         out = out | (int(len(self.output) == 0) << 3)
-        out = out | (int(len(self.input) >= (16 + self.encryption_size * 8)) << 2)
+        out = out | (int(len(self.input) >= 16) << 2)
         out = out | (int(len(self.input) == 0) << 1)
         self.__write_state(state, addr, out)
 
@@ -208,11 +205,11 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
         self.__write_state(state, addr, out)
         
     def __FIFO_write(self, state, addr, data):
-        if len(self.input) >= (16 + self.encryption_size * 8):
+        if len(self.input) >= 16:
             print(f"DEVICE attmped to write to full {self.name} FIFO")
             return
         self.input = data.to_bytes(4, 'big') + self.input
-        if len(self.input) == (16 + self.encryption_size * 8):
+        if len(self.input) == 16:
             if self.encryption_type == 0:
                 self.output = self.__AES_encrypt(state)
             else:
