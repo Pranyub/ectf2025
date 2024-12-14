@@ -1,4 +1,7 @@
+import os
 import claripy
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
 
 from .MemoryRegion import MemoryRegion
 
@@ -6,17 +9,60 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):
         super().__init__(start, size, mmio, name, use_concrete)
         self.register_offsets = {
-            0x00: ("CTRL", self.__CTRL_read, self.__CTRL_write, 0),
-            0x04: ("STATUS", self.__STATUS_read, self.__STATUS_write, 0),
-            0x08: ("INTFL", self.__INTFL_read, self.__INTFL_write, 0),
-            0x0C: ("INTEN", self.__INTEN_read, self.__INTEN_write, 0),
-            0x10: ("FIFO", self.__FIFO_read, self.__FIFO_write, 0)
+            0x0000: ("CTRL", self.__CTRL_read, self.__CTRL_write, 0),
+            0x0004: ("STATUS", self.__STATUS_read, self.__STATUS_write, 0),
+            0x0008: ("INTFL", self.__INTFL_read, self.__INTFL_write, 0),
+            0x000C: ("INTEN", self.__INTEN_read, self.__INTEN_write, 0),
+            0x0010: ("FIFO", self.__FIFO_read, self.__FIFO_write, 0),
+            0x0400: ("KEY", self.__KEY_read, self.__KEY_write, 0)
         }
         self.read_write_hook_active = False
         self.encryption_size = 0  # multiply this value by 64 and add 128 to get # of bits
         self.encryption_type = 0
         self.input = b''
         self.output = b''
+        self.internal_key = b''
+        self.cipher = None
+
+    def __AES_encrypt(self, state):
+        key = b''
+        if self.encryption_type < 2:
+            key = self.__AES_get_external_key(state)
+            print(f"External key: {self.encryption_type}")
+        else:
+            if len(self.internal_key) != 16 + self.encryption_size * 8:
+                self.internal_key = os.urandom(16 + self.encryption_size * 8)
+            key = self.internal_key
+
+        padder = padding.PKCS7(128 + self.encryption_size * 64).padder()
+        padded = padder.update(self.input)
+        padded += padder.finalize()
+        cipher = Cipher(algorithms.AES(key), modes.ECB())
+        encryptor = cipher.encryptor()
+        buf = bytearray(len(padded) + 16 + self.encryption_size * 8 - 1)
+        len_encrypted = encryptor.update_into(padded, buf)
+        ct = bytes(buf[:len_encrypted]) + encryptor.finalize()
+        return ct    
+
+    def __AES_decrypt(self, state):
+        key = b''
+        if self.encryption_type < 2:
+            key = self.__AES_get_external_key(state)
+        else:
+            key = self.internal_key
+
+        cipher = Cipher(algorithms.AES(key), modes.ECB())
+        decryptor = cipher.decryptor()
+        buf = bytearray(len(self.input) + 16 + self.encryption_size * 8 - 1)
+        len_decrypted = decryptor.update_into(self.input, buf)
+        padded = bytes(buf[:len_decrypted]) + decryptor.finalize()
+        unpadder = padding.PKCS7(128 + self.encryption_size * 64).unpadder()
+        unpadded = unpadder.update(padded)
+        unpadded += unpadder.finalize()
+        return unpadded
+
+    def __AES_get_external_key(self, state):
+        return self.__read_state(state, self.base + 0x0400, 16 + self.encryption_size * 8).to_bytes(16 + self.encryption_size * 8, 'little')
 
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -87,9 +133,12 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
         if data & (1 << 4) != 0:
             self.input = b''
         if data & (1 << 3) != 0:
-            self.output = b'asdf' * (4 + self.encryption_size * 2)
+            # should really only be happenening for encryptions, but we'll add the decryption case in case
+            if self.encryption_type == 0:
+                self.output = self.__AES_encrypt(state)
+            else:
+                self.output = self.__AES_decrypt(state)
             self.input = b''
-            pass  # start calculation
 
     def __STATUS_read(self, state, addr):
         # 31-5 (- RO): reserved
@@ -143,11 +192,19 @@ class MAX78000_AES_MemoryRegion(MemoryRegion):
         
     def __FIFO_write(self, state, addr, data):
         if len(self.input) >= (16 + self.encryption_size * 8):
-            print(f"DEVICE attmped to write to full {self.name}_FIFO")
+            print(f"DEVICE attmped to write to full {self.name} FIFO")
             return
         self.input += data.to_bytes(4, 'little')
         if len(self.input) == (16 + self.encryption_size * 8):
-            self.output = b'asdf' * (4 + self.encryption_size * 2)
+            if self.encryption_type == 0:
+                self.output = self.__AES_encrypt(state)
+            else:
+                self.output = self.__AES_decrypt(state)
             self.input = b''
-            pass  # start calculation
+
+    def __KEY_read(self, state, addr):
+        pass
+
+    def __KEY_write(self, state, addr, data):
+        pass
         
