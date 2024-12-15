@@ -1,6 +1,6 @@
 import claripy
 
-from .MemoryRegion import MemoryRegion
+from peripherals import MemoryRegion
 
 class PL011_UART_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):

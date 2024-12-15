@@ -3,7 +3,7 @@ import claripy
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
-from .MemoryRegion import MemoryRegion
+from peripherals.MemoryRegion import MemoryRegion
 
 class MAX78000_AES_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):

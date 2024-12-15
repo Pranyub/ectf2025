@@ -1,4 +1,4 @@
-from .MemoryRegion import MemoryRegion
+from peripherals import MemoryRegion
 
 class Pico_Timer(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???'):

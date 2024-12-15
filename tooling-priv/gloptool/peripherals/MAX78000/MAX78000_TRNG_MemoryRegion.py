@@ -1,7 +1,7 @@
 import claripy
 import os
 
-from .MemoryRegion import MemoryRegion
+from peripherals.MemoryRegion import MemoryRegion
 
 class MAX78000_TRNG_MemoryRegion(MemoryRegion):
     def __init__(self, start=0, size=0, mmio=False, name='???', use_concrete=True):

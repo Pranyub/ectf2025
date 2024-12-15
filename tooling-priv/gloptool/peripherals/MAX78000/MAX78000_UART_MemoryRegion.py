@@ -1,6 +1,6 @@
 import claripy
 
-from .MemoryRegion import MemoryRegion
+from peripherals.MemoryRegion import MemoryRegion
 
 # https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf
 # memory access meanings:
