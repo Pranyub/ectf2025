@@ -333,7 +333,8 @@ class MAX78000Target:
             MemoryRegion(0x50100000, 0x003FFFFF, mmio=True, name='CNNx16_0'),
             MemoryRegion(0x50500000, 0x003FFFFF, mmio=True, name='CNNx16_1'),
             MemoryRegion(0x50900000, 0x003FFFFF, mmio=True, name='CNNx16_2'),
-            MemoryRegion(0x50D00000, 0x003FFFFF, mmio=True, name='CNNx16_3')
+            MemoryRegion(0x50D00000, 0x003FFFFF, mmio=True, name='CNNx16_3'),
+            MAX78000_SYST_MemoryRegion(0xE000E010, 0x0C, mmio=True, name='SYST', use_concrete=False)  # systick
         ]
 
         if concrete_target != None:
