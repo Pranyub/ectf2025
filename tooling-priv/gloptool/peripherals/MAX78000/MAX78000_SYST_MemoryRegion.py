@@ -17,6 +17,7 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
         self.enabled = False
         self.reload = 0
         self.start_time = time.time_ns()
+        self.clock_speed = 100 * (10 ** 6)  # 100MHz
 
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -40,7 +41,7 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
         assert size == 4
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Read of {self.name}_{self.register_offsets[offset][0]} register")
+            # print(f"Read of {self.name}_{self.register_offsets[offset][0]} register")
             self.register_offsets[offset][1](state, addr)
         else:
             print(f"WARNING: read of unknown {self.name} register at address 0x{addr:x} with an offset of 0x{offset:x} !")
@@ -50,7 +51,7 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
             return
         offset = addr - self.base
         if offset in self.register_offsets:
-            print(f"Write to {self.name}_{self.register_offsets[offset][0]} register: 0x{data:x}")
+            # print(f"Write to {self.name}_{self.register_offsets[offset][0]} register: 0x{data:x}")
             self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"WARNING: write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")
@@ -63,7 +64,10 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
         # 1 (tickint ?): 0 no interrupts, 1 for interrupts
         # 0 (enable ?): 0 disabled, 1 enabled
         # assume no interrupts
-        out = int((time.time_ns() - self.start_time) >= (10 * self.reload)) << 16  # replace
+        down = int((time.time_ns() - self.start_time) >= (((10 ** 9) / self.clock_speed) * self.reload))
+        if self.enabled:
+            down = 0
+        out = down << 16  # replace
         out = out | (1 << 2)
         out = out | int(self.enabled)
         self.__write_state(state, addr, out)
@@ -80,16 +84,15 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
 
     def __RVR_write(self, state, addr, data):
         self.reload = data & 0x00FFFFFF
-        print(f"Reload value: 0x{self.reload:x}")
         self.start_time = time.time_ns()
 
     def __CVR_read(self, state, addr):
         # 31-24 (- RO): reserved
         # 23-0 (current ?): current systick counter. writes will clear to 0 and set currentflag to 0
         if not self.enabled:
+            self.__write_state(state, addr, 0)
             return
-        out = (self.reload + (self.start_time - time.time_ns()) // 10) % self.reload  # replace
-        print(f"Current value: 0x{out:x}")
+        out = ((self.start_time - time.time_ns()) // ((10 ** 9) // self.clock_speed)) % self.reload  # replace
         self.__write_state(state, addr, out)
 
     def __CVR_write(self, state, addr, data):
@@ -102,7 +105,7 @@ class MAX78000_SYST_MemoryRegion(MemoryRegion):
         # 29-24 (- RO): reserved
         # 23-0 (tenms R): reload value for 100hz timing.  0 if unknown.  Set to 1000000
         out = 1 << 31
-        out = out | 1000000
+        out = out | self.clock_speed // 100
         self.__write_state(state, addr, out)
 
     def __CALIB_write(self, state, addr, data):

@@ -40,9 +40,17 @@
 int main(void)
 {
     printf("Delay test.\n");
-
+    printf("5s\n");
+    MXC_Delay(5000000);  // SysTick
+    printf("1s\n");
+    MXC_Delay(1000000);  // SysTick
+    printf(".5s\n");
+    MXC_Delay(500000);  // SysTick
+    printf("10ms\n");
+    MXC_Delay(10000);  // SysTick
+    printf("1ms\n");
+    MXC_Delay(1000);  // SysTick
     while (1) {
-        printf("5 second delay...");
-        MXC_Delay(5000000);  // SysTick
+        printf("Done.\n");
     }
 }
