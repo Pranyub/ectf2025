@@ -1,3 +1,5 @@
+prectf/fuzzing_example/input/
+prectf/fuzzing_example/output
 **/out/*
 **/build/*
 tooling-priv/usbutils/nohup.out
