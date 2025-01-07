@@ -413,7 +413,7 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        # print(f'mmio read: {hex(addr)} {region.name}')
+        print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -421,7 +421,7 @@ class MAX78000Target:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        # debug_stack_trace(state, depth=1)
+        debug_stack_trace(state, depth=1)
         
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
@@ -434,10 +434,10 @@ class MAX78000Target:
         elif not region.mmio:
             return
 
-        # print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
         region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
             self.concrete_target.write_memory(addr, write_data)
             print(f'   write using concrete target: {hex(write_data)} -> {hex(addr)}')
-        # debug_stack_trace(state, depth=1)
+        debug_stack_trace(state, depth=1)
