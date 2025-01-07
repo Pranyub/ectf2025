@@ -2,12 +2,12 @@ import angr
 import archinfo
 from avatar2 import Avatar, TargetStates, archs
 from angr_targets import AvatarGDBConcreteTarget
+# import angr_platforms.risc_v  # for the RISC-V processor on the MAX78000
 import logging
 import sys
 import serial
 import struct
 from threading import Lock
-
 from peripherals import *
 
 def debug_stack_trace(state, depth=3):
@@ -276,7 +276,7 @@ class MAX78000Target:
         # UART trigger mappings example
         triggers = {
             b'Hi\r\n': b'Hello to DEVICE',
-            b'Enter the password: ': b'supersec\r\n'
+            b'Enter the password: ': b'?upersec\r\n'
         }
 
         # add other memory regions

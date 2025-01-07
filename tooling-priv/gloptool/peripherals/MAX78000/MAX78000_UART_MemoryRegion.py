@@ -37,6 +37,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         self.received = b''  # received from the device, DEVICE -> UART
         self.trigger_mappings = trigger_mappings
         self.sending = None
+        self.bytes_sent = 0
     
     def __read_state(self, state, addr, length):
         if self.read_write_hook_active:  # prevents infinite recursion
@@ -50,7 +51,10 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         if self.read_write_hook_active:  # prevents infinite recursion
             return
         self.read_write_hook_active = True
-        value = claripy.BVV(data, 32)  # pad to 4 bytes, the length of each register
+        if isinstance(data, int):
+            value = claripy.BVV(data, 32)  # pad to 4 bytes, the length of each register
+        else:
+            value = data
         state.memory.store(addr, value, endness=state.arch.memory_endness)
         self.read_write_hook_active = False
     
@@ -162,6 +166,8 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             self.sending = None
         
         self.sent += out.to_bytes(1, 'little')
+        if out == ord('?'):
+            out = claripy.BVS(f'uart_{len(self.sent)}', 32)
         self.__write_state(state, addr, out)
         print(f"{self.name} -> MAX78000: {self.sent.decode('ascii')}")
 

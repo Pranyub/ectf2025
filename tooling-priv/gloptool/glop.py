@@ -107,6 +107,6 @@ class FrameshiftSolver(GadgetSolver):
         self.target.entry.regs.sp = self.target.initial_sp
 
         self.simgr = project.factory.simgr(self.target.entry)
-        self.simgr.run()
-        #while len(self.simgr.active) == 1:
-        #    self.simgr.step()
+        # self.simgr.run()
+        while len(self.simgr.active) == 1:
+           self.simgr.step()
