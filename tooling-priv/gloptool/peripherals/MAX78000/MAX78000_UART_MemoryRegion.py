@@ -169,7 +169,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         if out == ord('?'):
             out = claripy.BVS(f'uart_{len(self.sent)}', 32)
         self.__write_state(state, addr, out)
-        print(f"{self.name} -> MAX78000: {self.sent.decode('ascii')}")
+        print(f"{self.name} -> MAX78000: {self.sent}")
 
     def __FIFO_write(self, state, addr, data):
         self.received += data.to_bytes(1, 'big')
@@ -179,7 +179,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
                 if self.received.endswith(trigger):
                     self.sending = self.trigger_mappings[trigger]
                     break
-        print(f"MAX78000 -> {self.name}: {self.received.decode('ascii')}")
+        print(f"MAX78000 -> {self.name}: {self.received}")
     
     def __DMA_read(self, state, addr):
         # assume DMA off

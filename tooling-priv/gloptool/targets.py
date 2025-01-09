@@ -230,12 +230,12 @@ class PicoTarget:
         addr = state.solver.eval(read_addr)
         region = self.get_region(state, addr)
         if not region:
-            print(f'mmio read: {hex(addr)} unmapped region')
+            #print(f'mmio read: {hex(addr)} unmapped region')
             return
         elif not region.mmio:
             return
 
-        print(f'mmio read: {hex(addr)} {region.name}')
+        #print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -243,7 +243,7 @@ class PicoTarget:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        debug_stack_trace(state, depth=1)
+        #debug_stack_trace(state, depth=1)
 
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
@@ -251,33 +251,35 @@ class PicoTarget:
         addr = state.solver.eval(write_addr)
         region = self.get_region(state, addr)
         if not region:
-            print(f'mmio write: {hex(addr)} unmapped region')
+            #print(f'mmio write: {hex(addr)} unmapped region')
             return
         elif not region.mmio:
             return
 
-        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        #print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
         region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
             self.concrete_target.write_memory(addr, write_data)
             print(f'   write using concrete target: {hex(write_data)} -> {hex(addr)}')
-        debug_stack_trace(state, depth=1)
+        #debug_stack_trace(state, depth=1)
         
 
 class MAX78000Target:
-    def __init__(self, binary, concrete_target=None, cached_cfg=None):
+    def __init__(self, binary, concrete_target=None, cached_cfg=None, triggers=None):
         # sram memory regions
         self.sram = MemoryRegion(0x20000000, 0x1FFFFFFF, mmio=False, name='SRAM', use_concrete=False)
         self.rom = MemoryRegion(0x00000000, 0x1FFFFFFF, mmio=False, name='ROM', use_concrete=False)
 
         regions = [self.sram, self.rom]
 
-        # UART trigger mappings example
-        triggers = {
-            b'Hi\r\n': b'Hello to DEVICE',
-            b'Enter the password: ': b'?upersec\r\n'
-        }
+        if not triggers:
+            # UART trigger mappings example
+            triggers = {
+                b'Hi\r\n': b'Hello to DEVICE',
+                b'begin': b'????????????????\r\n',
+                b'Enter the password: ': b'supersec\r\n'
+            }
 
         # add other memory regions
         regions += [
@@ -408,12 +410,12 @@ class MAX78000Target:
         addr = state.solver.eval(read_addr)
         region = self.get_region(state, addr)
         if not region:
-            print(f'mmio read: {hex(addr)} unmapped region')
+            #print(f'mmio read: {hex(addr)} unmapped region')
             return
         elif not region.mmio:
             return
 
-        print(f'mmio read: {hex(addr)} {region.name}')
+        #print(f'mmio read: {hex(addr)} {region.name}')
         region.read(state, addr)
 
         if self.concrete_target and region.use_concrete:
@@ -421,7 +423,7 @@ class MAX78000Target:
             state.memory.store(addr, read_bytes)
             print(f'   read using concrete target: {hex(addr)} -> {read_bytes.hex()}')
 
-        debug_stack_trace(state, depth=1)
+        #debug_stack_trace(state, depth=1)
         
     def write_hook(self, state):
         write_addr = state.inspect.mem_write_address
@@ -429,15 +431,15 @@ class MAX78000Target:
         addr = state.solver.eval(write_addr)
         region = self.get_region(state, addr)
         if not region:
-            print(f'mmio write: {hex(addr)} unmapped region')
+            #print(f'mmio write: {hex(addr)} unmapped region')
             return
         elif not region.mmio:
             return
 
-        print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
+        #print(f'mmio write: {hex(write_data)} -> {hex(addr)} {region.name}')
         region.write(state, addr, write_data)
 
         if self.concrete_target and region.use_concrete:
             self.concrete_target.write_memory(addr, write_data)
             print(f'   write using concrete target: {hex(write_data)} -> {hex(addr)}')
-        debug_stack_trace(state, depth=1)
+        #debug_stack_trace(state, depth=1)
