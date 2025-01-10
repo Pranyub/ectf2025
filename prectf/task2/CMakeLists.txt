@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 include_directories("inc/")
+include_directories("tiny-AES-c")
 
 file(GLOB test_SRC CONFIGURE_DEPENDS "inc/*.h" "src/*.c")
 

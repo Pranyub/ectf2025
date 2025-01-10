@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/anadaraj/ectf2025/prectf/task2/_deps/picotool-src/errors/errors.cpp
+cstdarg
+-
+errors.h
+/home/anadaraj/ectf2025/prectf/task2/_deps/picotool-src/errors/errors.h
+
+/home/anadaraj/ectf2025/prectf/task2/_deps/picotool-src/errors/errors.h
+string
+-
+
