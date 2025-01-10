@@ -31,7 +31,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-objcopy -I elf32-little --add-section=.riscv_flash=nullbytes "$2"
+objcopy -I elf32-little --add-section .riscv_flash=nullbytes "$2"
 rm nullbytes
 
 if [ $? -ne 0 ]; then
