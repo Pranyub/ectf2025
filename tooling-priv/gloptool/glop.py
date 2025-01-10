@@ -1,4 +1,4 @@
-from targets import PicoTarget, HardwareTarget
+from targets import MAX78000Target, PicoTarget, HardwareTarget
 import angr
 import pyvex
 import archinfo
@@ -20,8 +20,11 @@ class GadgetSolver:
         self.target = target        # Target class
 
     # Adds a new glitch to the state
-    def attempt_glitch(self, state):
-        pass
+    def attempt_glitch(self, state, addr):
+        if addr & 1: # Thumb mode, instr length is 2
+            (self.target.proj.hook(addr, length=2)(self.nop_hook))(state)
+        else: # regular ARMv7 mode, instr length is 4
+            (self.target.proj.hook(addr, length=4)(self.nop_hook))(state)
 
     # Returns true if the current block has an instruction that may be a vulnerable glitch target
     def criteria_hint(self, state):
@@ -104,6 +107,6 @@ class FrameshiftSolver(GadgetSolver):
         self.target.entry.regs.sp = self.target.initial_sp
 
         self.simgr = project.factory.simgr(self.target.entry)
-        self.simgr.run()
-        #while len(self.simgr.active) == 1:
-        #    self.simgr.step()
+        # self.simgr.run()
+        while len(self.simgr.active) == 1 and len(self.simgr.unconstrained) == 0:
+           self.simgr.step()
