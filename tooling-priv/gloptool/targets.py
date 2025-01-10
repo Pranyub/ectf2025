@@ -268,7 +268,7 @@ class PicoTarget:
 class MAX78000Target:
     def __init__(self, binary, concrete_target=None, cached_cfg=None, triggers=None):
         # sram memory regions
-        self.sram = MemoryRegion(0x20000000, 0x1FFFFFFF, mmio=False, name='SRAM', use_concrete=False)
+        self.sram = MemoryRegion(0x20000000, 0x1FFFF, mmio=False, name='SRAM', use_concrete=False)
         self.rom = MemoryRegion(0x00000000, 0x1FFFFFFF, mmio=False, name='ROM', use_concrete=False)
 
         regions = [self.sram, self.rom]

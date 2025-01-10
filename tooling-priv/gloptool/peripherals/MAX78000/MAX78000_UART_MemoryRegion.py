@@ -1,6 +1,62 @@
 import claripy
+import re
+import random
 
 from peripherals.MemoryRegion import MemoryRegion
+
+UART_REPLACE_PATTERN = b'A' * 32
+#UART_REPLACE_PATTERN = random.randbytes(32)
+
+# Having all input chars be wildcards causes state explosion, so replace all but last chars with some pattern,
+# and replace all after the last char is written
+def replace_msg(message):
+    wildcard = ord('?')
+    ind = 0
+    out = b''
+    for c in message:
+        if c == wildcard:
+            out += UART_REPLACE_PATTERN[ind].to_bytes(1, 'big')
+            ind += 1
+        else:
+            if ind != 0:
+                out = out[:-1] + b'?'
+            out += c.to_bytes(1, 'big')
+            ind = 0
+
+    return out
+
+def patch_msg_ram(state):
+
+    forward = UART_REPLACE_PATTERN
+
+    ram_start = 0x20000000
+    ram_end = ram_start + 0x1FFFF
+
+    index = 0
+    loc = -1
+    threshold = 4
+
+    #data = state.solver.eval(state.memory.load(ram_start, ram_end - ram_start), cast_to=bytes)
+    #return
+
+    for i in range(ram_start, ram_end):
+        if state.solver.eval(state.mem[i].uint8_t.resolved) == forward[index]:
+            index += 1
+            loc = i
+        elif index >= threshold:
+            break
+        else:
+            index = 0
+            loc = -1
+
+    if loc > 0:
+        loc -= index - 1
+        for i, c in enumerate(forward):
+            if state.solver.eval(state.mem[loc + i].uint8_t.resolved) == c:
+                print(f'found {loc + i}')
+                #state.memory.store(loc + i, claripy.BVS(f'uart_{loc + i}', 8), endness=state.arch.memory_endness)
+            else:
+                break
 
 # https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf
 # memory access meanings:
@@ -36,6 +92,8 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         self.sent = b''  # sent to the device, UART -> DEVICE
         self.received = b''  # received from the device, DEVICE -> UART
         self.trigger_mappings = trigger_mappings
+        for k, v in self.trigger_mappings.items():
+            self.trigger_mappings[k] = replace_msg(v)
         self.sending = None
         self.bytes_sent = 0
     
@@ -168,6 +226,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         self.sent += out.to_bytes(1, 'little')
         if out == ord('?'):
             out = claripy.BVS(f'uart_{len(self.sent)}', 32)
+            patch_msg_ram(state)
         self.__write_state(state, addr, out)
         print(f"{self.name} -> MAX78000: {self.sent}")
 
@@ -178,6 +237,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             for trigger in self.trigger_mappings:
                 if self.received.endswith(trigger):
                     self.sending = self.trigger_mappings[trigger]
+
                     break
         print(f"MAX78000 -> {self.name}: {self.received}")
     
