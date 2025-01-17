@@ -277,7 +277,7 @@ class MAX78000Target:
             # UART trigger mappings example
             triggers = {
                 b'Hi\r\n': b'Hello to DEVICE',
-                b'begin': b'????????????????\r\n',
+                b'begin': b'whatever???????\r\n',
                 b'Enter the password: ': b'supersec\r\n'
             }
 
@@ -430,6 +430,7 @@ class MAX78000Target:
         write_data = state.solver.eval(state.inspect.mem_write_expr)
         addr = state.solver.eval(write_addr)
         region = self.get_region(state, addr)
+
         if not region:
             #print(f'mmio write: {hex(addr)} unmapped region')
             return
