@@ -314,4 +314,3 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
 
 # f.simgr.stashes (dict of states)
 # f.simgr.errored (errored states)
-# 
