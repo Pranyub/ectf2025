@@ -32,8 +32,6 @@ def patch_msg_ram(state):
     loc = -1
     threshold = 4
 
-    #data = state.solver.eval(state.memory.load(ram_start, ram_end - ram_start), cast_to=bytes)
-    #return
     try:
         state_copy = state.copy()
         # print(f"SP: {state_copy.solver.eval(state_copy.regs.sp, size=4)}")
@@ -81,7 +79,7 @@ def patch_msg_ram(state):
                     break
                 i += 1
     except KeyboardInterrupt:
-        print("Keyboard Interupt; stopped patching ram for symbols.  The state is likely errored.")
+        print("Keyboard Interupt; stopped patching ram for symbols.  The state is likely errored now.")
 
 # https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf
 # memory access meanings:
