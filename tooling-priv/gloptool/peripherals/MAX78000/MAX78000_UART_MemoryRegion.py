@@ -4,8 +4,7 @@ import random
 
 from peripherals.MemoryRegion import MemoryRegion
 
-UART_REPLACE_PATTERN = b'A' * 32
-#UART_REPLACE_PATTERN = random.randbytes(32)
+UART_REPLACE_PATTERN = b'A'
 
 # Having all input chars be wildcards causes state explosion, so replace all but last chars with some pattern,
 # and replace all after the last char is written
@@ -15,7 +14,7 @@ def replace_msg(message):
     out = b''
     for c in message:
         if c == wildcard:
-            out += UART_REPLACE_PATTERN[ind].to_bytes(1, 'big')
+            out += UART_REPLACE_PATTERN
             ind += 1
         else:
             if ind != 0:
@@ -26,9 +25,6 @@ def replace_msg(message):
     return out
 
 def patch_msg_ram(state):
-
-    forward = UART_REPLACE_PATTERN
-
     ram_start = 0x20000000
     ram_end = ram_start + 0x1FFFF
 
@@ -38,25 +34,37 @@ def patch_msg_ram(state):
 
     #data = state.solver.eval(state.memory.load(ram_start, ram_end - ram_start), cast_to=bytes)
     #return
+    try:
+        state_copy = state.copy()
 
-    for i in range(ram_start, ram_end):
-        if state.solver.eval(state.mem[i].uint8_t.resolved) == forward[index]:
-            index += 1
-            loc = i
-        elif index >= threshold:
-            break
-        else:
-            index = 0
-            loc = -1
-
-    if loc > 0:
-        loc -= index - 1
-        for i, c in enumerate(forward):
-            if state.solver.eval(state.mem[loc + i].uint8_t.resolved) == c:
-                print(f'found {loc + i}')
-                #state.memory.store(loc + i, claripy.BVS(f'uart_{loc + i}', 8), endness=state.arch.memory_endness)
-            else:
+        for i in range(ram_start, ram_end):
+            val = state_copy.solver.eval(state_copy.memory.load(i, size=1))
+            if not (type(val) is int):
+                continue
+            if val == UART_REPLACE_PATTERN[0]:
+                index += 1
+                loc = i
+            elif index >= threshold:
                 break
+            else:
+                index = 0
+                loc = -1
+
+        if loc > 0:
+            loc -= index - 1
+            i = 0
+            while True:
+                val = state_copy.solver.eval(state_copy.memory.load(loc + i, size=1))
+                if val == UART_REPLACE_PATTERN[0]:
+                    print(f'found {val} @ {loc + i}')
+                    state.memory.store(loc + i, claripy.BVS(f'uart_{loc + i}', 8), endness=state.arch.memory_endness)
+                else:
+                    break
+                i += 1
+    except KeyboardInterrupt:
+        print("Break.")
+    except Exception as e:
+        print(f"Exception: {e}")
 
 # https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf
 # memory access meanings:
@@ -225,9 +233,14 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
         
         self.sent += out.to_bytes(1, 'little')
         if out == ord('?'):
-            out = claripy.BVS(f'uart_{len(self.sent)}', 32)
-            patch_msg_ram(state)
-        self.__write_state(state, addr, out)
+            out = claripy.BVS(f'uart_{len(self.sent)}', 8)
+            self.__write_state(state, addr, out)
+            if len(self.sent) > 1 and self.sent[-2] == UART_REPLACE_PATTERN[0]:
+                print("patching ram...")
+                patch_msg_ram(state)
+        else:
+            self.__write_state(state, addr, out)
+        
         print(f"{self.name} -> MAX78000: {self.sent}")
 
     def __FIFO_write(self, state, addr, data):
@@ -237,7 +250,6 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             for trigger in self.trigger_mappings:
                 if self.received.endswith(trigger):
                     self.sending = self.trigger_mappings[trigger]
-
                     break
         print(f"MAX78000 -> {self.name}: {self.received}")
     
@@ -282,3 +294,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             self.register_offsets[offset][2](state, addr, data)
         else:
             print(f"WARNING: Write to unknown {self.name} register at address 0x{addr:x}: 0x{data:x} !")
+
+# f.simgr.stashes (dict of states)
+# f.simgr.errored (errored states)
+# 
