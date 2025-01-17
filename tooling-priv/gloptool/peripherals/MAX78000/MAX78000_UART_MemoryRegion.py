@@ -36,8 +36,12 @@ def patch_msg_ram(state):
     #return
     try:
         state_copy = state.copy()
+        # print(f"SP: {state_copy.solver.eval(state_copy.regs.sp, size=4)}")
+        # print(f"RAM Start: {ram_start}")
+        # print(f"RAM End: {ram_end}")
 
-        for i in range(ram_start, ram_end):
+        # searching stack (NOTE: for some reason, it's not found in the stack, maybe this logic is wrong?)
+        for i in range(state_copy.solver.eval(state_copy.regs.sp, size=4), ram_end):
             val = state_copy.solver.eval(state_copy.memory.load(i, size=1))
             if not (type(val) is int):
                 continue
@@ -49,6 +53,21 @@ def patch_msg_ram(state):
             else:
                 index = 0
                 loc = -1
+
+        # if not found, search the rest of memory up to the stack
+        if loc == -1:
+            for i in range(ram_start, state_copy.solver.eval(state_copy.regs.sp, size=4)):
+                val = state_copy.solver.eval(state_copy.memory.load(i, size=1))
+                if not (type(val) is int):
+                    continue
+                if val == UART_REPLACE_PATTERN[0]:
+                    index += 1
+                    loc = i
+                elif index >= threshold:
+                    break
+                else:
+                    index = 0
+                    loc = -1
 
         if loc > 0:
             loc -= index - 1
@@ -62,9 +81,7 @@ def patch_msg_ram(state):
                     break
                 i += 1
     except KeyboardInterrupt:
-        print("Break.")
-    except Exception as e:
-        print(f"Exception: {e}")
+        print("Keyboard Interupt; stopped patching ram for symbols.  The state is likely errored.")
 
 # https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf
 # memory access meanings:
@@ -236,7 +253,7 @@ class MAX78000_UART_MemoryRegion(MemoryRegion):
             out = claripy.BVS(f'uart_{len(self.sent)}', 8)
             self.__write_state(state, addr, out)
             if len(self.sent) > 1 and self.sent[-2] == UART_REPLACE_PATTERN[0]:
-                print("patching ram...")
+                print("Patching RAM. This may take a while...")
                 patch_msg_ram(state)
         else:
             self.__write_state(state, addr, out)
