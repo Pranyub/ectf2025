@@ -22,7 +22,7 @@
  * @file    main.c
  * @brief   Tests the speed of various hashing functions.
  * @details Tests the speed of various hashing funcitons.
- *          MD5, SHA-1, SHA-256, and BLAKE.
+ *          MD5, SHA-1, SHA-256, and BLAKE2s.
  */
 
 /***** Includes *****/
@@ -33,10 +33,12 @@
 #include "mxc_device.h"
 #include "mxc_delay.h"
 #include "mxc_sys.h"
+#include "rtc.h"
 
 #include "include/md5/md5.h"
 #include "include/sha1/sha1.h"
 #include "include/sha256/sha256.h"
+#include "include/blake2s/blake2s.h"
 
 /***** Definitions *****/
 
@@ -45,6 +47,7 @@ char* INPUT_STRING = "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB";
 uint8_t MD5_HASH[] = {0x26, 0xdb, 0x08, 0xc4, 0x3c, 0x83, 0x9d, 0xa0, 0xd7, 0x95, 0x22, 0x9c, 0x14, 0xd7, 0xcd, 0x97};
 uint8_t SHA1_HASH[] = {0xeb, 0xc1, 0x0a, 0x83, 0xc2, 0x02, 0x13, 0x69, 0xca, 0x45, 0xd4, 0xf5, 0x33, 0xbd, 0x86, 0x5e, 0xb8, 0x0f, 0x3c, 0xd4};
 uint8_t SHA256_HASH[] = {0xda, 0xb6, 0x9f, 0x1c, 0x6a, 0x77, 0x0e, 0xac, 0x08, 0x28, 0xe6, 0x02, 0x0a, 0xe7, 0xb9, 0x1a, 0x08, 0x73, 0x6f, 0x26, 0x42, 0x39, 0xa1, 0x0c, 0x30, 0x0a, 0x67, 0x14, 0xcf, 0xf9, 0xce, 0x4f};
+uint8_t BLAKE2S_HASH[] = {0x0a, 0x19, 0x19, 0x18, 0xb9, 0xac, 0x86, 0x05, 0xf6, 0xec, 0xd0, 0xbc, 0x22, 0x75, 0x61, 0x76, 0x78, 0xf1, 0x57, 0xf9, 0x2a, 0x00, 0x57, 0x76, 0xc6, 0xd8, 0xe6, 0x85, 0x72, 0x37, 0x45, 0x58};
 
 /***** Functions *****/
 
@@ -77,6 +80,15 @@ int sha1_hash(char* input, uint8_t* compare, int n);
  */
 int sha256_hash(char* input, uint8_t* compare, int n);
 
+/**
+ * @brief computes the keyless 32-byte BLAKE2s hash of a string, then compares it against the true value \param n number of times
+ * @param input the input string to be hashed
+ * @param compare the correct BLAKE2s hash given the input (to be compared against the computed hash)
+ * @param n the number of comparisons to do
+ * @returns 0 on success, -1 on failed comparison
+ */
+int blake2s_hash(char* input, uint8_t* compare, int n);
+
 int main(void)
 {
     printf("\nHashing Test.\nInput data: %s\n", INPUT_STRING);
@@ -93,6 +105,10 @@ int main(void)
         if (sha256_hash(INPUT_STRING, SHA256_HASH, 1000) == -1) {
             printf("ERROR: SHA-256 hash comparison failed.\n");
         }
+
+        if (blake2s_hash(INPUT_STRING, BLAKE2S_HASH, 1000) == -1) {
+            printf("ERROR: BLAKE2s hash comparison failed.\n");
+        }
         MXC_Delay(1000000);  // 1s delay
     }
 }
@@ -100,13 +116,18 @@ int main(void)
 int md5_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting MD5.\n");
     uint8_t md5_result[16];
+    uint32_t start_time, stop_time, time_elapsed;
+    // MXC_RTC_GetSeconds(&start_time);  // start time
     for (int k = 0; k < n; k++) {
         md5String(input, md5_result);
     }
+    // MXC_RTC_GetSeconds(&stop_time);  // stop time
+    // time_elapsed = stop_time - start_time;  // elapsed time
+    time_elapsed = 0;
     if (memcmp(md5_result, compare, 16) != 0) {
         return -1;
     };
-    printf("MD5 hash test done.\n");
+    printf("%d MD5 hashes computed in %dms.\n", n, time_elapsed);
     return 0;
 }
 
@@ -140,5 +161,18 @@ int sha256_hash(char* input, uint8_t* compare, int n) {
         }
     }
     printf("SHA-256 hash test done.\n");
+    return 0;
+}
+
+int blake2s_hash(char* input, uint8_t* compare, int n) {
+    printf("\nTesting BLAKE2s.\n");
+    uint8_t blake2s_result[32];
+    for (int k = 0; k < n; k++) {
+        blake2s(blake2s_result, 32, NULL, 0, input, strlen(input));
+    }
+    if (memcmp(blake2s_result, compare, 32) != 0) {
+        return -1;
+    }
+    printf("BLAKE2s hash test done.\n");
     return 0;
 }
