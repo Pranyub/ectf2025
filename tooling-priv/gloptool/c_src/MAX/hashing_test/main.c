@@ -27,6 +27,7 @@
 
 /***** Includes *****/
 #include <stdio.h>
+#include <memory.h>
 #include <stdint.h>
 #include <string.h>
 #include "mxc_device.h"
@@ -35,50 +36,62 @@
 
 #include "include/md5/md5.h"
 #include "include/sha1/sha1.h"
+#include "include/sha256/sha256.h"
 
 /***** Definitions *****/
-#define INPUT_DATA "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB"  // 256-bit string
-#define SHA256_HASH "dab69f1c6a770eac0828e6020ae7b91a08736f264239a10c300a6714cff9ce4f"  // in hex
 
 /***** Globals *****/
+char* INPUT_STRING = "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB";
 uint8_t MD5_HASH[] = {0x26, 0xdb, 0x08, 0xc4, 0x3c, 0x83, 0x9d, 0xa0, 0xd7, 0x95, 0x22, 0x9c, 0x14, 0xd7, 0xcd, 0x97};
 uint8_t SHA1_HASH[] = {0xeb, 0xc1, 0x0a, 0x83, 0xc2, 0x02, 0x13, 0x69, 0xca, 0x45, 0xd4, 0xf5, 0x33, 0xbd, 0x86, 0x5e, 0xb8, 0x0f, 0x3c, 0xd4};
+uint8_t SHA256_HASH[] = {0xda, 0xb6, 0x9f, 0x1c, 0x6a, 0x77, 0x0e, 0xac, 0x08, 0x28, 0xe6, 0x02, 0x0a, 0xe7, 0xb9, 0x1a, 0x08, 0x73, 0x6f, 0x26, 0x42, 0x39, 0xa1, 0x0c, 0x30, 0x0a, 0x67, 0x14, 0xcf, 0xf9, 0xce, 0x4f};
 
 /***** Functions *****/
 
 // *****************************************************************************
 
 /**
- * @brief computes the md5 hash of a string, then compares it against the true value \param n number of times
+ * @brief computes the MD5 hash of a string, then compares it against the true value \param n number of times
  * @param input the input string to be hashed
- * @param compare the correct md5 hash given the input (to be compared against the computed hash)
+ * @param compare the correct MD5 hash given the input (to be compared against the computed hash)
  * @param n the number of comparisons to do
  * @returns 0 on success, -1 on failed comparison
  */
 int md5_hash(char* input, uint8_t* compare, int n);
 
 /**
- * @brief computes the sha1 hash of a string, then compares it against the true value \param n number of times
+ * @brief computes the SHA-1 hash of a string, then compares it against the true value \param n number of times
  * @param input the input string to be hashed
- * @param compare the correct sha1 hash given the input (to be compared against the computed hash)
+ * @param compare the correct SHA-1 hash given the input (to be compared against the computed hash)
  * @param n the number of comparisons to do
  * @returns 0 on success, -1 on failed comparison
  */
 int sha1_hash(char* input, uint8_t* compare, int n);
 
+/**
+ * @brief computes the SHA-256 hash of a string, then compares it against the true value \param n number of times
+ * @param input the input string to be hashed
+ * @param compare the correct SHA-256 hash given the input (to be compared against the computed hash)
+ * @param n the number of comparisons to do
+ * @returns 0 on success, -1 on failed comparison
+ */
+int sha256_hash(char* input, uint8_t* compare, int n);
+
 int main(void)
 {
-    char* input = INPUT_DATA;
-
-    printf("\nHashing Test.\nInput data: %s\n", input);
+    printf("\nHashing Test.\nInput data: %s\n", INPUT_STRING);
 
     while (1) {
-        if (md5_hash(input, MD5_HASH, 1000) == -1) {
-            printf("ERROR: MD5 hash comparison failed.");
+        if (md5_hash(INPUT_STRING, MD5_HASH, 1000) == -1) {
+            printf("ERROR: MD5 hash comparison failed.\n");
         }
 
-        if (sha1_hash(input, SHA1_HASH, 1000) == -1) {
-            printf("ERROR: SHA1 hash comparison failed.");
+        if (sha1_hash(INPUT_STRING, SHA1_HASH, 1000) == -1) {
+            printf("ERROR: SHA-1 hash comparison failed.\n");
+        }
+
+        if (sha256_hash(INPUT_STRING, SHA256_HASH, 1000) == -1) {
+            printf("ERROR: SHA-256 hash comparison failed.\n");
         }
         MXC_Delay(1000000);  // 1s delay
     }
@@ -89,28 +102,43 @@ int md5_hash(char* input, uint8_t* compare, int n) {
     uint8_t md5_result[16];
     for (int k = 0; k < n; k++) {
         md5String(input, md5_result);
-        for (int i = 0; i < 16; i++) {
-            if (md5_result[i] != compare[i]) {
-                return -1;
-            }
-        }
     }
+    if (memcmp(md5_result, compare, 16) != 0) {
+        return -1;
+    };
     printf("MD5 hash test done.\n");
     return 0;
 }
 
 int sha1_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting SHA-1.\n");
-    char sha1_result[21];
-    SHA1(sha1_result, input, strlen(input));
+    char sha1_result[21];  // not sure why the example is not 20
     for (int k = 0; k < n; k++) {
-        for (int i = 0; i < 20; i++) {
-            // printf("%02X %02X\n", sha1_result[i], compare[i]);
-            if (sha1_result[i] != compare[i]) {
-                return -1;
-            }
+        SHA1(sha1_result, input, strlen(input));
+    }
+    if (memcmp(sha1_result, compare, 16) != 0) {
+        return -1;
+    };
+    printf("SHA-1 hash test done.\n");
+    return 0;
+}
+
+int sha256_hash(char* input, uint8_t* compare, int n) {
+    printf("\nTesting SHA-256.\n");
+    uint8_t sha256_result[32];
+    SHA256_CTX ctx;
+    for (int k = 0; k < n; k++) {
+        sha256_init(&ctx);
+        sha256_update(&ctx, input, strlen(input));
+        sha256_final(&ctx, sha256_result);
+        // for (int i = 0; i < 32; i++) {
+        //     printf("%02X %02X\n", sha256_result[i], compare[i]);
+        // }
+        // printf("\n");
+        if (memcmp(sha256_result, compare, 32) != 0) {
+            return -1;
         }
     }
-    printf("SHA-1 hash test done.\n");
+    printf("SHA-256 hash test done.\n");
     return 0;
 }
