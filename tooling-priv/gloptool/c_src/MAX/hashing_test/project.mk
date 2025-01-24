@@ -25,3 +25,5 @@
 # **********************************************************
 # https://github.com/riscv-collab/riscv-gnu-toolchain
 MAXIM_PATH = /common/maxim-sdk
+VPATH += include/*
+IPATH += include/*

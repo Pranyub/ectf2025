@@ -35,7 +35,7 @@
 #include "mxc_sys.h"
 
 /***** Definitions *****/
-#define INPUT_DATA "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB"  // string
+#define INPUT_DATA "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB"  // 256-bit string
 #define MD5_HASH "d9e10fcefa95a8b139b98c587695920a"  // in hex
 #define SHA1_HASH "a9236393ad539fa2208d62924db3f034d033f67c"  // in hex
 #define SHA256_HASH "d503b11caeca4ed5b3173e4392322644f4b9a6cd2707bae89891a5e7df0f3133"  // in hex
@@ -48,14 +48,13 @@
 int main(void)
 {
     uint8_t md5_result[16];
-
     char* input = INPUT_DATA;
 
-    printf("Hashing Test.\nInput data: %s!\n", input);
+    printf("Hashing Test.\nInput data: %s\n", input);
 
     printf("Testing MD5.\n");
     md5String(input, md5_result);
-    
+    printf("Hash output: %16x", md5_result);
     
     printf("Hash succeeded.\n");}
 
