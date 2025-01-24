@@ -22,7 +22,7 @@
  * @file    main.c
  * @brief   Tests the speed of various hashing functions.
  * @details Tests the speed of various hashing funcitons.
- *          SHA-1, SHA-256, BLAKE, and MD5.
+ *          MD5, SHA-1, SHA-256, and BLAKE.
  */
 
 /***** Includes *****/
@@ -35,7 +35,10 @@
 #include "mxc_sys.h"
 
 /***** Definitions *****/
-#define INPUT_DATA "AM7qpodP9F0ZyVCHb6Unp3NtQGNI2w4yi3KXoPQyPor879817EXwRB0xxuhuRoylTI52vLhYf6XiW9b5md8rXot6hfats9biKGGqYPoyABbysM25oDB5wiMIyZ3axGkAc2aWMlbbodeJMo4yjVG5r57WUeOz4b22Ov25TFh0H7R2ZuHJ1Ik3gBDoRuREWxo0YFGpWSHI"
+#define INPUT_DATA "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB"  // string
+#define MD5_HASH "d9e10fcefa95a8b139b98c587695920a"  // in hex
+#define SHA1_HASH "a9236393ad539fa2208d62924db3f034d033f67c"  // in hex
+#define SHA256_HASH "d503b11caeca4ed5b3173e4392322644f4b9a6cd2707bae89891a5e7df0f3133"  // in hex
 
 /***** Globals *****/
 
@@ -52,6 +55,7 @@ int main(void)
 
     printf("Testing MD5.\n");
     md5String(input, md5_result);
+    
     
     printf("Hash succeeded.\n");}
 
