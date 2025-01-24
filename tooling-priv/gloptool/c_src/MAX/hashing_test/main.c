@@ -1,0 +1,57 @@
+/******************************************************************************
+ *
+ * Copyright (C) 2022-2023 Maxim Integrated Products, Inc. (now owned by 
+ * Analog Devices, Inc.),
+ * Copyright (C) 2023-2024 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
+/**
+ * @file    main.c
+ * @brief   Tests the speed of various hashing functions.
+ * @details Tests the speed of various hashing funcitons.
+ *          SHA-1, SHA-256, BLAKE, and MD5.
+ */
+
+/***** Includes *****/
+#include "include/md5/md5.h"
+
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include "mxc_device.h"
+#include "mxc_sys.h"
+
+/***** Definitions *****/
+#define INPUT_DATA "AM7qpodP9F0ZyVCHb6Unp3NtQGNI2w4yi3KXoPQyPor879817EXwRB0xxuhuRoylTI52vLhYf6XiW9b5md8rXot6hfats9biKGGqYPoyABbysM25oDB5wiMIyZ3axGkAc2aWMlbbodeJMo4yjVG5r57WUeOz4b22Ov25TFh0H7R2ZuHJ1Ik3gBDoRuREWxo0YFGpWSHI"
+
+/***** Globals *****/
+
+/***** Functions *****/
+
+// *****************************************************************************
+int main(void)
+{
+    uint8_t md5_result[16];
+
+    char* input = INPUT_DATA;
+
+    printf("Hashing Test.\nInput data: %s!\n", input);
+
+    printf("Testing MD5.\n");
+    md5String(input, md5_result);
+    
+    printf("Hash succeeded.\n");}
+
