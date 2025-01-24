@@ -38,11 +38,11 @@
 
 /***** Definitions *****/
 #define INPUT_DATA "19uR8uXz2lfZhUN0qKHCNLcbyJRTBJsB"  // 256-bit string
-#define SHA1_HASH "ebc10a83c2021369ca45d4f533bd865eb80f3cd4"  // in hex
 #define SHA256_HASH "dab69f1c6a770eac0828e6020ae7b91a08736f264239a10c300a6714cff9ce4f"  // in hex
 
 /***** Globals *****/
 uint8_t MD5_HASH[] = {0x26, 0xdb, 0x08, 0xc4, 0x3c, 0x83, 0x9d, 0xa0, 0xd7, 0x95, 0x22, 0x9c, 0x14, 0xd7, 0xcd, 0x97};
+uint8_t SHA1_HASH[] = {0xeb, 0xc1, 0x0a, 0x83, 0xc2, 0x02, 0x13, 0x69, 0xca, 0x45, 0xd4, 0xf5, 0x33, 0xbd, 0x86, 0x5e, 0xb8, 0x0f, 0x3c, 0xd4};
 
 /***** Functions *****/
 
@@ -87,11 +87,10 @@ int main(void)
 int md5_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting MD5.\n");
     uint8_t md5_result[16];
-    for (int k = 0; i < n; k++) {
+    for (int k = 0; k < n; k++) {
         md5String(input, md5_result);
         for (int i = 0; i < 16; i++) {
             if (md5_result[i] != compare[i]) {
-                printf("MD5 hash failed.\n");
                 return -1;
             }
         }
@@ -102,6 +101,16 @@ int md5_hash(char* input, uint8_t* compare, int n) {
 
 int sha1_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting SHA-1.\n");
+    char sha1_result[21];
+    SHA1(sha1_result, input, strlen(input));
+    for (int k = 0; k < n; k++) {
+        for (int i = 0; i < 20; i++) {
+            // printf("%02X %02X\n", sha1_result[i], compare[i]);
+            if (sha1_result[i] != compare[i]) {
+                return -1;
+            }
+        }
+    }
     printf("SHA-1 hash test done.\n");
     return 0;
 }
