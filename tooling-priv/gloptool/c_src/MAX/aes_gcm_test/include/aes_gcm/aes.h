@@ -28,6 +28,7 @@
 /******************************************************************************/
 
 #include <stdio.h>  // NOTE: for debugging only
+#include <inttypes.h>  // NOTE: for debugging only
 #include <string.h>
 #include <aes.h>  // for MAX hardware acceleration
 #include "max78000.h"  // for the AES key register

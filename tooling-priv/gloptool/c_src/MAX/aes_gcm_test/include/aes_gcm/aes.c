@@ -489,10 +489,23 @@ int MAX_aes_cipher( aes_context *ctx,
     req.length = CRYPT_LENGTH / 4;  // in 4 byte words
     req.inputData = (uint32_t*)input;
     req.resultData = (uint32_t*)output;
-    req.keySize = MXC_AES_128BITS;
+    int keyLength;
+    switch (ctx->rounds) {
+        case 12:
+            keyLength = 24;
+            req.keySize = MXC_AES_192BITS;
+            break;
+        case 14:
+            keyLength = 32;
+            req.keySize = MXC_AES_256BITS;
+            break;
+        default:  // should be when rounds == 10
+            keyLength = 16;
+            req.keySize = MXC_AES_128BITS;
+    }
 
     // load the key into the external key register
-    memcpy((void*)MXC_BASE_AESKEYS, ctx->rk, 16);
+    memcpy((void*)MXC_BASE_AESKEYS, ctx->rk, keyLength);
 #if AES_DECRYPTION  // whether AES decryption is supported
 
     if( ctx->mode == DECRYPT ) {

@@ -73,7 +73,7 @@ int main(void)
 
 
     uint8_t iv[12];
-    MXC_TRNG_Random(iv, 12);
+    MXC_TRNG_Random(iv, 12);  // generate IV from random bytes
     int length = strlen(INPUT_STRING) + 1;
     uint8_t encrypted[length];
     uint8_t encryption_tag[TAG_LENGTH];
@@ -170,7 +170,7 @@ int main(void)
     printf("Decryption Tag: %s\n\n", decryption_tag_string);
 
 
-    printf("\n\nDone.\n");
+    printf("Done.\n");
 }
 
 void bytes_to_string(const uint8_t* input, int length, char* output) {
