@@ -83,7 +83,7 @@ int main(void)
     bytes_to_string(encryption_tag, TAG_LENGTH, encryption_tag_string);
     printf("Input string: %s\n", INPUT_STRING);
     printf("Encrypted cipher: %s\n", encrypted_string);
-    printf("Encryption Tag: %s\n", encryption_tag_string);
+    printf("Encryption Tag: %s\n\n", encryption_tag_string);
 
     uint8_t decrypted[length];
     uint8_t decryption_tag[TAG_LENGTH];
@@ -94,6 +94,10 @@ int main(void)
     printf("Input encryption: %s\n", encrypted_string);
     printf("Decrypted cipher: %s\n", (char*)decrypted);
     printf("Decryption Tag: %s\n", decryption_tag_string);
+
+    if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) != 0) {
+        printf("ERROR: the encryption tag does not match the decryption tag.\n");
+    }
     while(1) {
         // busy loop
     }
