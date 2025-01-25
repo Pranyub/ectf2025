@@ -6,31 +6,34 @@ import time
 
 TTY_PATH = "/dev/ttyACM0"
 
+print("Connecting...")
 com = serial.Serial(TTY_PATH, 115200, timeout=None)
+print("Connected to MAX78000")
+
 try:
     # MD5
-    com.read_until(b"\nTesting MD5.\n")
+    com.read_until(b"\r\nTesting MD5.\r\n")
     t0 = time.time_ns()
     com.read_until(b" MD5 hashes computed in ")
     t1 = time.time_ns()
     print(f"MD5 completed in {(t1-t0) / 1e3} ")
 
     # SHA-1
-    com.read_until(b"\nTesting SHA-1.\n")
+    com.read_until(b"\r\nTesting SHA-1.\r\n")
     t0 = time.time_ns()
     com.read_until(b" SHA-1 hashes computed in ")
     t1 = time.time_ns()
     print(f"SHA-1 completed in {(t1-t0) / 1e3} ")
 
     # SHA-256
-    com.read_until(b"\nTesting SHA-256.\n")
+    com.read_until(b"\r\nTesting SHA-256.\r\n")
     t0 = time.time_ns()
     com.read_until(b" SHA-256 hashes computed in ")
     t1 = time.time_ns()
     print(f"SHA-256 completed in {(t1-t0) / 1e3} ")
 
     # BLAKE2s
-    com.read_until(b"\nTesting BLAKE2s.\n")
+    com.read_until(b"\r\nTesting BLAKE2s.\r\n")
     t0 = time.time_ns()
     com.read_until(b" BLAKE2s hashes computed in ")
     t1 = time.time_ns()

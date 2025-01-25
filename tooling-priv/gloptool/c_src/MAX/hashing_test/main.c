@@ -118,43 +118,39 @@ int main(void)
 int md5_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting MD5.\n");
     uint8_t md5_result[16];
-    uint32_t elapsed_time, fixed_time;
+    uint32_t elapsed_time;
     MXC_TMR_SW_Start(MXC_TMR0);
     for (int k = 0; k < n; k++) {
         md5String(input, md5_result);
     }
     elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);  // max78000 documentation example says that this is the time in us, but on the riscv, it is way too low
-    MXC_TMR_GetTime(MXC_TMR0, elapsed_time, &fixed_time, &TIME_UNITS);
     if (memcmp(md5_result, compare, 16) != 0) {
         return -1;
     };
     printf("%d MD5 hashes computed in %"PRIu32" microseconds.\n", n, elapsed_time);
-    printf("%d MD5 hashes computed in %"PRIu32" microseconds.\n", n, fixed_time);
     return 0;
 }
 
 int sha1_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting SHA-1.\n");
     char sha1_result[21];  // not sure why the example is not 20
-    uint32_t elapsed_time, fixed_time;
+    uint32_t elapsed_time;
     MXC_TMR_SW_Start(MXC_TMR0);
     for (int k = 0; k < n; k++) {
         SHA1(sha1_result, input, strlen(input));
     }
     elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    MXC_TMR_GetTime(MXC_TMR0, elapsed_time, &fixed_time, &TIME_UNITS);
     if (memcmp(sha1_result, compare, 16) != 0) {
         return -1;
     };
     printf("%d SHA-1 hashes computed in %"PRIu32" microseconds.\n", n, elapsed_time);
-    printf("%d SHA-1 hashes computed in %"PRIu32" microseconds.\n", n, fixed_time);
     return 0;
 }
 
 int sha256_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting SHA-256.\n");
     uint8_t sha256_result[32];
-    uint32_t elapsed_time, fixed_time;
+    uint32_t elapsed_time;
     SHA256_CTX ctx;
     MXC_TMR_SW_Start(MXC_TMR0);
     for (int k = 0; k < n; k++) {
@@ -167,29 +163,25 @@ int sha256_hash(char* input, uint8_t* compare, int n) {
         // printf("\n");
     }
     elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    MXC_TMR_GetTime(MXC_TMR0, elapsed_time, &fixed_time, &TIME_UNITS);
     if (memcmp(sha256_result, compare, 32) != 0) {
         return -1;
     }
     printf("%d SHA-256 hashes computed in %"PRIu32" microseconds.\n", n, elapsed_time);
-    printf("%d SHA-256 hashes computed in %"PRIu32" microseconds.\n", n, fixed_time);
     return 0;
 }
 
 int blake2s_hash(char* input, uint8_t* compare, int n) {
     printf("\nTesting BLAKE2s.\n");
     uint8_t blake2s_result[32];
-    uint32_t elapsed_time, fixed_time;
+    uint32_t elapsed_time;
     MXC_TMR_SW_Start(MXC_TMR0);
     for (int k = 0; k < n; k++) {
         blake2s(blake2s_result, 32, NULL, 0, input, strlen(input));
     }
     elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    MXC_TMR_GetTime(MXC_TMR0, elapsed_time, &fixed_time, &TIME_UNITS);
     if (memcmp(blake2s_result, compare, 32) != 0) {
         return -1;
     }
     printf("%d BLAKE2s hashes computed in %"PRIu32" microseconds.\n", n, elapsed_time);
-    printf("%d BLAKE2s hashes computed in %"PRIu32" microseconds.\n", n, fixed_time);
     return 0;
 }
