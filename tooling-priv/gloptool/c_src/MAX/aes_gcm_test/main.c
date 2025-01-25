@@ -28,20 +28,80 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "mxc_device.h"
+#include "trng.h"
+
 #include "include/aes_gcm/gcm.h"
 
 /***** Definitions *****/
 
 /***** Globals *****/
-char INPUT_STRING[] = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";
-uint8_t KEY[] = { 0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x28, 0xb9, 0xa9, 0x8c, 0xa1, 0x53, 0x1d };
+const char INPUT_STRING[] = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";
+const char* AEAD = NULL;
+const uint8_t KEY[] = { 0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x28, 0xb9, 0xa9, 0x8c, 0xa1, 0x53, 0x1d };
+const uint8_t KEY_LENGTH = 16;  // 128 bits
+const uint8_t TAG_LENGTH = 16;
 
 /***** Functions *****/
 
 // *****************************************************************************
+
+/**
+ * @brief converts an array of bytes to a hex string
+ * @param input pointer to the array of bytes
+ * @param length the length of the array of bytes: \p input
+ * @param output a pointer to the string to store the string. Should be at least twice \p length + 1
+ */
+void bytes_to_string(const uint8_t* input, int length, char* output);
+
 int main(void)
 {
-    while(1) {
-        printf("Hello");
+    MXC_TRNG_Init();
+    gcm_initialize();
+    gcm_context ctx;
+    if (gcm_setkey(&ctx, KEY, KEY_LENGTH) != 0) {
+        printf("Error setting GCM key.\n");
+        return 1;
     }
+
+
+    uint8_t iv[12];
+    MXC_TRNG_Random(iv, 12);
+    int length = strlen(INPUT_STRING) + 1;
+    uint8_t encrypted[length];
+    uint8_t encryption_tag[TAG_LENGTH];
+    int aead_length = 0;
+    if (AEAD != NULL) {
+        aead_length = strlen(AEAD);
+    }
+    
+    gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
+
+    char encrypted_string[length * 2 + 1];
+    bytes_to_string(encrypted, length, encrypted_string);
+
+    char encryption_tag_string[TAG_LENGTH * 2 + 1];
+    bytes_to_string(encryption_tag, TAG_LENGTH, encryption_tag_string);
+    printf("Input string: %s\n", INPUT_STRING);
+    printf("Encrypted cipher: %s\n", encrypted_string);
+    printf("Encryption Tag: %s\n", encryption_tag_string);
+
+    uint8_t decrypted[length];
+    uint8_t decryption_tag[TAG_LENGTH];
+    gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
+
+    char decryption_tag_string[TAG_LENGTH * 2 + 1];
+    bytes_to_string(decryption_tag, TAG_LENGTH, decryption_tag_string);
+    printf("Input encryption: %s\n", encrypted_string);
+    printf("Decrypted cipher: %s\n", (char*)decrypted);
+    printf("Decryption Tag: %s\n", decryption_tag_string);
+    while(1) {
+        // busy loop
+    }
+}
+
+void bytes_to_string(const uint8_t* input, int length, char* output) {
+    for (int i = 0; i < length; i++) {
+        sprintf(output + i, "%02x", input[i]);
+    }
+    output[length * 2 + 1] = '\n';
 }
