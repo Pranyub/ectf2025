@@ -17,7 +17,10 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
+/**
+ * command to flash: sudo openocd -f interface/cmsis-dap.cfg -f target/max78000.cfg -c "init; reset halt; max32xxx mass_erase 0; program {aes.elf} verify exit"
+ * command to run: sudo openocd -f interface/cmsis-dap.cfg -f target/max78000.cfg -c "init"
+*/
 /**
  * @file    main.c
  * @brief   Input test
@@ -27,19 +30,22 @@
 /***** Includes *****/
 #include <stdio.h>
 #include <stdint.h>
+#include <inttypes.h>
 #include "mxc_device.h"
 #include "trng.h"
+#include "tmr.h"
 
 #include "include/aes_gcm/gcm.h"
 
 /***** Definitions *****/
 
 /***** Globals *****/
-const char INPUT_STRING[] = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";
+const char INPUT_STRING[] = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";  // 91 bytes, including null terminator
 const char* AEAD = NULL;
 const uint8_t KEY[] = { 0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x28, 0xb9, 0xa9, 0x8c, 0xa1, 0x53, 0x1d };
 const uint8_t KEY_LENGTH = 16;  // 128 bits
 const uint8_t TAG_LENGTH = 16;
+const int NUMBER_OF_TRIALS = 100000;
 
 /***** Functions *****/
 
@@ -55,11 +61,12 @@ void bytes_to_string(const uint8_t* input, int length, char* output);
 
 int main(void)
 {
+    int warning = 0;
     MXC_TRNG_Init();
     gcm_initialize();
     gcm_context ctx;
     if (gcm_setkey(&ctx, KEY, KEY_LENGTH) != 0) {
-        printf("Error setting GCM key.\n");
+        printf("ERROR: unable to set GCM key.\n");
         return 1;
     }
 
@@ -74,7 +81,8 @@ int main(void)
         aead_length = strlen(AEAD);
     }
     
-    gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
+    // encryption
+    gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);
 
     char encrypted_string[length * 2 + 1];
     bytes_to_string(encrypted, length, encrypted_string);
@@ -85,22 +93,63 @@ int main(void)
     printf("Encrypted cipher: %s\n", encrypted_string);
     printf("Encryption Tag: %s\n\n", encryption_tag_string);
 
+    // decryption
     uint8_t decrypted[length];
     uint8_t decryption_tag[TAG_LENGTH];
-    gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
+    gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);
 
     char decryption_tag_string[TAG_LENGTH * 2 + 1];
     bytes_to_string(decryption_tag, TAG_LENGTH, decryption_tag_string);
     printf("Input encryption: %s\n", encrypted_string);
     printf("Decrypted cipher: %s\n", (char*)decrypted);
-    printf("Decryption Tag: %s\n", decryption_tag_string);
+    printf("Decryption Tag: %s\n\n", decryption_tag_string);
 
+    // testing the tag
+    printf("Checking the tag...\n");
     if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) != 0) {
-        printf("ERROR: the encryption tag does not match the decryption tag.\n");
+        printf("WARNING: the encryption tag DOES NOT match the decryption tag when it SHOULD!\n\n");
+        warning = 1;
+    } else {
+        printf("Passed.\n");
     }
-    while(1) {
-        // busy loop
+
+    // testing modification of encrypted cipher
+    printf("Testing a modified encrypted cipher...\n");
+    encrypted[0] ^= 0b1;  // flip the first bit of the first byte
+    gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
+    if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) == 0) {
+        printf("WARNING: the encryption tag DOES match the decryption tag when it SHOULD NOT.\n\n");
+        warning = 1;
+    } else {
+        printf("Passed.\n\n");
     }
+
+    if (warning != 0) {
+        printf("WARNING: one or more tests have failed.\n");
+    } else {
+        printf("All tests passed successfully.\n\n");
+    }
+
+    // measuring time of encryption
+    printf("Testing %d encryptions...\n", NUMBER_OF_TRIALS);
+    uint32_t elapsed_time;
+    MXC_TMR_SW_Start(MXC_TMR0);
+    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+        gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
+    }
+    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    printf("%d encryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+
+    // measuring time of decyrption
+    printf("Testing %d decryptions...\n", NUMBER_OF_TRIALS);
+    MXC_TMR_SW_Start(MXC_TMR0);
+    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+        gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
+    }
+    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    printf("%d decryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+
+    printf("\nDone.\n");
 }
 
 void bytes_to_string(const uint8_t* input, int length, char* output) {
