@@ -480,4 +480,35 @@ int aes_cipher( aes_context *ctx,
 
     return( 0 );
 }
+
+int MAX_aes_cipher( aes_context *ctx,
+                    const uchar input[16],
+                    uchar output[16] ) {
+    int CRYPT_LENGTH = 16;  // in bytes
+    mxc_aes_req_t req;
+    req.length = CRYPT_LENGTH / 4;  // in 4 byte words
+    req.inputData = (uint32_t*)input;
+    req.resultData = (uint32_t*)output;
+    req.keySize = MXC_AES_128BITS;
+
+    // load the key into the external key register
+    memcpy((void*)MXC_BASE_AESKEYS, ctx->rk, 16);
+#if AES_DECRYPTION  // whether AES decryption is supported
+
+    if( ctx->mode == DECRYPT ) {
+        req.encryption = MXC_AES_DECRYPT_INT_KEY;
+        if (MXC_AES_Decrypt(&req) != 0) {
+            printf("ERROR: hardware accelerated decryption failed.\n");
+        }
+    } else {
+#endif /* AES_DECRYPTION */
+        req.encryption = MXC_AES_ENCRYPT_EXT_KEY;
+        if(MXC_AES_Encrypt(&req) != 0) {
+            printf("ERROR: hardware accelerated encryption failed.\n");
+        }
+#if AES_DECRYPTION  // whether AES decryption is supported
+    }
+#endif /* AES_DECRYPTION */
+    return 0;
+}
 /* end of aes.c */

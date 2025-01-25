@@ -69,6 +69,15 @@ int gcm_setkey( gcm_context *ctx,   // caller-provided context ptr
 		                    // 128, 192 or 256-bit keys respectively)
 ); // returns 0 for success
 
+/**
+ * @brief same as the above function, but hardware accelerated
+ */
+int MAX_gcm_setkey( gcm_context *ctx,   // caller-provided context ptr
+                const uchar *key,   // pointer to cipher key
+                const uint keysize  // size in bytes (must be 16, 24, 32 for
+		                    // 128, 192 or 256-bit keys respectively)
+); // returns 0 for success
+
 
 /******************************************************************************
  *
@@ -88,6 +97,22 @@ int gcm_setkey( gcm_context *ctx,   // caller-provided context ptr
  *
  ******************************************************************************/
 int gcm_crypt_and_tag(
+        gcm_context *ctx,       // gcm context with key already setup
+        int mode,               // cipher direction: ENCRYPT (1) or DECRYPT (0)
+        const uchar *iv,        // pointer to the 12-byte initialization vector
+        size_t iv_len,          // byte length if the IV. should always be 12
+        const uchar *add,       // pointer to the non-ciphered additional data
+        size_t add_len,         // byte length of the additional AEAD data
+        const uchar *input,     // pointer to the cipher data source
+        uchar *output,          // pointer to the cipher data destination
+        size_t length,          // byte length of the cipher data
+        uchar *tag,             // pointer to the tag to be generated
+        size_t tag_len );       // byte length of the tag to be generated
+
+/**
+ * @brief same as the function above, but hardware accelerated
+ */
+int MAX_gcm_crypt_and_tag(
         gcm_context *ctx,       // gcm context with key already setup
         int mode,               // cipher direction: ENCRYPT (1) or DECRYPT (0)
         const uchar *iv,        // pointer to the 12-byte initialization vector
@@ -142,6 +167,17 @@ int gcm_start( gcm_context *ctx,    // pointer to user-provided GCM context
                size_t add_len );    // length of additional AEAD data (bytes)
 
 
+/**
+ * @brief same as the above function, but hardware accelerated
+ */
+int MAX_gcm_start( gcm_context *ctx,    // pointer to user-provided GCM context
+               int mode,            // ENCRYPT (1) or DECRYPT (0)
+               const uchar *iv,     // pointer to initialization vector
+               size_t iv_len,       // IV length in bytes (should == 12)
+               const uchar *add,    // pointer to additional AEAD data (NULL if none)
+               size_t add_len );    // length of additional AEAD data (bytes)
+
+
 /******************************************************************************
  *
  *  GCM_UPDATE
@@ -154,6 +190,14 @@ int gcm_start( gcm_context *ctx,    // pointer to user-provided GCM context
  *
  ******************************************************************************/
 int gcm_update( gcm_context *ctx,       // pointer to user-provided GCM context
+                size_t length,          // length, in bytes, of data to process
+                const uchar *input,     // pointer to source data
+                uchar *output );        // pointer to destination data
+
+/**
+ * @brief same as the above function, but hardware accelerated
+ */
+int MAX_gcm_update( gcm_context *ctx,       // pointer to user-provided GCM context
                 size_t length,          // length, in bytes, of data to process
                 const uchar *input,     // pointer to source data
                 uchar *output );        // pointer to destination data

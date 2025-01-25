@@ -61,6 +61,7 @@ void bytes_to_string(const uint8_t* input, int length, char* output);
 
 int main(void)
 {
+    printf("Starting non-hardware accelerated tests.\n");
     int warning = 0;
     MXC_TRNG_Init();
     gcm_initialize();
@@ -131,25 +132,45 @@ int main(void)
     }
 
     // measuring time of encryption
-    printf("Testing %d encryptions...\n", NUMBER_OF_TRIALS);
-    uint32_t elapsed_time;
-    MXC_TMR_SW_Start(MXC_TMR0);
-    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
-        gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
-    }
-    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    printf("%d encryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+    // printf("Testing %d encryptions...\n", NUMBER_OF_TRIALS);
+    // uint32_t elapsed_time;
+    // MXC_TMR_SW_Start(MXC_TMR0);
+    // for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+    //     gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
+    // }
+    // elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    // printf("%d encryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
 
     // measuring time of decyrption
-    printf("Testing %d decryptions...\n", NUMBER_OF_TRIALS);
-    MXC_TMR_SW_Start(MXC_TMR0);
-    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
-        gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
-    }
-    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    printf("%d decryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+    // printf("Testing %d decryptions...\n", NUMBER_OF_TRIALS);
+    // MXC_TMR_SW_Start(MXC_TMR0);
+    // for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+    //     gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
+    // }
+    // elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    // printf("%d decryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
 
-    printf("\nDone.\n");
+
+    // hardware accelerated portion
+    printf("\nStarting hardware accelerated tests\n");
+    warning = 0;
+    // encryption
+    MAX_gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
+    bytes_to_string(encrypted, length, encrypted_string);
+    bytes_to_string(encryption_tag, TAG_LENGTH, encryption_tag_string);
+    printf("Input string: %s\n", INPUT_STRING);
+    printf("Encrypted cipher: %s\n", encrypted_string);
+    printf("Encryption Tag: %s\n\n", encryption_tag_string);
+
+    // decryption
+    gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);
+    bytes_to_string(decryption_tag, TAG_LENGTH, decryption_tag_string);
+    printf("Input encryption: %s\n", encrypted_string);
+    printf("Decrypted cipher: %s\n", (char*)decrypted);
+    printf("Decryption Tag: %s\n\n", decryption_tag_string);
+
+
+    printf("\n\nDone.\n");
 }
 
 void bytes_to_string(const uint8_t* input, int length, char* output) {

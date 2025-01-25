@@ -27,7 +27,10 @@
 #define AES_DECRYPTION  0       // whether AES decryption is supported
 /******************************************************************************/
 
+#include <stdio.h>  // NOTE: for debugging only
 #include <string.h>
+#include <aes.h>  // for MAX hardware acceleration
+#include "max78000.h"  // for the AES key register
 
 #define ENCRYPT         1       // specify whether we're encrypting
 #define DECRYPT         0       // or decrypting
@@ -74,6 +77,14 @@ int aes_setkey( aes_context *ctx,       // pointer to context
  *  AES_CIPHER : called to encrypt or decrypt ONE 128-bit block of data
  ******************************************************************************/
 int aes_cipher( aes_context *ctx,       // pointer to context
+                const uchar input[16],  // 128-bit block to en/decipher
+                uchar output[16] );     // 128-bit output result block
+                                        // returns 0 for success
+
+/**
+ * @brief same as above function, but hardware accelerated
+ */
+int MAX_aes_cipher( aes_context *ctx,       // pointer to context
                 const uchar input[16],  // 128-bit block to en/decipher
                 uchar output[16] );     // 128-bit output result block
                                         // returns 0 for success
