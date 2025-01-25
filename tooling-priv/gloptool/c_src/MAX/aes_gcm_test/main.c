@@ -33,8 +33,8 @@
 /***** Definitions *****/
 
 /***** Globals *****/
-char INPUT_STRING = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";
-char KEY = "This is the key.";
+char INPUT_STRING[] = "Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!";
+uint8_t KEY[] = { 0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x28, 0xb9, 0xa9, 0x8c, 0xa1, 0x53, 0x1d };
 
 /***** Functions *****/
 
