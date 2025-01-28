@@ -79,7 +79,7 @@ int main(void)
     uint8_t encryption_tag[TAG_LENGTH];
     int aead_length = 0;
     if (AEAD != NULL) {
-        aead_length = strlen(AEAD);
+        aead_length = strlen(AEAD) + 1;
     }
     
     // encryption
