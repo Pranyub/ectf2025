@@ -50,6 +50,7 @@ const uint8_t KEY[] = { 0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x
                         0x3c, 0x6e, 0x0b, 0x8a, 0x9c, 0x15, 0x22, 0x4a, 0x82, 0x28, 0xb9, 0xa9, 0x8c, 0xa1, 0x53, 0x1d };
 const uint8_t KEY_LENGTH = 32;  // 256 bits
 const uint8_t TAG_LENGTH = 16;
+const uint8_t NONCE_SIZE = 12;
 const int NUMBER_OF_TRIALS = 100000;
 
 /***** Functions *****/
@@ -66,11 +67,10 @@ void bytes_to_string(const uint8_t* input, int length, char* output);
 
 int main(void)
 {
-    printf("Starting non-hardware accelerated tests.\n");
     int warning = 0;
     MXC_TRNG_Init();
-    uint8_t NONCE[12];
-    MXC_TRNG_Random(NONCE, 12);  // generate IV from random bytes
+    uint8_t NONCE[NONCE_SIZE];
+    MXC_TRNG_Random(NONCE, NONCE_SIZE);  // generate IV from random bytes
     int length = strlen(INPUT_STRING) + 1;
     uint8_t encrypted[length];
     uint8_t encryption_tag[TAG_LENGTH];
@@ -83,7 +83,7 @@ int main(void)
     uint8_t encryption_buffer[length + TAG_LENGTH];
     size_t encryption_cipher_size = portable_chacha20_poly1305_encrypt(encryption_buffer, KEY, NONCE, (uint8_t*)AAD, aad_length, (uint8_t*)INPUT_STRING, length);
     if (encryption_cipher_size == -1) {  // encryption_cipher_size should be the size of the amount of data written to the buffer, or -1 on error
-        printf("Error encrypting.");
+        printf("Error encrypting.\n");
         return -1;
     }
     
@@ -103,26 +103,27 @@ int main(void)
     uint8_t decrypted[length];
     uint8_t decryption_tag[TAG_LENGTH];
 
-    uint8_t decryption_buffer[length + TAG_LENGTH];
-    size_t decryption_cipher_size = portable_chacha20_poly1305_decrypt(decryption_buffer, KEY, NONCE, (uint8_t*)AAD, aad_length, encrypted, length);
+    size_t decryption_cipher_size = portable_chacha20_poly1305_decrypt(decrypted, KEY, NONCE, (uint8_t*)AAD, aad_length, encryption_buffer, encryption_cipher_size);
 
-    memcpy(decrypted, decryption_buffer, length);
-    memcpy(decryption_tag, decryption_buffer + length, TAG_LENGTH);
+    if (decryption_cipher_size == -1) {
+        printf("Error decrypting.\n");
+        return -1;
+    }
 
     char decryption_tag_string[TAG_LENGTH * 2 + 1];
     bytes_to_string(decryption_tag, TAG_LENGTH, decryption_tag_string);
     printf("Input encryption: %s\n", encrypted_string);
-    // printf("Decrypted cipher: %s\n", (char*)decrypted);
-    printf("Decryption Tag: %s\n\n", decryption_tag_string);
+    printf("Decrypted cipher: %s\n", (char*)decrypted);
+    // printf("Decryption Tag: %s\n\n", decryption_tag_string);
 
     // // testing the tag
-    printf("Checking the tag...\n");
-    if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) != 0) {
-        printf("WARNING: the encryption tag DOES NOT match the decryption tag when it SHOULD!\n\n");
-        warning = 1;
-    } else {
-        printf("Passed.\n");
-    }
+    // printf("Checking the tag...\n");
+    // if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) != 0) {
+    //     printf("WARNING: the encryption tag DOES NOT match the decryption tag when it SHOULD!\n\n");
+    //     warning = 1;
+    // } else {
+    //     printf("Passed.\n");
+    // }
 
     // // testing modification of encrypted cipher
     // printf("Testing a modified encrypted cipher...\n");
