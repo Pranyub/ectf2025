@@ -67,7 +67,6 @@ void bytes_to_string(const uint8_t* input, int length, char* output);
 
 int main(void)
 {
-    int warning = 0;
     MXC_TRNG_Init();
     uint8_t NONCE[NONCE_SIZE];
     MXC_TRNG_Random(NONCE, NONCE_SIZE);  // generate IV from random bytes
@@ -83,7 +82,7 @@ int main(void)
     uint8_t encryption_buffer[length + TAG_LENGTH];
     size_t encryption_cipher_size = portable_chacha20_poly1305_encrypt(encryption_buffer, KEY, NONCE, (uint8_t*)AAD, aad_length, (uint8_t*)INPUT_STRING, length);
     if (encryption_cipher_size == -1) {  // encryption_cipher_size should be the size of the amount of data written to the buffer, or -1 on error
-        printf("Error encrypting.\n");
+        printf("ERROR: Encryption failed.\n");
         return -1;
     }
     
@@ -103,63 +102,47 @@ int main(void)
     uint8_t decrypted[length];
     uint8_t decryption_tag[TAG_LENGTH];
 
+    // the tag checking is integrated into the decrypt function and contained after the ciphertext in the encryption_buffer
     size_t decryption_cipher_size = portable_chacha20_poly1305_decrypt(decrypted, KEY, NONCE, (uint8_t*)AAD, aad_length, encryption_buffer, encryption_cipher_size);
 
     if (decryption_cipher_size == -1) {
-        printf("Error decrypting.\n");
+        printf("ERROR: Corrupted decryption.\n");
         return -1;
     }
 
-    char decryption_tag_string[TAG_LENGTH * 2 + 1];
-    bytes_to_string(decryption_tag, TAG_LENGTH, decryption_tag_string);
     printf("Input encryption: %s\n", encrypted_string);
     printf("Decrypted cipher: %s\n", (char*)decrypted);
-    // printf("Decryption Tag: %s\n\n", decryption_tag_string);
+    
+    // testing modification of encrypted cipher
+    printf("Testing a modified encrypted cipher...\n");
+    encryption_buffer[0] ^= 0b1;  // flip the first bit of the first byte
+    
+    decryption_cipher_size = portable_chacha20_poly1305_decrypt(decrypted, KEY, NONCE, (uint8_t*)AAD, aad_length, encryption_buffer, encryption_cipher_size);
 
-    // // testing the tag
-    // printf("Checking the tag...\n");
-    // if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) != 0) {
-    //     printf("WARNING: the encryption tag DOES NOT match the decryption tag when it SHOULD!\n\n");
-    //     warning = 1;
-    // } else {
-    //     printf("Passed.\n");
-    // }
-
-    // // testing modification of encrypted cipher
-    // printf("Testing a modified encrypted cipher...\n");
-    // encrypted[0] ^= 0b1;  // flip the first bit of the first byte
-    // gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
-    // if (memcmp(encryption_tag, decryption_tag, TAG_LENGTH) == 0) {
-    //     printf("WARNING: the encryption tag DOES match the decryption tag when it SHOULD NOT.\n\n");
-    //     warning = 1;
-    // } else {
-    //     printf("Passed.\n\n");
-    // }
-
-    // if (warning != 0) {
-    //     printf("WARNING: one or more tests have failed.\n");
-    // } else {
-    //     printf("All tests passed successfully.\n\n");
-    // }
+    if (decryption_cipher_size != -1) {
+        printf("ERROR: the decryption DID NOT fail when it should have.\n\n");
+        return -1;
+    }
+    printf("Passed test.\n\n");
 
     // measuring time of encryption
-    // printf("Testing %d encryptions...\n", NUMBER_OF_TRIALS);
-    // uint32_t elapsed_time;
-    // MXC_TMR_SW_Start(MXC_TMR0);
-    // for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
-    //     gcm_crypt_and_tag(&ctx, 1, iv, 12, (uint8_t*)AEAD, aead_length, (uint8_t*)INPUT_STRING, encrypted, length, encryption_tag, TAG_LENGTH);  // encrypting
-    // }
-    // elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    // printf("%d encryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+    printf("Testing %d encryptions...\n", NUMBER_OF_TRIALS);
+    uint32_t elapsed_time;
+    MXC_TMR_SW_Start(MXC_TMR0);
+    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+        encryption_cipher_size = portable_chacha20_poly1305_encrypt(encryption_buffer, KEY, NONCE, (uint8_t*)AAD, aad_length, (uint8_t*)INPUT_STRING, length);
+    }
+    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    printf("%d encryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
 
     // measuring time of decyrption
-    // printf("Testing %d decryptions...\n", NUMBER_OF_TRIALS);
-    // MXC_TMR_SW_Start(MXC_TMR0);
-    // for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
-    //     gcm_crypt_and_tag(&ctx, 0, iv, 12, (uint8_t*)AEAD, aead_length, encrypted, decrypted, length, decryption_tag, TAG_LENGTH);  // decrypting
-    // }
-    // elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
-    // printf("%d decryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
+    printf("Testing %d decryptions...\n", NUMBER_OF_TRIALS);
+    MXC_TMR_SW_Start(MXC_TMR0);
+    for (int i = 0; i < NUMBER_OF_TRIALS; i++) {
+        decryption_cipher_size = portable_chacha20_poly1305_decrypt(decrypted, KEY, NONCE, (uint8_t*)AAD, aad_length, encryption_buffer, encryption_cipher_size);
+    }
+    elapsed_time = MXC_TMR_SW_Stop(MXC_TMR0);
+    printf("%d decryptions took %"PRIu32" microseconds.\n\n", NUMBER_OF_TRIALS, elapsed_time);
 
 
     printf("Done.\n");
