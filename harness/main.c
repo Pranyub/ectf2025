@@ -11,52 +11,58 @@
 #include "inc/keystone.h"
 #include <stddef.h>
 #include "core_cm4.h"  // CMSIS header for Cortex-M4
+#include "uart.h"
 
 
+#define UART_BAUD 115200
+#define BUFF_SIZE 1024
+#define READING_UART MXC_UART2
+#define WRITING_UART MXC_UART3
+volatile int READ_FLAG;
+
+    #define CMD_MAGIC 0xcc
+    #define RESP_MAGIC 0xdd
+    #define CMD_SIZE 512
+
+    #define DELAY_PIN_OUT MXC_GPIO_PIN_0
+    #define DELAY_PORT_OUT MXC_GPIO0
+
+    #define ARM_PIN_OUT MXC_GPIO_PIN_1
+    #define ARM_PORT_OUT MXC_GPIO1
 
 
-const uint DELAY_PIN = 2;
-const uint WIDTH_PIN = 3;
-const uint ARM_PIN = 4;
+    mxc_gpio_cfg_t delay_pin_out;
+    mxc_gpio_cfg_t arm_pin_out;
 
-#define CMD_MAGIC 0xcc
-#define RESP_MAGIC 0xdd
-#define CMD_SIZE 10
+    enum CMD_ID {
+        READ_MEM    = 0x01,
+        WRITE_MEM   = 0x02,
+        READ_REG    = 0x03,
+        RUN_ASM     = 0x04,
+        HELLO_WORLD = 0x05,
+        SET_CW_DELAY = 0x06,
+        SET_CW_LENGTH = 0x07,
+        SEND_REG = 0x08,
+    };
 
-#define DELAY_PIN_OUT MXC_GPIO_PIN_0
-#define DELAY_PORT_OUT MXC_GPIO0
-
-#define ARM_PIN_OUT MXC_GPIO_PIN_1
-#define ARM_PORT_OUT MXC_GPIO1
-
-
-mxc_gpio_cfg_t delay_pin_out;
-mxc_gpio_cfg_t arm_pin_out;
-
-enum CMD_ID {
-    READ_MEM    = 0x01,
-    WRITE_MEM   = 0x02,
-    READ_REG    = 0x03
-};
-
-typedef enum{
-    R0,
-    R1,
-    R2, 
-    R3,
-    R4,
-    R5, 
-    R6,
-    R7, 
-    R8,
-    R9,
-    R10,
-    FP,
-    IP,
-    SP, 
-    LR,
-    PC
-} REGISTERS;
+    typedef enum{
+        R0,
+        R1,
+        R2, 
+        R3,
+        R4,
+        R5, 
+        R6,
+        R7, 
+        R8,
+        R9,
+        R10,
+        FP,
+        IP,
+        SP, 
+        LR,
+        PC
+    } REGISTERS;
 
 //Stores value of reg (REGISTERS) in dest (uint32_t*)
 #define GET_REGISTER_VALUE(reg, dest)          \
@@ -178,104 +184,231 @@ void configureMPU() {
     MPU->CTRL = 0;
 }  
 
-void configurePins() {
-    delay_pin_out.port = DELAY_PORT_OUT;
-    delay_pin_out.mask = DELAY_PIN_OUT;
-    delay_pin_out.pad = MXC_GPIO_PAD_NONE;
-    delay_pin_out.func = MXC_GPIO_FUNC_OUT;
-    delay_pin_out.vssel = MXC_GPIO_VSSEL_VDDIO;
-    delay_pin_out.drvstr = MXC_GPIO_DRVSTR_0;
-    MXC_GPIO_Config(&delay_pin_out);
+// void readCallback(mxc_uart_req_t *req, int error)
+// {
+//     READ_FLAG = error;
+// }
 
-    arm_pin_out.port = ARM_PORT_OUT;
-    arm_pin_out.mask = ARM_PIN_OUT;
-    arm_pin_out.pad = MXC_GPIO_PAD_NONE;
-    arm_pin_out.func = MXC_GPIO_FUNC_OUT;
-    arm_pin_out.vssel = MXC_GPIO_VSSEL_VDDIO;
-    arm_pin_out.drvstr = MXC_GPIO_DRVSTR_0;
-    MXC_GPIO_Config(&arm_pin_out);
-}
+// void configureUART() {
+//     uint8_t TxData[BUFF_SIZE];
+//     uint8_t RxData[BUFF_SIZE];
+//     for (int i = 0; i < BUFF_SIZE; i++) {
+//         TxData[i] = i;
+//     }
 
+//     memset(RxData, 0x0, BUFF_SIZE);
 
-int* runASM(unsigned char* bytecode, int bytecodeSize, int delayUS){
+//     MXC_UART_Init(READING_UART, UART_BAUD, MXC_UART_APB_CLK);
+//     MXC_UART_Init(WRITING_UART, UART_BAUD, MXC_UART_APB_CLK);
+
+//     mxc_uart_req_t read_req;
+//     read_req.uart = READING_UART;
+//     read_req.rxData = RxData;
+//     read_req.rxLen = BUFF_SIZE;
+//     read_req.txLen = 0;
+//     read_req.callback = readCallback;
+
+//     mxc_uart_req_t write_req;
+//     write_req.uart = WRITING_UART;
+//     write_req.txData = TxData;
+//     write_req.txLen = BUFF_SIZE;
+//     write_req.rxLen = 0;
+//     write_req.callback = NULL;
+
+//     READ_FLAG = 1;
+//     MXC_UART_ClearRXFIFO(READING_UART);
+// }
+
+uint32_t runLengthTestReg(unsigned char* bytecode, int bytecodeSize, REGISTERS reg, int lengthUS, int delayUS){
     memcpy(exec_memory, bytecode, bytecodeSize);
     
     void (*exec)(void) = (void (*)(void))((uintptr_t)exec_memory | 1); //Set last bit of function address to 1 so that the blx jump keeps the processor in thumb mode
 
-    //Tell chipwhisper to start listening for delay from GPIO
-    MXC_GPIO_OutSet(delay_pin_out.port, delay_pin_out.mask); 
-    MXC_Delay(100);
-    MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); 
-    MXC_Delay(1000);
+    // //Tell chipwhisper to start listening for delay from GPIO
+    // MXC_GPIO_OutSet(delay_pin_out.port, delay_pin_out.mask); 
+    // MXC_Delay(100);
+    // MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); 
+    // MXC_Delay(1000);
 
-    //Send delay integer through GPIO
-    for (int i = 0; i < 32; i++) { //Iterate over all 32 bits of the integer
-        int bit = (delayMS >> i) & 1; //Get the i-th bit
-        if (bit) {
-            MXC_GPIO_OutSet(delay_pin_out.port, delay_pin_out.mask); //Set delay pin to one
-        } else {
-            MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); // Setdelay pin to zero
-        }
-        MXC_Delay(1000);
-    }
-    MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); //Clear delay pin
+    // //Send delay integer through GPIO
+    // for (int i = 0; i < 32; i++) { //Iterate over all 32 bits of the integer
+    //     int bit = (delayMS >> i) & 1; //Get the i-th bit
+    //     if (bit) {
+    //         MXC_GPIO_OutSet(delay_pin_out.port, delay_pin_out.mask); //Set delay pin to one
+    //     } else {
+    //         MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); // Setdelay pin to zero
+    //     }
+    //     MXC_Delay(1000);
+    // }
+    // MXC_GPIO_OutClr(delay_pin_out.port, delay_pin_out.mask); //Clear delay pin
 
-    MXC_GPIO_OutSet(arm_pin_out.port, arm_pin_out.mask); //Arm the chipwhisper
-    MXC_Delay(100);
-    MXC_GPIO_OutClr(arm_pin_out.port, arm_pin_out.mask);
-    MXC_Delay(delayMS);  //Delay to sync up with chipwhisperer
+    // MXC_GPIO_OutSet(arm_pin_out.port, arm_pin_out.mask); //Arm the chipwhisper
+    // MXC_Delay(100);
+    // MXC_GPIO_OutClr(arm_pin_out.port, arm_pin_out.mask);
+
+    
+    //Send delay and length someitme
+
+    //MXC_Delay(delayUS);  //Delay to sync up with chipwhisperer
     exec(); //Run the bytecode
-
+    uint32_t value;
+    GET_REGISTER_VALUE(reg, &value);
+    return value;
 }   
+
+void send(char bytes[], int length ){
+    for (int i = 0; i < length; i ++){
+        putchar(bytes[i]);
+    }
+}
 
 int repl() {
     uint8_t cmd[CMD_SIZE];
 
     uint8_t c;
-    
+   
     // Wait for magic
-    while((c = getchar()) != CMD_MAGIC);
+    // while ((c = getchar()) != CMD_MAGIC) {};
     
+    char k[] = {CMD_MAGIC, HELLO_WORLD};
+    send(k, sizeof(k));
+    return;
     // First char is magic
     cmd[0] = c;
-    // Read in rest of command
-    for(int i = 1; i < CMD_SIZE; i++) {
-        cmd[i] = getchar();
-    }
+    
+    // Next char is command ID
 
-    // Command Id
+    cmd[1] = getchar();
+
     char command = cmd[1];
-    // Parse data for command (big endian)
-    uint32_t addr = (cmd[2] << 24) | (cmd[3] << 16) | (cmd[4] << 8) | (cmd[5] << 0);
-    uint32_t write_data = (cmd[6] << 24) | (cmd[7] << 16) | (cmd[8] << 8) | (cmd[9] << 0);
-
-    uint8_t resp[CMD_SIZE] = {0};
-
-    // first byte is magic, second byte is command type
-    resp[0] = RESP_MAGIC;
-    resp[1] = command;
-    if (command == READ_MEM) {
-        uint32_t data = *(uint32_t*)(addr);
-        resp[2] = (data >> 24) & 0xff;
-        resp[3] = (data >> 16) & 0xff;
-        resp[4] = (data >> 8 ) & 0xff;
-        resp[5] = (data >> 0 ) & 0xff;
-    } else if (command == WRITE_MEM) {
-        *(uint32_t*)(addr) = write_data;
+    if (command = HELLO_WORLD){
+        char resp[] = {CMD_MAGIC, HELLO_WORLD};
+        send(resp, sizeof(resp));
+        return 0;
     }
-    else if (command == READ_REG)
-    {
-        uint32_t reg;
-        GET_REGISTER_VALUE(cmd[2], &reg);
+    
+    if (command == RUN_ASM){
+        char a[] = {CMD_MAGIC, HELLO_WORLD};
+        send(a, sizeof(a));
+        return;
+        //Magic, CMD_ID, Reg Or Mem, Register or Address (4 bytes), Opcodes (128 bytes), target state opcodes (128 bytes)
+        //Command Size is 263 bytes
+        for(int i = 2; i < 263; i++) {
+            cmd[i] = getchar();
+        }
+        char readType = cmd[2];
+        unsigned char testingOpcodes[128];
+        unsigned char targetStateOpcodes[128];
+        //Read from register
+        if (readType == 0x00){
+            char reg = cmd[3];
+            for (int i = 7; i < 128 + 7; i++){
+                testingOpcodes[i - 7] = cmd[i];
+            }
+            for (int i = 128 + 7; i < 263; i++){
+                targetStateOpcodes[i - 128 - 7] = cmd[i];
+            }
+            uint32_t targetRegisterValue = runLengthTestReg(targetStateOpcodes, 128, reg, 0, 0);
+            uint8_t resp1[7] = {CMD_MAGIC, SEND_REG, reg};
+            resp1[3] = (targetRegisterValue >> 24) & 0xff;
+            resp1[4] = (targetRegisterValue >> 16) & 0xff;
+            resp1[5] = (targetRegisterValue >> 8 ) & 0xff;
+            resp1[6] = (targetRegisterValue >> 0 ) & 0xff;
+            char a[] = {CMD_MAGIC, HELLO_WORLD};
+            send(a, sizeof(a));
+            uint32_t testRegisterValue = 0;
+            int delay = 1000;
+            int length = 1000;
+            do{
+                testRegisterValue = runLengthTestReg(testingOpcodes, 128, reg, delay, length);
+                uint8_t resp[7] = {CMD_MAGIC, SEND_REG, reg};
+                resp[3] = (testRegisterValue >> 24) & 0xff;
+                resp[4] = (testRegisterValue >> 16) & 0xff;
+                resp[5] = (testRegisterValue >> 8 ) & 0xff;
+                resp[6] = (testRegisterValue >> 0 ) & 0xff;
+                send(a, sizeof(a));   
+                length += 100;
+            }while(0);
+        }       
+        return 0;
     }
-
-    for(int i = 0; i < CMD_SIZE; i++) {
-        putchar(resp[i]);
-    }
-
-    return 0;
 }
+    
+    // Read in rest of command
+    
+    
+    // // Parse data for command (big endian)
+    // uint32_t addr = (cmd[2] << 24) | (cmd[3] << 16) | (cmd[4] << 8) | (cmd[5] << 0);
+    // uint32_t write_data = (cmd[6] << 24) | (cmd[7] << 16) | (cmd[8] << 8) | (cmd[9] << 0);
 
+    // uint8_t resp[CMD_SIZE] = {0};
+
+    // // first byte is magic, second byte is command type
+    // resp[0] = RESP_MAGIC;
+    // resp[1] = command;
+    // if (command == READ_MEM) {
+    //     uint32_t data = *(uint32_t*)(addr);
+    //     resp[2] = (data >> 24) & 0xff;
+    //     resp[3] = (data >> 16) & 0xff;
+    //     resp[4] = (data >> 8 ) & 0xff;
+    //     resp[5] = (data >> 0 ) & 0xff;
+    // } else if (command == WRITE_MEM) {
+    //     *(uint32_t*)(addr) = write_data;
+    // }
+    // else if (command == READ_REG)
+    // {
+    //     uint32_t reg;
+    //     GET_REGISTER_VALUE(cmd[2], &reg);
+    // }
+
+    // // for(int i = 0; i < CMD_SIZE; i++) {
+    // //     putchar(resp[i]);
+    // // }
+
+//     return 0;
+// }
+
+
+void pissballs(unsigned char cmd[]){
+        char readType = cmd[2];
+        unsigned char testingOpcodes[128];
+        unsigned char targetStateOpcodes[128];
+        char a[] = {CMD_MAGIC, HELLO_WORLD, 0x01};
+        send(a, sizeof(a));
+        //Read from register
+        if (readType == 0x00){
+            char reg = cmd[3];
+            for (int i = 7; i < 128 + 7; i++){
+                testingOpcodes[i - 7] = cmd[i];
+            }
+            for (int i = 128 + 7; i < 263; i++){
+                targetStateOpcodes[i - 128 - 7] = cmd[i];
+            }
+             a[2] = 0x02;
+            send(a, sizeof(a));
+            uint32_t targetRegisterValue = runLengthTestReg(targetStateOpcodes, 128, reg, 0, 0);
+            uint8_t resp1[7] = {CMD_MAGIC, SEND_REG, reg};
+            resp1[3] = (targetRegisterValue >> 24) & 0xff;
+            resp1[4] = (targetRegisterValue >> 16) & 0xff;
+            resp1[5] = (targetRegisterValue >> 8 ) & 0xff;
+            resp1[6] = (targetRegisterValue >> 0 ) & 0xff;
+            send(resp1, sizeof(resp1));
+            uint32_t testRegisterValue = 0;
+            int delay = 1000;
+            int length = 1000;
+            do{
+                testRegisterValue = runLengthTestReg(testingOpcodes, 128, reg, delay, length);
+                uint8_t resp[7] = {CMD_MAGIC, SEND_REG, reg};
+                resp[3] = (testRegisterValue >> 24) & 0xff;
+                resp[4] = (testRegisterValue >> 16) & 0xff;
+                resp[5] = (testRegisterValue >> 8 ) & 0xff;
+                resp[6] = (testRegisterValue >> 0 ) & 0xff;
+                send(resp, sizeof(resp));   
+                length += 100;
+            }while(0);
+        }       
+        return 0;
+}
 int main(void)
 {
     unsigned char opcodes[] = {
@@ -284,21 +417,56 @@ int main(void)
     0x03, 0xf1, 0x01, 0x03, 0x70, 0x47
 };
 
+unsigned char cmd[] = {
+    // Initial cmd values
+    CMD_MAGIC, RUN_ASM, 0x00, R3, 0x00, 0x00, 0x00,
+
+    // opcodesTest with padding
+    0x03, 0xf1, 0x01, 0x03, 0x03, 0xf1, 0x01, 0x03, 
+    0x03, 0xf1, 0x01, 0x03, 0x03, 0xf1, 0x01, 0x03, 
+    0x03, 0xf1, 0x01, 0x03, 0x70, 0x47, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00,
+
+    // opcodesTarget with padding
+    0x03, 0xf1, 0x01, 0x03, 0x03, 0xf1, 0x01, 0x03, 
+    0x03, 0xf1, 0x01, 0x03, 0x70, 0x47, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+    0x00, 0x00, 0x00, 0x00
+};
+
     int count = 0;
     unsigned int cinema = 0;
     configureMPU();
-    configurePins();
     while (1) {
         LED_On(LED1);
-        MXC_Delay(500000);
+        // repl();
+        // MXC_Delay(500000);
+        pissballs(cmd);
         LED_Off(LED1);
-        printf("count : %d\n", count++);
-        GET_REGISTER_VALUE(R3, &cinema);
-        printf("preasm : %d\n", cinema);
-        runASM(opcodes, sizeof(opcodes), 0);
-        GET_REGISTER_VALUE(R3, &cinema);
-        printf("postasm : %d\n", cinema);
-        
-        MXC_Delay(500000);
+        MXC_Delay(5000);
+        // while (getchar() != '\n'); //Clear input buffer
+
     }
 }
