@@ -1,8 +1,13 @@
 #ifndef CC20P1305_H
 #define CC20P1305_H
 
+#include <string.h>
 #include "chacha20_poly1305/portable8439.h"
 #include "../constants.h"
+
+#define TAG_LENGTH 16
+#define KEY_SIZE 32
+#define NONCE_SIZE 12
 
 /**
  * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
@@ -19,12 +24,13 @@
  * @param out the output buffer that should store the decrypted cipher
  * @return SUCCESS on success, ERROR on error
  */
-int chacha20_decrypt(const uint8_t key[32],
+int chacha20_decrypt(const uint8_t key[KEY_SIZE],
                      const uint8_t* in,
                      size_t len,
-                     const uint8_t tag[16],
+                     const uint8_t tag[TAG_LENGTH],
                      const uint8_t* ad,
                      size_t ad_len,
+                     const uint8_t nonce[NONCE_SIZE],
                      uint8_t* out);
 
 #endif
