@@ -21,7 +21,7 @@ inline key_entry hash_towards_frame(key_entry entry, frame_number frame);
  */
 inline bool get_subscription(frame_number frame, key_entry* key);
 
-int derive_key(uint64_t packet_id, uint32_t channel_no, uint8_t key[32]) {
+int derive_key(frame_number frame, channel_number chan, uint8_t key[32]) {
 
 }
 
@@ -30,13 +30,13 @@ inline key_entry hash_towards_frame(key_entry entry, frame_number frame) {
 }
 
 inline bool key_contains_frame(key_entry entry, frame_number frame) {
-	
+
 }
 
 void add_subscription(struct subscription* sub) {
 
 }
 
-inline bool get_subscription(frame_number frame, key_entry* key) {
+inline bool get_subscription(frame_number frame, channel_number chan, key_entry* key) {
 
 }
