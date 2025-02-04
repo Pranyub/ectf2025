@@ -5,12 +5,11 @@
 #include "common.h"
 
 /**
- * Hashes the next block of keys starting at the given frame number
- * Stores results in output parameter dst
+ * Returns SUCCESS on success, FAILURE on failure
  */
-void hash_block(key_block* dst, frame_number block);
+int derive_key(uint64_t packet_id, uint32_t channel_no, uint8_t key[32]);
 
 /**
- * adds the subscription to the decoder
+ * Adds a subscription to the library
  */
-void add_subscription(subscription* sub);
+void add_subscription(struct subscription* sub);
