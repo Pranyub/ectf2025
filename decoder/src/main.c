@@ -20,17 +20,13 @@
 
 /**
  * @file    main.c
- * @brief   Hello World!
- * @details This example uses the UART to print to a terminal and flashes an LED.
+ * @brief   Entry point for the 2025 MITRE eCTF.
+ * @details Starts the program.
  */
 
 /***** Includes *****/
 #include <stdio.h>
-#include <stdint.h>
 #include "mxc_device.h"
-#include "led.h"
-#include "board.h"
-#include "mxc_delay.h"
 
 /***** Definitions *****/
 
@@ -41,15 +37,6 @@
 // *****************************************************************************
 int main(void)
 {
-    // int count = 0;
-
     printf("Hello World!\n");
-
-    while (1) {
-        // LED_On(LED1);
-        // MXC_Delay(500000);
-        // LED_Off(LED1);
-        // MXC_Delay(500000);
-        // printf("count : %d\n", count++);
-    }
+    return 0;
 }
