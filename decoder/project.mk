@@ -36,4 +36,6 @@ MAXIM_PATH = /common/maxim-sdk
 
 IPATH += include/*
 VPATH += include/*
+
+IPATH += src/*
 VPATH += src/*

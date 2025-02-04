@@ -1,0 +1,30 @@
+#ifndef CC20P1305_H
+#define CC20P1305_H
+
+#include "chacha20_poly1305/portable8439.h"
+#include "../constants.h"
+
+/**
+ * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
+ * @pre \p in is at least \p len bytes
+ * @pre \p out is a buffer of at least \p len bytes
+ * @pre \p ad is at least \p ad_len bytes
+ * @post \p out now stores the plaintext
+ * @param key the key to be used for decryption
+ * @param in a pointer to the input (encrypted) cipher
+ * @param len the length of the \p in buffer, and the \p out buffer
+ * @param tag the tag to be checked (for authentication)
+ * @param ad the additional data to be checked for authenticity
+ * @param ad_len the length of \p ad in bytes
+ * @param out the output buffer that should store the decrypted cipher
+ * @return SUCCESS on success, ERROR on error
+ */
+int chacha20_decrypt(const uint8_t key[32],
+                     const uint8_t* in,
+                     size_t len,
+                     const uint8_t tag[16],
+                     const uint8_t* ad,
+                     size_t ad_len,
+                     uint8_t* out);
+
+#endif
