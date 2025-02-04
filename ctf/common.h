@@ -2,6 +2,9 @@
 
 #include <types.h>
 
+#define SUCCESS 1
+#define FAILURE 0
+
 typedef uint64_t frame_number;
 
 typedef struct key_entry {
