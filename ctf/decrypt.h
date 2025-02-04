@@ -6,8 +6,9 @@
 
 /**
  * Returns SUCCESS on success, FAILURE on failure
+ * Returns key in key[]
  */
-int derive_key(uint64_t packet_id, uint32_t channel_no, uint8_t key[32]);
+int derive_key(frame_number frame, channel_number chan, uint8_t key[32]);
 
 /**
  * Adds a subscription to the library

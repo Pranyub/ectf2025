@@ -6,6 +6,7 @@
 #define FAILURE 0
 
 typedef uint64_t frame_number;
+typedef uint32_t channel_number;
 
 typedef struct key_entry {
 	// the key itself
