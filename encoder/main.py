@@ -12,4 +12,3 @@ nonce, tag, cipher = chacha_encrypt(KEY, INPUT_STRING, nonce=NONCE)
 print(f"Nonce: {nonce.hex()}")
 print(f"Tag: {tag.hex()}")
 print(f"Cipher: {cipher.hex()}")
-
