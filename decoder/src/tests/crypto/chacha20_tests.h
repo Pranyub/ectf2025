@@ -98,7 +98,7 @@ int chacha20_test_all(void) {
 }
 
 static int chacha20_test_decrypt_normal(void) {
-    uint8_t* plaintext = (uint8_t*)malloc(sizeof(uint8_t) * CHACHA20_TEST_CIPHER_LENGTH);
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
     if (chacha20_decrypt(CHACHA20_TEST_KEY,
                          CHACHA20_TEST_ENCRYPTED_CIPHER,
                          CHACHA20_TEST_CIPHER_LENGTH,
@@ -108,7 +108,10 @@ static int chacha20_test_decrypt_normal(void) {
                          CHACHA20_TEST_NONCE,
                          plaintext) != SUCCESS) { return ERROR; }
 
-    if (memcmp(plaintext, CHACHA20_TEST_ENCRYPTED_CIPHER, CHACHA20_TEST_CIPHER_LENGTH) != 0) { return ERROR; }
+    if (memcmp(plaintext, CHACHA20_TEST_ENCRYPTED_CIPHER, CHACHA20_TEST_CIPHER_LENGTH) != 0) { 
+        printf("Expected %*s, got %*s", CHACHA20_TEST_CIPHER_LENGTH, CHACHA20_TEST_PLAINTEXT, CHACHA20_TEST_CIPHER_LENGTH, plaintext);
+        return ERROR;
+    }
     return SUCCESS;
 }
 
