@@ -6,13 +6,14 @@ import os
 #  @pre the \p nonce is exactly 12 bytes.
 #  @param key bytes of the key to be used.
 #  @param plaintext bytes of the plaintext to be encrypted.
-#  @param Optional. The nonce to be used.  If empty (the default), a random nonce will be generated using os.urandom().
+#  @param ad Optional. the additional data
+#  @param nonce Optional. The nonce to be used.  If empty (the default), a random nonce will be generated using os.urandom().
 #  @return the 12 byte nonce used.
 #  @return the 16 byte tag generated.
 #  @return the encrypted cipher.
-def chacha_encrypt(key: bytes, plaintext: bytes, nonce: bytes = b'') -> (bytes, bytes, bytes):
+def chacha_encrypt(key: bytes, plaintext: bytes, ad: bytes = b'', nonce: bytes = b'') -> (bytes, bytes, bytes):
     if (len(key) != 32):
-        raise Exception("Incorrect key length.")
+        raise Exception(f"Incorrect key length, expected 32 bytes, got {len(key)} bytes.")
     if (len(plaintext) == 0):
         raise Exception("Empty plaintext.")
     if (len(nonce) != 0 and len(nonce) != 12):
