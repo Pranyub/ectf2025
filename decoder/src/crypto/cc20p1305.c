@@ -12,14 +12,14 @@ int chacha20_decrypt(const uint8_t key[KEY_SIZE],
     memcpy(encrypted_buffer, in, len);
     memcpy(encrypted_buffer + len, tag, TAG_LENGTH);
 
-    uint8_t decrypted_buffer[len];
-    size_t decryption_size = portable_chacha20_poly1305_decrypt(decrypted_buffer,
+    size_t decryption_size = portable_chacha20_poly1305_decrypt(out,
                                                                 key,
                                                                 nonce,
                                                                 ad,
                                                                 ad_len,
                                                                 encrypted_buffer,
                                                                 len + TAG_LENGTH);
+    
 
     if (decryption_size == -1) return ERROR;
 
