@@ -1,4 +1,5 @@
-import os
+from Crypto.Cipher import ChaCha20_Poly1305
+from Crypto.Random import get_random_bytes
 
 ## @brief encrypts bytes using ChaCha20-Poly1305.
 #  @pre the \p key is exactly 32 bytes.
@@ -20,7 +21,7 @@ def chacha_encrypt(key: bytes, plaintext: bytes, ad: bytes = b'', nonce: bytes =
         raise Exception("Incorrect nonce length.")
 
     if (len(nonce) == 0):
-        nonce = os.urandom(12)
+        nonce = get_random_bytes(12)
     tag = b''
     output = b''
 
