@@ -1,6 +1,7 @@
 #pragma once
 
-#include <types.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #define SUCCESS 1
 #define FAILURE 0
@@ -18,6 +19,9 @@ typedef struct key_entry {
 	// the number of nodes below this
 	// len == 1 << level
 	uint8_t level;
+
+	// valid
+	bool valid;
 } key_entry;
 
 #define SUBSCRIPTION_NUM_BLOCKS 30

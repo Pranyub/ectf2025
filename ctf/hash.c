@@ -1,5 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 #include <openssl/sha.h>
+
 #include "hash.h"
 
 #define PAD_LENGTH 256
