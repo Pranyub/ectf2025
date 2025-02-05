@@ -29,10 +29,9 @@
 # **********************************************************
 
 # Add your config here!
-
-
-
 MAXIM_PATH = /common/maxim-sdk
+BOARD=FTHR_RevA
+TARGET=MAX78000
 
 IPATH += include/*
 VPATH += include/*
