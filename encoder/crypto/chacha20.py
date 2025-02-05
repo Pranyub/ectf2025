@@ -22,8 +22,8 @@ def chacha_encrypt(key: bytes, plaintext: bytes, ad: bytes = b'', nonce: bytes =
 
     if (len(nonce) == 0):
         nonce = get_random_bytes(12)
-
-    cipher = ChaCha20_Poly1305.new(key=key)
+        
+    cipher = ChaCha20_Poly1305.new(key=key, nonce=nonce)
     if (len(ad) != 0):
         cipher.update(ad)
     
