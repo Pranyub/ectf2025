@@ -11,9 +11,11 @@
 
 /**
  * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
+ * @pre \p key is exactly 32 bytes
  * @pre \p in is at least \p len bytes
  * @pre \p out is a buffer of at least \p len bytes
  * @pre \p ad is at least \p ad_len bytes
+ * @pre \p nonce is exactly 12 bytes
  * @post \p out now stores the plaintext
  * @param key the key to be used for decryption
  * @param in a pointer to the input (encrypted) cipher
@@ -21,6 +23,7 @@
  * @param tag the tag to be checked (for authentication)
  * @param ad the additional data to be checked for authenticity
  * @param ad_len the length of \p ad in bytes
+ * @param nonce the number used once for chacha
  * @param out the output buffer that should store the decrypted cipher
  * @return SUCCESS on success, ERROR on error
  */
