@@ -28,6 +28,8 @@
 #include <stdio.h>
 #include "mxc_device.h"
 
+#include "tests/crypto/chacha20_tests.h"
+
 /***** Definitions *****/
 
 /***** Globals *****/
@@ -37,6 +39,9 @@
 // *****************************************************************************
 int main(void)
 {
-    printf("Hello World!\n");
+    printf("Testing chacha20\n");
+    if (chacha20_test_all() == 0) {
+        printf("All tests passed.\n");
+    }
     return 0;
 }
