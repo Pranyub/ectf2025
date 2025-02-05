@@ -22,7 +22,11 @@ def chacha_encrypt(key: bytes, plaintext: bytes, ad: bytes = b'', nonce: bytes =
 
     if (len(nonce) == 0):
         nonce = get_random_bytes(12)
-    tag = b''
-    output = b''
+
+    cipher = ChaCha20_Poly1305.new(key=key)
+    if (len(ad) != 0):
+        cipher.update(ad)
+    
+    output, tag = cipher.encrypt_and_digest(plaintext)
 
     return (nonce, tag, output)
