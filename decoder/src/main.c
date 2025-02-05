@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "mxc_device.h"
 
+#include "constants.h"
 #include "tests/crypto/chacha20_tests.h"
 
 /***** Definitions *****/
@@ -40,7 +41,7 @@
 int main(void)
 {
     printf("Testing chacha20\n");
-    if (chacha20_test_all() == 0) {
+    if (chacha20_test_all() == SUCCESS) {
         printf("All tests passed.\n");
     }
     return 0;
