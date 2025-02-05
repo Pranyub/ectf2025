@@ -1,3 +1,4 @@
 #!/bin/python
+from crypto.chacha20 import *
 
-print("Hello World")
+print(chacha_encrypt(b'asdfasdfasdfasdfasdfasdfasdfasdf', b'whatever'))
