@@ -7,7 +7,7 @@ INPUT_STRING = b'This is some test plaintext. Secrets secrets secrets secrets se
 NONCE = bytes([0x04, 0x1c, 0xaf, 0x4b, 0x50, 0xd0, 0xe4, 0xab, 0xf1, 0xe7, 0xbf, 0xcd])
 AD = b'%this is some test additional data.\0'
 
-nonce, tag, cipher = chacha_encrypt(KEY, INPUT_STRING, nonce=NONCE)
+nonce, tag, cipher = chacha_encrypt(KEY, INPUT_STRING, ad=AD, nonce=NONCE)
 
 print(f"Nonce: {nonce.hex()}")
 print(f"Tag: {tag.hex()}")
