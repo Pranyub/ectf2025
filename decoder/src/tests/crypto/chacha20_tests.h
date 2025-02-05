@@ -2,7 +2,6 @@
 #define CHACHA20_TEST_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "../../crypto/cc20p1305.h"
@@ -108,8 +107,9 @@ static int chacha20_test_decrypt_normal(void) {
                          CHACHA20_TEST_NONCE,
                          plaintext) != SUCCESS) { return ERROR; }
 
-    if (memcmp(plaintext, CHACHA20_TEST_ENCRYPTED_CIPHER, CHACHA20_TEST_CIPHER_LENGTH) != 0) { 
-        printf("Expected %*s, got %*s", CHACHA20_TEST_CIPHER_LENGTH, CHACHA20_TEST_PLAINTEXT, CHACHA20_TEST_CIPHER_LENGTH, plaintext);
+    int memcmp_ret;
+    if ((memcmp_ret = memcmp(plaintext, CHACHA20_TEST_ENCRYPTED_CIPHER, sizeof(CHACHA20_TEST_ENCRYPTED_CIPHER))) != 0) { 
+        printf("Expected `%s` got `%s`\nThe memcmp returned %d\n", CHACHA20_TEST_PLAINTEXT, plaintext, memcmp_ret);
         return ERROR;
     }
     return SUCCESS;
