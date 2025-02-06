@@ -45,6 +45,12 @@ inline key_entry hash_towards_frame(key_entry entry, frame_number frame);
  */
 inline bool get_subscription(frame_number frame, channel_number chan, key_entry* key);
 
+/**
+ * Returns true iff the key outer fully contains inner
+ * i.e., inner could be derived from outer
+ */
+inline bool key_contains_key(key_entry outer, key_entry inner);
+
 int derive_key(frame_number frame, channel_number chan, uint8_t key[32]) {
 
 }
@@ -58,9 +64,82 @@ inline bool key_contains_frame(key_entry entry, frame_number frame) {
 }
 
 void add_subscription(struct subscription* sub) {
+	// start lib ptr
+	key_entry* slp = lib_chan[sub->chan];
+	// end lib ptr
+	key_entry* elp = lib_chan[sub->chan + 1];
+	// start sub ptr
+	key_entry* ssp = sub->keys;
+	// end sub ptr
+	key_entry* esp  = sub->keys + sub->nkeys;
 
+	// assertions
+	// slp <= elp
+	// ssp < esp
+
+	while (true) {
+		// nothing useful in sub
+		if (ssp >= esp) return;
+		// nothing left in lib
+		if (slp >= elp) break;
+
+		if (slp->start < ssp->start) slp++;
+		else if (key_contains_key(*slp, *ssp)) ssp++;
+		else break;
+	}
+
+	// assertions
+	// slp <= elp
+	// ssp < esp
+	// slp == elp || ssp.start < slp.start || ssp contains slp
+
+	while (true) {
+		// nothing useful in sub
+		if (ssp >= esp) return;
+		// nothing left in lib
+		if (slp >= elp) break;
+		
+		if (elp[-1].start > esp[-1].start) elp--;
+		else if (key_contains_key(elp[-1], esp[-1])) esp--;
+		else break;
+	}
+
+	// assertions
+	// slp <= elp
+	// ssp < esp
+	// slp == elp || ssp.start < slp.start || ssp contains slp
+	// slp == elp || esp[-1].start < elp[-1].start || esp[-1] contains elp[-1]
+
+	// offset to copy tail (everything past elp)
+	int copy_dist = (esp - ssp) - (elp - slp);
+
+	// copy tail to correct position
+	if (copy_dist > 0) {
+		if (lib_chan[NUM_CHANNELS + 1] + copy_dist > LIB_END) return;  // failure (out of space)
+		for (key_entry* ptr = lib_chan[NUM_CHANNELS + 1] - 1; ptr >= elp; ptr--) {
+			ptr[copy_dist] = ptr[0];
+		}
+	} else if (copy_dist < 0) {
+		for (key_entry* ptr = elp; ptr < lib_chan[NUM_CHANNELS + 1]; ptr++) {
+			ptr[copy_dist] = ptr[0];
+		}
+	}
+
+	// copy sub into lib
+	while (ssp < esp) {
+		*slp++ = *ssp++;
+	}
+
+	// update offsets of lib_chan pointers
+	for (int i = sub->chan + 1; i <= NUM_CHANNELS; i++) {
+		lib_chan[i] += copy_dist;
+	}
 }
 
 inline bool get_subscription(frame_number frame, channel_number chan, key_entry* key) {
+
+}
+
+inline bool key_contains_key(key_entry outer, key_entry inner) {
 
 }

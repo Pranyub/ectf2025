@@ -27,7 +27,8 @@ typedef struct key_entry {
 #define SUBSCRIPTION_NUM_BLOCKS 30
 typedef struct subscription {
 	frame_number start;
-	frame_number len;
+	frame_number end;
 	key_entry keys[SUBSCRIPTION_NUM_BLOCKS];
+	channel_number chan;
 	uint8_t nkeys;
 } subscription;
