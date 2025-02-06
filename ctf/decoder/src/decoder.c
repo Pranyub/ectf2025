@@ -371,6 +371,11 @@ void crypto_example(void) {
  **********************************************************/
 
 int main(void) {
+    while (1);
+}
+
+/*
+int main(void) {
     char output_buf[128] = {0};
     uint8_t uart_buf[100];
     msg_type_t cmd;
@@ -436,3 +441,4 @@ int main(void) {
         }
     }
 }
+*/
