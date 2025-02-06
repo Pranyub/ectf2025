@@ -7,10 +7,26 @@
 #define NUM_KEYS 256
 #define NUM_CHANNELS 5
 
+/*
+ * On the format and implementation of lib:
+ * Lib is an array broken into separate sections for each channel
+ * Each channel's section starts at its pointer in lib_chan (inclusive) and ends
+ * at the next pointer in lib_chan (exclusive)
+ * Thus, channel 0's keys are from lib_chan[0] to lib_chan[1]
+ * 
+ * Each section is sorted by frame number (increasing)
+ * additionally, each section should have no redundant keys,
+ * there should exist no frame that can be derived from two different keys in a section
+ */
+
 // initial values of lib pointers
 // add a blank (defualt) key with the root for channel 0
 key_entry lib[NUM_KEYS] = {{.key = {}, .start = 0, .level = 64, .valid = true}};
+
+// pointers to the start of keys for each channel
 key_entry* lib_chan[NUM_CHANNELS + 1] = {lib, lib+1, lib+1, lib+1, lib+1, lib+1};
+
+#define LIB_END (lib + NUM_KEYS)
 
 /**
  * Returns true iff the key for the given frame can be derived from the given key
