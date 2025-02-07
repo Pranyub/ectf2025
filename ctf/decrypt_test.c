@@ -209,11 +209,6 @@ void test_deriveKey() {
 	assert(derive_key(11, 1, key) == SUCCESS);
 	assert(tstksize == 0);
 	assert(key[0] == 3);
-	
-
-	
-
-
 
 	printf("Finish Test Derive Key\n");
 }
