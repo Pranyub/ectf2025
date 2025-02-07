@@ -141,5 +141,7 @@ inline bool get_subscription(frame_number frame, channel_number chan, key_entry*
 }
 
 inline bool key_contains_key(key_entry outer, key_entry inner) {
-
+	if (outer.level < inner.level) return false;
+	return (outer.start >> outer.level) == (inner.start >> outer.level);
+	// return !((outer.start ^ inner.start) >> outer.level)
 }
