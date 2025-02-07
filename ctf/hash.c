@@ -10,6 +10,7 @@
  * Hashes all keys under this key into dst
  */
 void hash_key(key_entry key ,uint64_t frame_num, key_entry* dst) {
+    /*
 	SHA256_CTX sha256;
     int padding_len = sizeof(key.key) + sizeof(frame_num);
 	
@@ -27,5 +28,5 @@ void hash_key(key_entry key ,uint64_t frame_num, key_entry* dst) {
     
     // Finalize and store the result in output
     SHA256_Final(dst, &sha256);
-
+    */
 }

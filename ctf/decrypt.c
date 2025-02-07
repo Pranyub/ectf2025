@@ -116,11 +116,11 @@ void add_subscription(struct subscription* sub) {
 	// copy tail to correct position
 	if (copy_dist > 0) {
 		if (lib_chan[NUM_CHANNELS + 1] + copy_dist > LIB_END) return;  // failure (out of space)
-		for (key_entry* ptr = lib_chan[NUM_CHANNELS + 1] - 1; ptr >= elp; ptr--) {
+		for (key_entry* ptr = lib_chan[NUM_CHANNELS] - 1; ptr >= elp; ptr--) {
 			ptr[copy_dist] = ptr[0];
 		}
 	} else if (copy_dist < 0) {
-		for (key_entry* ptr = elp; ptr < lib_chan[NUM_CHANNELS + 1]; ptr++) {
+		for (key_entry* ptr = elp; ptr < lib_chan[NUM_CHANNELS]; ptr++) {
 			ptr[copy_dist] = ptr[0];
 		}
 	}

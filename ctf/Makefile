@@ -14,7 +14,7 @@ build: all
 
 all: decrypt_test
 
-decrypt_test: decrypt_test.o decrypt.o hash.o
+decrypt_test: decrypt_test.o hash.o
 	$(CC) $(LFLAGS) -o $@ $^ $(LIBS)
 
 decrypt.o: decrypt.c decrypt.h common.h hash.h
