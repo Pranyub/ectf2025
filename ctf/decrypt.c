@@ -5,7 +5,6 @@
 #include "hash.h"
 
 #define NUM_KEYS 256
-#define NUM_CHANNELS 5
 
 /*
  * On the format and implementation of lib:
@@ -19,14 +18,20 @@
  * there should exist no frame that can be derived from two different keys in a section
  */
 
-// initial values of lib pointers
 // add a blank (defualt) key with the root for channel 0
-key_entry lib[NUM_KEYS] = {{.key = {}, .start = 0, .level = 64, .valid = true}};
-
-// pointers to the start of keys for each channel
+key_entry lib[NUM_KEYS] = {{.key = {}, .start = 0, .level = ROOT_KEY_LEVEL}};
+// initial values of lib pointers
 key_entry* lib_chan[NUM_CHANNELS + 1] = {lib, lib+1, lib+1, lib+1, lib+1, lib+1};
 
 #define LIB_END (lib + NUM_KEYS)
+
+/**
+ * stk contains the current stack of derived keys
+ * The highest level key is always at the bottom of the stack (stk[0])
+ * derived keys are layered on top
+ */
+key_entry stk[NUM_CHANNELS][ROOT_KEY_LEVEL];
+uint8_t stksize[NUM_CHANNELS];
 
 /**
  * Returns true iff the key for the given frame can be derived from the given key
@@ -37,13 +42,7 @@ inline bool key_contains_frame(key_entry entry, frame_number frame);
  * Hashes the key to get the next key
  * Successive calls will eventually reach the key for the given frame
  */
-inline key_entry hash_towards_frame(key_entry entry, frame_number frame);
-
-/**
- * Gets the correct key for the given frame from the library
- * Returns SUCCESS on success, else FAILURE
- */
-inline bool get_subscription(frame_number frame, channel_number chan, key_entry* key);
+inline key_entry hash_towards_frame(key_entry entry, frame_number frame, key_entry* dst);
 
 /**
  * Returns true iff the key outer fully contains inner
@@ -52,11 +51,47 @@ inline bool get_subscription(frame_number frame, channel_number chan, key_entry*
 inline bool key_contains_key(key_entry outer, key_entry inner);
 
 int derive_key(frame_number frame, channel_number chan, uint8_t key[32]) {
+	// check if key is found in stack
+	if (stksize[chan] > 0 && key_contains_frame(stk[chan][0], frame)) {
+		goto key_found;
+	}
 
+	// try to find the correct key from the library
+	for (key_entry* ptr = lib_chan[chan]; ptr < lib_chan[chan + 1]; ptr++) {
+		if (key_contains_frame(*ptr, frame)) {
+			stk[chan][0] = *ptr;
+			stksize[chan] = 1;
+			goto key_found;
+		}
+	}
+
+	// didn't find correct key; fail
+	return FAILURE;
+
+	key_found:
+	
+	// pop the stack until the key on the top of the stack can be used to derive our frame
+	while (!key_contains_frame(stk[chan][stksize[chan] - 1], frame)) stksize[chan]--;
+
+	// derive keys from the top of the stack until we get the level 0 key
+	while (stk[chan][stksize[chan] - 1].level) {
+		hash_towards_frame(stk[chan][stksize[chan] - 1], frame, &stk[chan][stksize[chan]]);
+		stksize[chan]++;
+	}
+
+	// copy the top key in stack out to the given dst array
+	for (int i = 0; i < 32; i++) {
+		key[i] = stk[chan][stksize[chan] - 1].key[i];
+	}
+	return SUCCESS;
 }
 
-inline key_entry hash_towards_frame(key_entry entry, frame_number frame) {
+inline key_entry hash_towards_frame(key_entry entry, frame_number frame, key_entry* dst) {
+	// get the start value of the key we're looking for by bitmasking frame
+	frame = (frame >> entry.level - 1) << entry.level - 1;
 
+	// call hash function
+	hash_key(entry, frame, dst);
 }
 
 inline bool key_contains_frame(key_entry entry, frame_number frame) {
@@ -134,10 +169,6 @@ void add_subscription(struct subscription* sub) {
 	for (int i = sub->chan + 1; i <= NUM_CHANNELS; i++) {
 		lib_chan[i] += copy_dist;
 	}
-}
-
-inline bool get_subscription(frame_number frame, channel_number chan, key_entry* key) {
-
 }
 
 inline bool key_contains_key(key_entry outer, key_entry inner) {

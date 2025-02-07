@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+// maybe don't look into this either
+#include "hash.h"
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
@@ -16,6 +19,26 @@ key_entry keygen(frame_number start, frame_number len) {
 		level++;
 	}
 	return (key_entry){.level = level, .start = start};
+}
+
+frame_number tstk[ROOT_KEY_LEVEL];
+uint8_t tstksize = 0;
+
+// dummy implementation of hash_key for testing purposes
+void hash_key(key_entry srckey, uint64_t dstkey_start, key_entry* dstkey) {
+	assert(tstksize);
+	
+	// pop the next off the target stack
+	frame_number target = tstk[--tstksize];
+	assert(dstkey_start == target);
+
+	dstkey->start = dstkey_start;
+	dstkey->level = srckey.level - 1;
+
+	// copy key for verification purposes
+	for (int i = 0; i < 32; i++) {
+		dstkey->key[i] = srckey.key[i];
+	}
 }
 
 void check_lib_invariant() {
@@ -139,9 +162,66 @@ void test_addSubscription() {
 	printf("Finish Test Add Subscription\n");
 }
 
+void test_deriveKey() {
+	printf("Start Test Derive Key\n");
+
+	// add some things into lib
+	lib[1] = keygen(0,4);
+	lib[1].key[0] = 1;
+	lib[2] = keygen(8,1);
+	lib[2].key[0] = 2;
+	lib[3] = keygen(10,2);
+	lib[3].key[0] = 3;
+
+	lib_chan[5] = lib_chan[4] = lib_chan[3] = lib_chan[2] = lib_chan[1] + 3;
+	
+	uint8_t key[32];
+
+	// test frame 0, has key
+	tstk[0] = 0;
+	tstk[1] = 0;
+	tstksize = 2;
+	assert(derive_key(0, 1, key) == SUCCESS);
+	assert(tstksize == 0);
+	assert(key[0] == 1);
+
+	// test frame 6, no key
+	assert(derive_key(6, 1, key) == FAILURE);
+	assert(tstksize == 0);
+
+	// (implicit) test stack is retained
+
+	// test frame 1, has key, stack partially known
+	tstk[0] = 1;
+	tstksize = 1;
+	assert(derive_key(1, 1, key) == SUCCESS);
+	assert(tstksize == 0);
+	assert(key[0] == 1);
+
+	// test frame 8, has key, clear stack
+	assert(derive_key(8, 1, key) == SUCCESS);
+	assert(tstksize == 0);
+	assert(key[0] == 2);
+
+	// test frame 11, has key, clear stack, non-start
+	tstk[0] = 11;
+	tstksize = 1;
+	assert(derive_key(11, 1, key) == SUCCESS);
+	assert(tstksize == 0);
+	assert(key[0] == 3);
+	
+
+	
+
+
+
+	printf("Finish Test Derive Key\n");
+}
+
 /**
  * Testbench for decrypt functions
  */
 int main(int argc, char** argv) {
 	test_addSubscription();
+	test_deriveKey();
 }
