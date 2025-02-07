@@ -103,10 +103,15 @@ void test_addSubscription() {
 
 	// full check of lib_chan
 	assert(lib_chan[0] + 1 == lib_chan[1]);
-	assert(lib_chan[1] + 3 == lib_chan[2]);
+	assert(lib_chan[1] + 2 == lib_chan[2]);
 	assert(lib_chan[2] == lib_chan[3]);
 	assert(lib_chan[2] == lib_chan[4]);
 	assert(lib_chan[2] == lib_chan[5]);
+
+	// add a sub (setup for next test)
+	sub = (subscription){.chan=1, .start=8, .end=12, .nkeys=1, .keys={keygen(8,4)}};
+	add_subscription(&sub);
+	check_lib_invariant();
 	
 	// add a sub that doesn't have a useful end
 	sub = (subscription){.chan=1, .start=0, .end=10, .nkeys=2, .keys={keygen(0,8), keygen(8,2)}};

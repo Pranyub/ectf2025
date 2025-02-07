@@ -60,7 +60,7 @@ inline key_entry hash_towards_frame(key_entry entry, frame_number frame) {
 }
 
 inline bool key_contains_frame(key_entry entry, frame_number frame) {
-
+	return (entry.start >> entry.level) == (frame >> entry.level);
 }
 
 void add_subscription(struct subscription* sub) {
@@ -83,8 +83,8 @@ void add_subscription(struct subscription* sub) {
 		// nothing left in lib
 		if (slp >= elp) break;
 
-		if (slp->start < ssp->start) slp++;
-		else if (key_contains_key(*slp, *ssp)) ssp++;
+		if (key_contains_key(*slp, *ssp)) ssp++;
+		else if (slp->start < ssp->start) slp++;
 		else break;
 	}
 
@@ -99,7 +99,7 @@ void add_subscription(struct subscription* sub) {
 		// nothing left in lib
 		if (slp >= elp) break;
 		
-		if (elp[-1].start > esp[-1].start) elp--;
+		if (elp[-1].start > esp[-1].start && !key_contains_key(esp[-1], elp[-1])) elp--;
 		else if (key_contains_key(elp[-1], esp[-1])) esp--;
 		else break;
 	}
