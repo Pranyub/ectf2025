@@ -210,6 +210,8 @@ void test_deriveKey() {
 	assert(tstksize == 0);
 	assert(key[0] == 3);
 
+	lib_chan[5] = lib_chan[4] = lib_chan[3] = lib_chan[2] = lib_chan[1] = lib_chan[0] + 1;
+
 	printf("Finish Test Derive Key\n");
 }
 
