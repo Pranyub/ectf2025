@@ -96,6 +96,7 @@ inline key_entry hash_towards_frame(key_entry entry, frame_number frame, key_ent
 
 inline bool key_contains_frame(key_entry entry, frame_number frame) {
 	return (entry.start >> entry.level) == (frame >> entry.level);
+	// return !((entry.start ^ frame) >> entry.level);
 }
 
 void add_subscription(struct subscription* sub) {
@@ -174,5 +175,21 @@ void add_subscription(struct subscription* sub) {
 inline bool key_contains_key(key_entry outer, key_entry inner) {
 	if (outer.level < inner.level) return false;
 	return (outer.start >> outer.level) == (inner.start >> outer.level);
-	// return !((outer.start ^ inner.start) >> outer.level)
+	// return !((outer.start ^ inner.start) >> outer.level);
+}
+
+int lib_has_key(frame_number frame, channel_number chan) {
+	// check if key is found in stack
+	if (stksize[chan] > 0 && key_contains_frame(stk[chan][0], frame)) {
+		return SUCCESS;
+	}
+
+	// try to find the correct key from the library
+	for (key_entry* ptr = lib_chan[chan]; ptr < lib_chan[chan + 1]; ptr++) {
+		if (key_contains_frame(*ptr, frame)) {
+			return SUCCESS;
+		}
+	}
+
+	return FAILURE;
 }
