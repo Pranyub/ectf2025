@@ -345,4 +345,3 @@ msdk/
 **/build/*
 tooling-priv/usbutils/nohup.out
 nohup.out
-__pycache__
