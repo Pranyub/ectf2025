@@ -4,7 +4,7 @@ CFLAGS=
 DFLAGS=-g -Og
 BFLAGS=-O2
 LFLAGS=
-LIBS=
+LIBS=libwolfssl.a
 
 debug: override CFLAGS+=$(DFLAGS)
 debug: all
@@ -12,19 +12,16 @@ debug: all
 build: override CFLAGS+=$(BFLAGS)
 build: all
 
-all: decrypt_test
+all: testmain
 
-decrypt_test: decrypt_test.o
+testmain: testmain.o decrypt.o
 	$(CC) $(LFLAGS) -o $@ $^ $(LIBS)
 
-decrypt.o: decrypt.c decrypt.h common.h hash.h
-	$(CC) $(CFLAGS) -c -o $@ $<
+decrypt.o: decrypt.c decrypt.h common.h
+	$(CC) $(CFLAGS) -I . -c -o $@ $<
 
-hash.o: hash.c hash.h common.h
-	$(CC) $(CFLAGS) -c -o $@ $<
-
-decrypt_test.o: decrypt_test.c decrypt.c decrypt.h common.h hash.h
+testmain.o: testmain.c common.h decrypt.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	/bin/rm -f *.o decrypt_test
+	/bin/rm -f *.o testmain

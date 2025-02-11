@@ -1,6 +1,8 @@
 #include <stdbool.h>
 #include <string.h>
-#include <wolfssl/sha.h>
+
+#include <wolfssl/options.h>
+#include <wolfssl/wolfcrypt/sha256.h>
 
 #include "decrypt.h"
 #include "common.h"
@@ -86,31 +88,29 @@ inline bool key_contains_frame(key_entry entry, frame_number frame) {
 
 void add_subscription(struct subscription* sub) {
 	stksize[sub->chan] = 0;
+	/*
 	for (int i = 0; i < ROOT_KEY_LEVEL; i++) {
 		stk[sub->chan][i] = (key_entry){};
 	}
 	for (int i = 0; i < SUBSCRIPTION_NUM_BLOCKS; i++) {
 		lib[sub->chan].keys[i] = (key_entry){};
 	}
+	*/
 	lib[sub->chan] = *sub;
 }
 
 void hash_key(key_entry key, uint64_t frame_num, key_entry* dst) {
-	SHA256_CTX sha256;
-    int padding_len = sizeof(key.key) + sizeof(frame_num);
-	
-    SHA256_Init(&sha256);
+	Sha256 sha256;
+	wc_InitSha256(&sha256);
 
     //fix padding so that it's same with Taylor
-    if (padding_len < PAD_LENGTH) {
-        char padding[PAD_LENGTH - padding_len];
-        memset(padding, 0, sizeof(padding));
-        SHA256_Update(&sha256, padding, sizeof(padding));
-    }
+	char padding[PAD_LENGTH];
+	memset(padding, 0, sizeof(PAD_LENGTH));
+	wc_Sha256Update(&sha256, padding, PAD_LENGTH - sizeof(frame_num));
 	
-    SHA256_Update(&sha256, key.key, sizeof(key));
-	SHA256_Update(&sha256, frame_num, sizeof(frame_num));
+    wc_Sha256Update(&sha256, (char*) &key.key, sizeof(key.key));
+	wc_Sha256Update(&sha256, (char*) &frame_num, sizeof(frame_num));
     
     // Finalize and store the result in output
-    SHA256_Final(dst, &sha256);
+    wc_Sha256Final(&sha256, dst->key);
 }

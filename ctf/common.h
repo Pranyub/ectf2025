@@ -19,7 +19,7 @@ typedef struct key_entry {
 	
 	// the first frame number covered by this key
 	frame_number start;
-
+	
 	// the number of nodes below this
 	// len == 1 << level
 	uint8_t level;

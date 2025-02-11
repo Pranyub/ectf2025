@@ -3,3 +3,10 @@
 tooling-priv/usbutils/nohup.out
 nohup.out
 __pycache__
+**/wolfssl-5.7.6/*
+**/.vscode/*
+ctf/libwolfssl.a
+
+*.o
+
+ctf/testmain
