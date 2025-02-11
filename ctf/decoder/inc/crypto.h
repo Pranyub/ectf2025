@@ -5,6 +5,7 @@
 #include <wolfssl/options.h>
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
+#include <wolfssl/wolfcrypt/ecc.h>
 
 #define TAG_LENGTH 16
 #define KEY_SIZE 32
@@ -62,5 +63,10 @@ int decrypt_frame(const uint8_t key[KEY_SIZE],
                   const uint8_t nonce[NONCE_SIZE],
                   const uint8_t encrypted_frame[FRAME_SIZE],
                   uint8_t* out);
+
+/**
+ * @brief verifies the ECDSA signature of a hash
+ * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/ecc-params.c
+ */
 
 #endif
