@@ -40,3 +40,5 @@ ENTRY=firmware_startup
 
 # Enable Crypto Example
 CRYPTO_EXAMPLE=1
+PROJ_CFLAGS += -DHAVE_CHACHA  # compile with CHACHA
+PROJ_CFLAGS += -DHAVE_POLY1305  # compile with CHACHA
