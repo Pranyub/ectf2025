@@ -111,9 +111,9 @@ static int chacha20_test_decrypt_normal(void) {
                          plaintext) != SUCCESS) { return ERROR; }
 
     int memcmp_ret;
-    if ((memcmp_ret = memcmp(plaintext, CHACHA20_TEST_PLAINTEXT, CHACHA20_TEST_CIPHER_LENGTH)) != 0) { 
-        char buf[48 + 2 * CHACHA20_TEST_CIPHER_LENGTH];
-        sprintf(buf, "Expected `%s` got `%s`\nThe memcmp returned %d\n", CHACHA20_TEST_PLAINTEXT, plaintext);
+    if ((memcmp_ret = memcmp(plaintext, CHACHA20_TEST_ENCRYPTED_CIPHER, sizeof(CHACHA20_TEST_ENCRYPTED_CIPHER))) != 0) { 
+        char buf[10000];
+        sprintf(buf, "Expected `%s` got `%s`\nThe memcmp returned %d\n", CHACHA20_TEST_PLAINTEXT, plaintext, memcmp_ret);
         print_debug(buf);
         return ERROR;
     }

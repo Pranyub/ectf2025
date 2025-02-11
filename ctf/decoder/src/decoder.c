@@ -182,6 +182,9 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     return 1;
 }
 
+#include "crypto.h"
+#include "chacha20_tests.h"
+
 /* Code between this #ifdef and the subsequent #endif will
 *  be ignored by the compiler if CRYPTO_EXAMPLE is not set in
 *  the projectk.mk file. */
@@ -530,6 +533,7 @@ int main(void) {
         case LIST_MSG:
             STATUS_LED_CYAN();
             list_channels();
+
             break;
 
         // Handle decode command

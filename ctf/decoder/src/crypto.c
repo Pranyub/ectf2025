@@ -1,6 +1,6 @@
 #include "crypto.h"
 
-int chacha20_decrypt(const uint8_t key[KEY_SIZE],
+int chacha20_decrypt(const uint8_t key[CRYPTO_KEY_SIZE],
                      const uint8_t* in,
                      size_t len,
                      const uint8_t tag[TAG_LENGTH],
@@ -23,12 +23,12 @@ int chacha20_decrypt(const uint8_t key[KEY_SIZE],
     return ERROR;  // generic error
 }
 
-int decrypt_frame(const uint8_t key[KEY_SIZE],
+int decrypt_frame(const uint8_t key[CRYPTO_KEY_SIZE],
                   const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
-                  const uint8_t encrypted_frame[FRAME_SIZE],
+                  const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                   const uint8_t tag[TAG_LENGTH],
                   uint8_t* out) {
     int offset = 0;
@@ -48,6 +48,6 @@ int decrypt_frame(const uint8_t key[KEY_SIZE],
 
     memcpy((void*)(additional_data + offset), (void*)nonce, NONCE_SIZE);  // copy the nonce to the AD
 
-    int status = chacha20_decrypt(key, encrypted_frame, FRAME_SIZE, tag, additional_data, ad_size, nonce, out);
+    int status = chacha20_decrypt(key, encrypted_frame, CRYPTO_FRAME_SIZE, tag, additional_data, ad_size, nonce, out);
     return status;
 }
