@@ -22,3 +22,17 @@ int chacha20_decrypt(const uint8_t key[KEY_SIZE],
 
     return ERROR;  // generic error
 }
+
+int decrypt_frame(const uint8_t key[KEY_SIZE],
+                  uint64_t packet_id,
+                  uint32_t channel_no,
+                  const uint8_t tag[TAG_LENGTH],
+                  const uint8_t nonce[NONCE_SIZE],
+                  const uint8_t encrypted_frame[FRAME_SIZE],
+                  uint8_t* out) {
+    uint8_t additional_data[12];
+    memcpy((void*)additional_data, (void*)&packet_id, 8);  // copy the packet_id
+    memcpy((void*)additional_data, (void*)&channel_no, 4);  // copy the channel_no
+    int status = chacha20_decrypt(key, encrypted_frame, FRAME_SIZE, tag, additional_data, 12, nonce, out);
+    return status;
+}
