@@ -1,8 +1,12 @@
 #include <stdbool.h>
+#include <string.h>
+#include <wolfssl/sha.h>
 
 #include "decrypt.h"
 #include "common.h"
 #include "hash.h"
+
+#define PAD_LENGTH 256
 
 // add a blank (defualt) key with the root for channel 0
 subscription lib[NUM_CHANNELS] = {{.start=0, .end=0, .chan=0, .nkeys=1 /*keys initialized to 0*/}};
@@ -25,6 +29,12 @@ inline bool key_contains_frame(key_entry entry, frame_number frame);
  * Successive calls will eventually reach the key for the given frame
  */
 inline key_entry hash_towards_frame(key_entry entry, frame_number frame, key_entry* dst);
+
+/**
+ * Hashes the source key with the start value of the dstkey to produce the value of the dstkey
+ * outputs the dstkey into dstkey
+ */
+void hash_key(key_entry srckey, uint64_t dstkey_start, key_entry* dstkey);
 
 int derive_key(frame_number frame, channel_number chan, uint8_t key[32]) {
 	// check if key is found in stack
@@ -84,4 +94,24 @@ void add_subscription(struct subscription* sub) {
 		lib[sub->chan].keys[i] = (key_entry){};
 	}
 	lib[sub->chan] = *sub;
+}
+
+void hash_key(key_entry key, uint64_t frame_num, key_entry* dst) {
+	SHA256_CTX sha256;
+    int padding_len = sizeof(key.key) + sizeof(frame_num);
+	
+    SHA256_Init(&sha256);
+
+    //fix padding so that it's same with Taylor
+    if (padding_len < PAD_LENGTH) {
+        char padding[PAD_LENGTH - padding_len];
+        memset(padding, 0, sizeof(padding));
+        SHA256_Update(&sha256, padding, sizeof(padding));
+    }
+	
+    SHA256_Update(&sha256, key.key, sizeof(key));
+	SHA256_Update(&sha256, frame_num, sizeof(frame_num));
+    
+    // Finalize and store the result in output
+    SHA256_Final(dst, &sha256);
 }
