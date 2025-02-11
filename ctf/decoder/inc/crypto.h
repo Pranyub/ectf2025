@@ -2,7 +2,13 @@
 #define CRYPTO_H
 
 #include <string.h>
+
+// required wolfssl includes
 #include <wolfssl/options.h>
+#include <wolfssl/wolfcrypt/settings.h>
+#include <wolfssl/ssl.h>
+
+// crypto related imports
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
 #include <wolfssl/wolfcrypt/ecc.h>
@@ -11,6 +17,7 @@
 #define KEY_SIZE 32
 #define NONCE_SIZE 12
 #define FRAME_SIZE 256
+#define MAGIC_SIZE 3
 
 #define SUCCESS 0
 #define ERROR 1
@@ -46,22 +53,25 @@ int chacha20_decrypt(const uint8_t key[KEY_SIZE],
 /**
  * @brief decrypts a frame with authentication checking
  * @pre \p out is at least the same size as \p buf
+ * @pre \p tag is a valid tag for the frame
  * @post \p out now stores the decrypted frame
  * @param key the key used for decryption
- * @param packet_id the id of the packed
+ * @param magic the magic used at the start of the frame
  * @param channel_no the channel number of the frame
- * @param tag the tag used for authentication checking
+ * @param frame_no the frame number
  * @param nonce the number used once
- * @param buf the input buffer with the encrypted frame
+ * @param encrypted_frame the input buffer with the encrypted frame
+ * @param tag the tag used for authentication checking
  * @param out the output buffer that will store the decrypted frame
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame(const uint8_t key[KEY_SIZE],
-                  uint64_t packet_id,
-                  uint32_t channel_no,
-                  const uint8_t tag[TAG_LENGTH],
+                  const uint8_t magic[MAGIC_SIZE],
+                  uint8_t channel_no,
+                  uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
                   const uint8_t encrypted_frame[FRAME_SIZE],
+                  const uint8_t tag[TAG_LENGTH],
                   uint8_t* out);
 
 /**
