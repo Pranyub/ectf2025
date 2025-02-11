@@ -9,6 +9,8 @@
 #define TAG_LENGTH 16
 #define KEY_SIZE 32
 #define NONCE_SIZE 12
+#define FRAME_SIZE 256
+
 #define SUCCESS 0
 #define ERROR 1
 #define TAG_ERROR 2
@@ -39,5 +41,26 @@ int chacha20_decrypt(const uint8_t key[KEY_SIZE],
                      size_t ad_len,
                      const uint8_t nonce[NONCE_SIZE],
                      uint8_t* out);
+
+/**
+ * @brief decrypts a frame with authentication checking
+ * @pre \p out is at least the same size as \p buf
+ * @post \p out now stores the decrypted frame
+ * @param key the key used for decryption
+ * @param packet_id the id of the packed
+ * @param channel_no the channel number of the frame
+ * @param tag the tag used for authentication checking
+ * @param nonce the number used once
+ * @param buf the input buffer with the encrypted frame
+ * @param out the output buffer that will store the decrypted frame
+ * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
+ */
+int decrypt_frame(const uint8_t key[KEY_SIZE],
+                  uint64_t packet_id,
+                  uint32_t channel_no,
+                  const uint8_t tag[TAG_LENGTH],
+                  const uint8_t nonce[NONCE_SIZE],
+                  const uint8_t encrypted_frame[FRAME_SIZE],
+                  uint8_t* out);
 
 #endif
