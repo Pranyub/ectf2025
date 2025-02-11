@@ -3,10 +3,8 @@
 
 #include <string.h>
 #include <wolfssl/options.h>
-#include <wolfssl/wolfcrypt/hash.h>
+#include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
-
-
 
 #define TAG_LENGTH 16
 #define KEY_SIZE 32
