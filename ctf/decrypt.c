@@ -4,7 +4,6 @@
 
 #include "decrypt.h"
 #include "common.h"
-#include "hash.h"
 
 #define PAD_LENGTH 256
 
