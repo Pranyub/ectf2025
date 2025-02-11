@@ -43,7 +43,10 @@ ENTRY=firmware_startup
 CRYPTO_EXAMPLE=1
 PROJ_CFLAGS += -DHAVE_CHACHA  # compile with CHACHA
 PROJ_CFLAGS += -DHAVE_POLY1305  # compile with CHACHA
+<<<<<<< HEAD
 PROJ_CFLAGS += -DECC_TIMING_RESISTANT  # compile ECC with timing attack resistance
 PROJ_CLFAGS += -DTFM_TIMING_RESISTANT
 PROJ_CFLAGS += -DNO_RSA
 # PROJ_CFLAGS += -DWC_NO_RNG
+=======
+>>>>>>> 18c60a3 (Added chacha and poly1305 to compilation)
