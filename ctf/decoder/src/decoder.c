@@ -533,6 +533,29 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
+
+            #ifdef CRYPTO_EXAMPLE
+                // Run the crypto example
+                // TODO: Remove this from your design
+                crypto_example();
+            #endif // CRYPTO_EXAMPLE
+
+            print_debug("Performing chacha20 tests...\n");
+            if (chacha20_test_decrypt_normal() != SUCCESS) {
+                print_debug("Passed normal decryption test.\n");
+            } else {
+                print_debug("Failed normal decyrption test.\n");
+            }
+            print_debug("Finished chacha20 tests.\n");
+
+            print_debug("Performing crypto tests.\n");
+            if (decrypt_frame_test_normal() != SUCCESS) {
+                print_debug("Passed normal decryption test.\n");
+            } else {
+                print_debug("Failed normal decryption test.\n");
+            }
+            print_debug("Finished crypto tests.");
+
             list_channels();
             break;
 

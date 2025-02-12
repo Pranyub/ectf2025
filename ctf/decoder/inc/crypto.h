@@ -51,6 +51,31 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
                      uint8_t* out);
 
 /**
+ * @brief decrypts a frame with authentication checking, given an additional data that's already in a uint8_t array
+ * @pre \p out is at least the same size as \p buf
+ * @pre \p tag is a valid tag for the frame
+ * @pre \p additional_data is the formatted additional data in the following order:
+ *                                   3 bytes   1 byte      8 bytes           12 bytes
+ *                                ---------------------------------------------------------
+ *                                |           |       |               |                   |
+ *                                |   MAGIC   | CH. # |    FRAME #    |       NONCE       |
+ *                                |           |       |               |                   |
+ *                                ---------------------------------------------------------
+ * @post \p out now stores the decrypted frame
+ * @param key the key used for decryption
+ * @param additional_data the additional data to be used authentication
+ * @param encrypted_frame the input buffer with the encrypted frame
+ * @param tag the tag used for authentication checking
+ * @param out the output buffer that will store the decrypted frame
+ * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
+ */
+int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
+                         const uint8_t additional_data[MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
+                         const uint8_t tag[TAG_LENGTH],
+                         uint8_t* out);
+
+/**
  * @brief decrypts a frame with authentication checking
  * @pre \p out is at least the same size as \p buf
  * @pre \p tag is a valid tag for the frame

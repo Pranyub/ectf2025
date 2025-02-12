@@ -8,14 +8,15 @@ def encryptFrame(fNum, key, frame_data, magic, channel_num):
     frameKey = calcKey(fNum, key)
 
     nonce = os.urandom(12)
+    nonce = b'\xc3\x26\x6c\x7b\xe8\x14\x02\x3c\xae\x9b\x8e\x2c'
     ad = b''
     ad += magic
     ad += channel_num
-    ad += fNum.to_bytes(1, 'big')
+    ad += fNum.to_bytes(8, 'big')
     ad += nonce
     cipher = ChaCha20Poly1305(frameKey)
     ciphertext = cipher.encrypt(nonce, frame_data, ad)
-    print(f"\n\nAdditional data: {ad.hex()}\nCipher text: {ciphertext.hex()}\nKey: {key.hex()}\nNonce: {nonce.hex()}\n\n")
+    print(f"\n\nAdditional data: {ad.hex()}\nPlaintext frame: {frame_data.hex()}\nCipher text: {ciphertext[:-16].hex()}\nKey: {key.hex()}\nNonce: {nonce.hex()}\nTag: {ciphertext[-16:].hex()}\n\n")
     return ciphertext
 
 def calcKey(fNum, currKey):

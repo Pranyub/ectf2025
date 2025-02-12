@@ -23,6 +23,23 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
     return ERROR;  // generic error
 }
 
+int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
+                         const uint8_t additional_data[MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
+                         const uint8_t tag[TAG_LENGTH],
+                         uint8_t* out) {
+    size_t ad_size = MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
+    return chacha20_decrypt(key,
+                            encrypted_frame,
+                            CRYPTO_FRAME_SIZE,
+                            tag,
+                            additional_data,
+                            ad_size,
+                            additional_data + ad_size - NONCE_SIZE,
+                            out);
+    
+}
+
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
@@ -47,7 +64,5 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     offset += sizeof(frame_no);
 
     memcpy((void*)(additional_data + offset), (void*)nonce, NONCE_SIZE);  // copy the nonce to the AD
-
-    int status = chacha20_decrypt(key, encrypted_frame, CRYPTO_FRAME_SIZE, tag, additional_data, ad_size, nonce, out);
-    return status;
+    return decrypt_frame_ad_buf(key, additional_data, encrypted_frame, tag, out);
 }
