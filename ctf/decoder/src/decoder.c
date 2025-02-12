@@ -533,7 +533,6 @@ int main(void) {
         case LIST_MSG:
             STATUS_LED_CYAN();
             list_channels();
-
             break;
 
         // Handle decode command
