@@ -53,14 +53,17 @@ static int decrypt_frame_test_normal(void);
 
 static int decrypt_frame_test_normal(void) {
     uint8_t out[CRYPTO_FRAME_SIZE];
-    if (decrypt_frame_ad_buf(CRYPTO_TEST_KEY,
+    int status;
+    if ((status = decrypt_frame_ad_buf(CRYPTO_TEST_KEY,
                              CRYPTO_TEST_AD,
                              CRYPTO_TEST_CIPHER_TEXT,
                              CRYPTO_TEST_TAG,
-                             out) != SUCCESS) { return ERROR; }
+                             out)) != SUCCESS) {
+            return status;
+        }
     if (memcmp(out, CRYPTO_TEST_PLAIN, CRYPTO_FRAME_SIZE) != 0) {
         print_debug("Something went wrong...\n");
-        return ERROR;
+        return status;
     }
 
     return SUCCESS;
