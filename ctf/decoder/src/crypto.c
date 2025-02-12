@@ -1,6 +1,6 @@
 #include "crypto.h"
 
-int chacha20_decrypt(const uint8_t key[CRYPTO_KEY_SIZE],
+int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
                      const uint8_t* in,
                      size_t len,
                      const uint8_t tag[TAG_LENGTH],
@@ -23,7 +23,7 @@ int chacha20_decrypt(const uint8_t key[CRYPTO_KEY_SIZE],
     return ERROR;  // generic error
 }
 
-int decrypt_frame(const uint8_t key[CRYPTO_KEY_SIZE],
+int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,

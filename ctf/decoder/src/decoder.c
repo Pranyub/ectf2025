@@ -184,6 +184,7 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
 
 #include "crypto.h"
 #include "chacha20_tests.h"
+#include "crypto_tests.h"
 
 /* Code between this #ifdef and the subsequent #endif will
 *  be ignored by the compiler if CRYPTO_EXAMPLE is not set in

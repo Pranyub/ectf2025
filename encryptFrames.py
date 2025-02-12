@@ -4,12 +4,18 @@ import os
 
 TOTAL_FRAMES = 3
 
-def encryptFrame(fNum, key, frame_data):
+def encryptFrame(fNum, key, frame_data, magic, channel_num):
     frameKey = calcKey(fNum, key)
 
     nonce = os.urandom(12)
+    ad = b''
+    ad += magic
+    ad += channel_num
+    ad += fNum.to_bytes(1, 'big')
+    ad += nonce
     cipher = ChaCha20Poly1305(frameKey)
-    ciphertext = cipher.encrypt(nonce, frame_data, None)
+    ciphertext = cipher.encrypt(nonce, frame_data, ad)
+    print(f"\n\nAdditional data: {ad.hex()}\nCipher text: {ciphertext.hex()}\nKey: {key.hex()}\nNonce: {nonce.hex()}\n\n")
     return ciphertext
 
 def calcKey(fNum, currKey):
@@ -36,10 +42,10 @@ def main():
     key = bytes.fromhex("02a943ba302de0112c175a6f9e104bcbf4dd6bc9deff839699da8a383f976284")
     magic = b'FRA'
     channelNum = b'\x05'
-    frames = ["apple", "banana", "grape"]
+    frames = [b'apple\0', b'banana\0', b'grape\0']
     for i in range (TOTAL_FRAMES):
         #print(str(i) + ": ", encryptFrame(i, key, frames[i].encode('utf-8').rjust(256, b'0')).hex())
-        encFrameData = encryptFrame(i, key, frames[i].encode('utf-8').rjust(256, b'\x00'))
+        encFrameData = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), magic, channelNum)
         #print(type(encFrameData))
         frame = magic + channelNum + i.to_bytes(8, byteorder='big') + encFrameData
         print(frame.hex())

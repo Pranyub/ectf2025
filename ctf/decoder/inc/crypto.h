@@ -14,7 +14,7 @@
 #include <wolfssl/wolfcrypt/ecc.h>
 
 #define TAG_LENGTH 16
-#define CRYPTO_KEY_SIZE 32
+#define CHACHA_KEY_SIZE 32
 #define NONCE_SIZE 12
 #define CRYPTO_FRAME_SIZE 256
 #define MAGIC_SIZE 3
@@ -41,7 +41,7 @@
  * @param out the output buffer that should store the decrypted cipher
  * @return SUCCESS on success, ERROR on general error, TAG_ERROR on tag mismatch
  */
-int chacha20_decrypt(const uint8_t key[CRYPTO_KEY_SIZE],
+int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
                      const uint8_t* in,
                      size_t len,
                      const uint8_t tag[TAG_LENGTH],
@@ -65,7 +65,7 @@ int chacha20_decrypt(const uint8_t key[CRYPTO_KEY_SIZE],
  * @param out the output buffer that will store the decrypted frame
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
-int decrypt_frame(const uint8_t key[CRYPTO_KEY_SIZE],
+int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,
