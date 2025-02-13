@@ -3,6 +3,11 @@
 
 #include <string.h>
 
+// debug
+#include "simple_flash.h"
+#include "host_messaging.h"
+#include "simple_uart.h"
+
 // required wolfssl includes
 #include <wolfssl/options.h>
 #include <wolfssl/wolfcrypt/settings.h>
@@ -74,6 +79,24 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
                          const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                          const uint8_t tag[TAG_LENGTH],
                          uint8_t* out);
+
+/**
+ * @brief decrypts a frame that is encoded as a raw byte array
+ * @pre \p out is at least the same size as the ciphertext
+ * @post \p out now stores the decrypted frame
+ * @param key the key used for decryption
+ * @param in the input frame which includes the AD, encrypted frame, and tag
+ * @param out the output buffer that will store the decrypted frame
+ * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
+ */
+int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
+                      const uint8_t in[MAGIC_SIZE +
+                                       sizeof(uint8_t) +
+                                       sizeof(uint64_t) +
+                                       NONCE_SIZE +
+                                       CRYPTO_FRAME_SIZE +
+                                       TAG_LENGTH],
+                      uint8_t* out);
 
 /**
  * @brief decrypts a frame with authentication checking

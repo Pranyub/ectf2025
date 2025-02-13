@@ -16,8 +16,8 @@ def encryptFrame(fNum, key, frame_data, magic, channel_num):
     ad += nonce
     cipher = ChaCha20Poly1305(frameKey)
     ciphertext = cipher.encrypt(nonce, frame_data, ad)
-    print(f"\n\nAdditional data: {ad.hex()}\nPlaintext frame: {frame_data.hex()}\nCipher text: {ciphertext[:-16].hex()}\nKey: {key.hex()}\nNonce: {nonce.hex()}\nTag: {ciphertext[-16:].hex()}\n\n")
-    return ciphertext
+    # print(f"\n\nAdditional data: {ad.hex()}\nPlaintext frame: {frame_data.hex()}\nCipher text: {ciphertext[:-16].hex()}\nKey: {frameKey.hex()}\nNonce: {nonce.hex()}\nTag: {ciphertext[-16:].hex()}\n\n")
+    return ciphertext, ad
 
 def calcKey(fNum, currKey):
     low = 0
@@ -46,9 +46,9 @@ def main():
     frames = [b'apple\0', b'banana\0', b'grape\0']
     for i in range (TOTAL_FRAMES):
         #print(str(i) + ": ", encryptFrame(i, key, frames[i].encode('utf-8').rjust(256, b'0')).hex())
-        encFrameData = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), magic, channelNum)
+        encFrameData, ad = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), magic, channelNum)
         #print(type(encFrameData))
-        frame = magic + channelNum + i.to_bytes(8, byteorder='big') + encFrameData
-        print(frame.hex())
+        frame = ad + encFrameData
+        print(frame.hex(), end="\n\n")
     
 main()

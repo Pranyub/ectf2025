@@ -540,26 +540,9 @@ int main(void) {
                 crypto_example();
             #endif // CRYPTO_EXAMPLE
 
-            print_debug("Performing chacha20 tests...\n");
-            if (chacha20_test_decrypt_normal() == SUCCESS) {
-                print_debug("Passed normal decryption test.\n");
-            } else {
-                print_debug("Failed normal decyrption test.\n");
-            }
-            print_debug("Finished chacha20 tests.\n");
-
-            print_debug("Performing crypto tests...\n");
-            int status;
-            if ((status = decrypt_frame_test_normal()) == SUCCESS) {
-                print_debug("Passed normal decryption test.\n");
-            } else {
-                if (status == TAG_ERROR) {
-                    print_debug("Tag mismatch.\n");
-                }
-                print_debug("Failed normal decryption test.\n");
-            }
-            print_debug("Finished crypto tests.\n");
-
+            // tests
+            chacha20_test_all();
+            decrypt_frame_test_all();
             list_channels();
             break;
 
