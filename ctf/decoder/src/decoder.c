@@ -33,17 +33,34 @@ static key_entry_t key_stack[NUM_CHANNELS][ROOT_KEY_LEVEL];
 // Keeps track of the current number of keys derived for each channel
 static uint8_t key_stack_sz[NUM_CHANNELS];
 
-void key_hash(char key[32], uint64_t salt, char digest[32]) {
+// Stores subscriptions for all channels
+// Note: we add a zero root key for channel 0
+static subscription_t subscriptions[NUM_CHANNELS] = { { .frame_start = 0, .frame_end = 0, .chan = 0, .nkeys = 1 } };
+
+/*
+ * Hashes an intermediate key to give the next key, which will eventually
+ * yield a decryption key.
+ * 
+ * @param key the intermediate key
+ * @param salt the salt to use to derive the next key
+ * @param digest an output parameter that will store the resulting hash
+ */
+void key_hash(uint8_t key[32], uint64_t salt, uint8_t digest[32]) {
 	Sha256 s;
 	wc_InitSha256(&s);
-    wc_Sha256Update(&s, key, sizeof(key));
-	wc_Sha256Update(&s, (char*)&salt, sizeof(salt));
+    wc_Sha256Update(&s, key, 32);
+	wc_Sha256Update(&s, (byte*)&salt, sizeof(salt));
     wc_Sha256Final(&s, digest);
 }
 
 /*
  * Hashes the key to get the next key. Successive calls will eventually reach
  * the key for the given frame.
+ * 
+ * @param k the current key entry
+ * @param frame the frame number whose decryption key we wish to derive
+ * @param res an output parameter that will store the next key entry in the
+ *        derivation
  */
 void key_hash_towards_frame(key_entry_t* k, uint64_t frame, key_entry_t* res) {
     /*
@@ -70,6 +87,13 @@ void key_hash_towards_frame(key_entry_t* k, uint64_t frame, key_entry_t* res) {
     key_hash(k->key, child_frame_start, res->key);
 }
 
+/*
+ * Returns true if the given key can eventually derive the given frame
+ *
+ * @param k a key
+ * @param frame the frame number we wish to derive decryption keys for
+ * @return 1 if k can eventually derive frame, 0 otherwise
+ */
 int key_covers_frame(key_entry_t* k, uint64_t frame) {
     /*
      * There are two cases: either the key's level is zero, or nonzero. If it's
@@ -91,6 +115,60 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
      * the comparison.
      */
     return (k->frame_start >> k->level) == (frame >> k->level);
+}
+
+/*
+ * Returns the final decryption key for a particular frame
+ *
+ * @param chan the satellite channel number
+ * @param frame the frame number we wish to decrypt
+ * @param key output parameter that will hold the decryption key
+ * @return 1 if key was successfully found, 0 otherwise
+ */
+int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
+    // the "stack" of derived keys so far: this is a macro to save typing
+#define st (key_stack[chan])
+
+    // the stack size
+    uint8_t* sz = &key_stack_sz[chan];
+
+    // boolean flag
+    uint8_t key_found = 0;
+
+    if (*sz <= 0) {
+        // Empty stack: find correct intermediate key
+        subscription_t* sub = &subscriptions[chan];
+        for (int i = 0; i < sub->nkeys; i++) {
+            if (key_covers_frame(&sub->keys[i], frame)) {
+                // Setup the stack with the intermediate key
+                st[0] = sub->keys[i];
+                *sz = 1;
+
+                key_found = 1;
+                break;
+            }
+        }
+    } else if (key_covers_frame(&st[0], frame)) {
+        // It is possible, through repeated hashing, to derive a key for frame
+        key_found = 1;
+    }
+
+    if (!key_found)
+        return 0;
+
+    // Pop the stack until the key on the top of the stack can be used to derive our frame
+    while (!key_covers_frame(&st[*sz - 1], frame))
+        (*sz)--;
+
+    // Derive keys from the top of the stack until we get the level 0 key
+    while (st[*sz - 1].level) {
+        key_hash_towards_frame(&st[*sz - 1], frame, &st[*sz]);
+        (*sz)++;
+    }
+
+    // Copy the top key in stack to output
+    memcpy(key, st[*sz - 1].key, sizeof(((key_entry_t) {}).key));
+    return 1;
 }
 
 /* Code between this #ifdef and the subsequent #endif will
@@ -435,36 +513,10 @@ void crypto_example(void) {
 }
 #endif  //CRYPTO_EXAMPLE
 
-int main(void) {
-    init();
-    
-    Sha256 sha256;
-    wc_InitSha256(&sha256);
-
-    // char padding[PAD_LENGTH];
-    // memset(padding, 0, sizeof(PAD_LENGTH));
-    // wc_Sha256Update(&sha256, padding, PAD_LENGTH - sizeof(frame_num));
-    char key[32];
-    memset(key, 0, 32);
-    uint32_t frame_num = 123;
-    wc_Sha256Update(&sha256, &key, 32);
-    wc_Sha256Update(&sha256, &frame_num, 4);
-
-    char dst[32];
-    if (wc_Sha256Final(&sha256, dst) != 0) {
-        print_debug("hashing failed!");
-    } else {
-        print_debug("hashing succeeded");
-    }
-
-    // print_debug();
-    while (1) {}
-}
-
 /**********************************************************
  *********************** MAIN LOOP ************************
  **********************************************************/
-int old_main(void) {
+int main(void) {
     char output_buf[128] = {0};
     uint8_t uart_buf[100];
     msg_type_t cmd;
