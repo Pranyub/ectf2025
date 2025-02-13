@@ -12,11 +12,11 @@ Copyright: Copyright (c) 2025 The MITRE Corporation
 
 import argparse
 import json
-from pathlib import Path
 import struct
+import ectf25_design.encoder
 
+from pathlib import Path
 from loguru import logger
-
 
 def gen_subscription(
     secrets: bytes, device_id: int, start: int, end: int, channel: int
@@ -31,19 +31,56 @@ def gen_subscription(
     :param end: Last timestamp the subscription is valid for
     :param channel: Channel to enable
     """
-    # TODO: Update this function to provide a Decoder with whatever data it needs to
-    #   subscribe to a new channel
 
     # Load the json of the secrets file
     secrets = json.loads(secrets)
 
-    # You can use secrets generated using `gen_secrets` here like:
-    # secrets["some_secrets"]
-    # Which would return "EXAMPLE" in the reference design.
-    # Please note that the secrets are READ ONLY at this sage!
+    root_key = secrets['root_key'].encode()
+
+    # Find the highest level intermediate key whose lowest covered frame equals
+    # the current frame number and whose highest covered frame is less than or
+    # equal to the frame end
+    
+    # the highest-numbered underived frame
+    curr_frame = start
+    # stores final keys for decoder in tuple format: (frame_start, level, key)
+    keys = []
+
+    while curr_frame <= end:
+        # the current key under consideration
+        key, level = root_key, 63
+        # the range of frames the current key covers
+        covered_start, covered_end = 0, 2**64 - 1
+
+        while True:
+            if level <= 0:
+                break
+
+            if covered_start == curr_frame and covered_end <= end:
+                break
+
+            child_level = level - 1
+            child_start = (curr_frame >> child_level) << child_level # salt
+
+            key, level = ectf25_design.encoder.hash(key, child_start), child_level
+            covered_start, covered_end = child_start, child_start + (1 << level) - 1
+
+        if level == 0 and ((covered_start != curr_frame) or (covered_end != curr_frame)):
+            raise Exception(f'could not derive frame #{curr_frame}!')
+
+        keys.append((covered_start, level, key))
+        # print(f'adding key: frame_start={covered_start}, level={level}')
+        curr_frame = covered_end + 1
+
+
+    keys_serialized = b''
+    for frame_start, level, key in keys:
+        # This aligns with key_entry_packet_t
+        keys_serialized += struct.pack('<QB', frame_start, level) + key
 
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
-    return struct.pack("<IQQI", device_id, start, end, channel)
+    # This aligns with subscription_update_packet_t
+    return struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + keys_serialized
 
 
 def parse_args():

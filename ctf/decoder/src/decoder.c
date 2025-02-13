@@ -424,6 +424,8 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
     frame_size = pkt_len - (sizeof(new_frame->channel) + sizeof(new_frame->timestamp));
     channel = new_frame->channel;
 
+
+
     // The reference design doesn't use the timestamp, but you may want to in your design
     // timestamp_t timestamp = new_frame->timestamp;
 
@@ -533,7 +535,7 @@ int main(void) {
     print_debug("Decoder Booted!\n");
 
     // TODO: test enc/dec
-    while (1) { }
+    while (1) {}
 }
 
 /*
