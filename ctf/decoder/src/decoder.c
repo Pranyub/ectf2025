@@ -37,8 +37,8 @@ static uint8_t key_stack_sz[NUM_CHANNELS];
 // Note: we add a zero root key for channel 0
 static subscription_t subscriptions[NUM_CHANNELS] = { { .frame_start = 0, .frame_end = 0, .chan = 0, .nkeys = 1 } };
 
-/*
- * Hashes an intermediate key to give the next key, which will eventually
+/**
+ * @brief Hashes an intermediate key to give the next key, which will eventually
  * yield a decryption key.
  * 
  * @param key the intermediate key
@@ -53,8 +53,8 @@ void key_hash(uint8_t key[32], uint64_t salt, uint8_t digest[32]) {
     wc_Sha256Final(&s, digest);
 }
 
-/*
- * Hashes the key to get the next key. Successive calls will eventually reach
+/**
+ * @brief Hashes the key to get the next key. Successive calls will eventually reach
  * the key for the given frame.
  * 
  * @param k the current key entry
@@ -87,8 +87,8 @@ void key_hash_towards_frame(key_entry_t* k, uint64_t frame, key_entry_t* res) {
     key_hash(k->key, child_frame_start, res->key);
 }
 
-/*
- * Returns true if the given key can eventually derive the given frame
+/**
+ * @brief Returns true if the given key can eventually derive the given frame
  *
  * @param k a key
  * @param frame the frame number we wish to derive decryption keys for
@@ -117,7 +117,8 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
     return (k->frame_start >> k->level) == (frame >> k->level);
 }
 
-/*
+/**
+ * @brief
  * Returns the final decryption key for a particular frame
  *
  * @param chan the satellite channel number
@@ -218,17 +219,28 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
 #pragma pack(push, 1) // Tells the compiler not to pad the struct members
 // for more information on what struct padding does, see:
 // https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Structure-Layout.html
+
+// decrypted frame packet
 typedef struct {
-    channel_id_t channel;
-    timestamp_t timestamp;
+    uint8_t channel;
+    uint64_t timestamp;
     uint8_t data[FRAME_SIZE];
 } frame_packet_t;
 
 typedef struct {
+    uint64_t frame_start;
+    uint8_t level;
+    uint8_t key[32];
+} key_entry_packet_t;
+
+typedef struct {
+    // TODO: add signature buf here
     decoder_id_t decoder_id;
-    timestamp_t start_timestamp;
-    timestamp_t end_timestamp;
-    channel_id_t channel;
+    uint8_t chan;
+    uint8_t nkeys;
+    uint64_t start_timestamp;
+    uint64_t end_timestamp;
+    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];
 } subscription_update_packet_t;
 
 typedef struct {
@@ -359,7 +371,8 @@ int list_channels() {
  *  @note Take care to note that this system is little endian.
  *
  *  @return 0 upon success.  -1 if error.
-*/
+ */
+/*
 int update_subscription(pkt_len_t pkt_len, subscription_update_packet_t *update) {
     int i;
 
@@ -393,6 +406,7 @@ int update_subscription(pkt_len_t pkt_len, subscription_update_packet_t *update)
     write_packet(SUBSCRIBE_MSG, NULL, 0);
     return 0;
 }
+*/
 
 /** @brief Processes a packet containing frame data.
  *
@@ -513,9 +527,16 @@ void crypto_example(void) {
 }
 #endif  //CRYPTO_EXAMPLE
 
-/**********************************************************
- *********************** MAIN LOOP ************************
- **********************************************************/
+
+int main(void) {
+    init();
+    print_debug("Decoder Booted!\n");
+
+    // TODO: test enc/dec
+    while (1) { }
+}
+
+/*
 int main(void) {
     char output_buf[128] = {0};
     uint8_t uart_buf[100];
@@ -582,3 +603,4 @@ int main(void) {
         }
     }
 }
+*/
