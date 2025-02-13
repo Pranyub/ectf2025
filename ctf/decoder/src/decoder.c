@@ -15,14 +15,83 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <wolfssl/options.h>
+#include <wolfssl/wolfcrypt/sha256.h>
+
 #include "mxc_device.h"
 #include "status_led.h"
 #include "board.h"
 #include "mxc_delay.h"
 #include "simple_flash.h"
 #include "host_messaging.h"
-
 #include "simple_uart.h"
+#include "decoder.h"
+
+// Stores the current "chain" of keys that have been derived
+static key_entry_t key_stack[NUM_CHANNELS][ROOT_KEY_LEVEL];
+
+// Keeps track of the current number of keys derived for each channel
+static uint8_t key_stack_sz[NUM_CHANNELS];
+
+void key_hash(char key[32], uint64_t salt, char digest[32]) {
+	Sha256 s;
+	wc_InitSha256(&s);
+    wc_Sha256Update(&s, key, sizeof(key));
+	wc_Sha256Update(&s, (char*)&salt, sizeof(salt));
+    wc_Sha256Final(&s, digest);
+}
+
+/*
+ * Hashes the key to get the next key. Successive calls will eventually reach
+ * the key for the given frame.
+ */
+void key_hash_towards_frame(key_entry_t* k, uint64_t frame, key_entry_t* res) {
+    /*
+     * The salt is the starting frame number covered by the key entry, which is
+     * guaranteed to be unique for the left and right children. It is helpful
+     * to think of the frame number's bitstring as deciding which route to take
+     * (left vs right) at each level of the tree. Thus, the starting frame
+     * number (salt) is the frame number with the lowest "level" bits set to
+     * zero.
+     * 
+     * Note: the salt value was chosen somewhat arbitrarily; it does not matter
+     * as long as it is the same for frames under the same subtree, and
+     * distinct from the other salt at the same level.
+     * 
+     * Also note: level is assumed to be positive, since hashing a level 1 key
+     * gives us the final key for the frame.
+     */
+    uint64_t child_level = k->level - 1;
+    uint64_t child_frame_start = (frame >> child_level) << child_level;
+
+    // Return a new key entry in the output parameter res
+    res->frame_start = child_frame_start;
+    res->level = child_level;
+    key_hash(k->key, child_frame_start, res->key);
+}
+
+int key_covers_frame(key_entry_t* k, uint64_t frame) {
+    /*
+     * There are two cases: either the key's level is zero, or nonzero. If it's
+     * zero, then it's a leaf key so the frame start must equal the given frame
+     * number.
+     * 
+     * If the key's level is nonzero, then frame start must be a power of 2,
+     * and everything from frame start to the start of the next level is
+     * covered. This means we can ignore the low bits of the frame numbers
+     * since they are part of the same subtree.
+     * 
+     * For example, let's say frame start is 16 and level is 4. In this case,
+     * frames 16-31 (0b10000 - 0b11111) are covered by this key, so we can
+     * ignore the last 4 bits during the comparison to find whether the
+     * provided frame number lies in this range.
+     * 
+     * Now consider what if level is 3. In this case, frames 16-23
+     * (0b10000 - 0b10111) are covered, so we can ignore the last 3 bits during
+     * the comparison.
+     */
+    return (k->frame_start >> k->level) == (frame >> k->level);
+}
 
 /* Code between this #ifdef and the subsequent #endif will
 *  be ignored by the compiler if CRYPTO_EXAMPLE is not set in
@@ -366,16 +435,36 @@ void crypto_example(void) {
 }
 #endif  //CRYPTO_EXAMPLE
 
+int main(void) {
+    init();
+    
+    Sha256 sha256;
+    wc_InitSha256(&sha256);
+
+    // char padding[PAD_LENGTH];
+    // memset(padding, 0, sizeof(PAD_LENGTH));
+    // wc_Sha256Update(&sha256, padding, PAD_LENGTH - sizeof(frame_num));
+    char key[32];
+    memset(key, 0, 32);
+    uint32_t frame_num = 123;
+    wc_Sha256Update(&sha256, &key, 32);
+    wc_Sha256Update(&sha256, &frame_num, 4);
+
+    char dst[32];
+    if (wc_Sha256Final(&sha256, dst) != 0) {
+        print_debug("hashing failed!");
+    } else {
+        print_debug("hashing succeeded");
+    }
+
+    // print_debug();
+    while (1) {}
+}
+
 /**********************************************************
  *********************** MAIN LOOP ************************
  **********************************************************/
-
-int main(void) {
-    while (1);
-}
-
-/*
-int main(void) {
+int old_main(void) {
     char output_buf[128] = {0};
     uint8_t uart_buf[100];
     msg_type_t cmd;
@@ -441,4 +530,3 @@ int main(void) {
         }
     }
 }
-*/
