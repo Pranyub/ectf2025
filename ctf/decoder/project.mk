@@ -21,6 +21,7 @@ MFLOAT_ABI=soft
 IPATH+=../deployment
 IPATH+=inc/
 IPATH+=/secrets
+IPATH+=tests
 VPATH+=src/
 
 # ****************** eCTF Bootloader *******************
@@ -40,3 +41,9 @@ ENTRY=firmware_startup
 
 # Enable Crypto Example
 CRYPTO_EXAMPLE=1
+PROJ_CFLAGS += -DHAVE_CHACHA  # compile with CHACHA
+PROJ_CFLAGS += -DHAVE_POLY1305  # compile with CHACHA
+PROJ_CFLAGS += -DECC_TIMING_RESISTANT  # compile ECC with timing attack resistance
+PROJ_CLFAGS += -DTFM_TIMING_RESISTANT
+PROJ_CFLAGS += -DNO_RSA
+# PROJ_CFLAGS += -DWC_NO_RNG
