@@ -85,7 +85,13 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
  * @pre \p out is at least the same size as the ciphertext
  * @post \p out now stores the decrypted frame
  * @param key the key used for decryption
- * @param in the input frame which includes the AD, encrypted frame, and tag
+ * @param in the input frame which includes the AD, encrypted frame, and tag formatted as such
+ *             3 bytes   1 byte      8 bytes           12 bytes                256 bytes            16 bytes
+ *         -----------------------------------------------------------------------------------------------------
+ *         |           |       |               |                   |                            |              |
+ *         |   MAGIC   | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |
+ *         |           |       |               |                   |                            |              |
+ *         -----------------------------------------------------------------------------------------------------
  * @param out the output buffer that will store the decrypted frame
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
