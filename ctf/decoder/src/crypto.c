@@ -86,3 +86,19 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     memcpy((void*)(additional_data + offset), (void*)nonce, NONCE_SIZE);  // copy the nonce to the AD
     return decrypt_frame_ad_buf(key, additional_data, encrypted_frame, tag, out);
 }
+
+int verify_ecdsa(const uint8_t* in,
+                 size_t len,
+                 const uint8_t sig[ECDSA_SIGNATURE_SIZE],
+                 const uint8_t pub[ECC_KEY_SIZE]) {
+    uint8_t hash[32];
+    int res = 0;
+    if (wc_Sha256Hash(in, len, hash) != 0 ||
+        wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_LENGTH, hash, 32, &res, pub) != 0) {
+        return ERROR;
+    }
+    if (res != 1) {
+        return ECDSA_VERIFY_ERROR;
+    }
+    return SUCCESS;
+}

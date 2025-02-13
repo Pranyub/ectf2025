@@ -17,6 +17,7 @@
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
 #include <wolfssl/wolfcrypt/ecc.h>
+#include <wolfssl/wolfcrypt/sha256.h>
 
 #define TAG_LENGTH 16
 #define CHACHA_KEY_SIZE 32
@@ -24,9 +25,14 @@
 #define CRYPTO_FRAME_SIZE 256
 #define MAGIC_SIZE 3
 
+#define SUBSCRIPTION_SIZE 167
+#define ECDSA_SIGNATURE_SIZE 64
+#define ECC_KEY_SIZE 64
+
 #define SUCCESS 0
 #define ERROR 1
 #define TAG_ERROR 2
+#define ECDSA_VERIFY_ERROR 3
 
 /**
  * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
@@ -130,8 +136,17 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   uint8_t* out);
 
 /**
- * @brief verifies the ECDSA signature of a hash
- * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/ecc-params.c
+ * @brief verifies the ECDSA signature 
+ * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/
+ * @param in the signed data to be verified
+ * @param len the length of \p in
+ * @param sig the signature to be checked against \p data
+ * @param pub the public key to be used
+ * @return SUCCESS on success, ERROR on error, ECDSA_VERIFY_ERROR on signature verification fail
  */
+int verify_ecdsa(const uint8_t* in,
+                 size_t len,
+                 const uint8_t sig[ECDSA_SIGNATURE_SIZE],
+                 const uint8_t pub[ECC_KEY_SIZE]);
 
 #endif
