@@ -19,15 +19,16 @@
 #include <wolfssl/wolfcrypt/ecc.h>
 #include <wolfssl/wolfcrypt/sha256.h>
 
+
 #define TAG_LENGTH 16
 #define CHACHA_KEY_SIZE 32
 #define NONCE_SIZE 12
 #define CRYPTO_FRAME_SIZE 256
 #define MAGIC_SIZE 3
 
-#define SUBSCRIPTION_SIZE 167
+#define SUBSCRIPTION_SIZE 176
 #define ECDSA_SIGNATURE_SIZE 64
-#define ECC_KEY_SIZE 64
+#define ECC_KEY_SIZE 65
 
 #define SUCCESS 0
 #define ERROR 1

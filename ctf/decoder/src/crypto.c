@@ -91,10 +91,26 @@ int verify_ecdsa(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                  const uint8_t pub[ECC_KEY_SIZE]) {
+    ecc_key eccKey;
+    size_t inOutIdx = 0;
+    wc_ecc_init(&eccKey);
+    if ((wc_EccPublicKeyDecode(pub, &inOutIdx, &eccKey, ECC_KEY_SIZE)) != 0) {
+        return ERROR;
+    }
+
+    if ((wc_ecc_set_curve(&eccKey, 32, ECC_SECP256K1)) != 0) {
+        return ERROR;
+    }
+    
     uint8_t hash[32];
     int res = 0;
     if (wc_Sha256Hash(in, len, hash) != 0 ||
-        wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_LENGTH, hash, 32, &res, pub) != 0) {
+        wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_SIZE, hash, 32, &res, &eccKey) != 0) {
+        char out[100];
+        for (int i = 0; i < 32; i++) {
+            sprintf(out + i * 2, "%02x", hash[i]);
+        }
+        print_debug(out);
         return ERROR;
     }
     if (res != 1) {
