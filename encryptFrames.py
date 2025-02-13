@@ -8,7 +8,7 @@ def encryptFrame(fNum, key, frame_data, magic, channel_num):
     frameKey = calcKey(fNum, key)
 
     nonce = os.urandom(12)
-    nonce = b'\xc3\x26\x6c\x7b\xe8\x14\x02\x3c\xae\x9b\x8e\x2c'
+    # nonce = b'\xc3\x26\x6c\x7b\xe8\x14\x02\x3c\xae\x9b\x8e\x2c'
     ad = b''
     ad += magic
     ad += channel_num
