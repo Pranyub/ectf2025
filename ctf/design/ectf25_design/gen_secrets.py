@@ -13,6 +13,8 @@ Copyright: Copyright (c) 2025 The MITRE Corporation
 import argparse
 import json
 from pathlib import Path
+from secrets import token_bytes
+import ecdsa
 
 from loguru import logger
 
@@ -29,20 +31,21 @@ def gen_secrets(channels: list[int]) -> bytes:
 
     :returns: Contents of the secrets file
     """
-    # TODO: Update this function to generate any system-wide secrets needed by
-    #   your design
 
-    # Create the secrets object
-    # You can change this to generate any secret material
-    # The secrets file will never be shared with attackers
+    # we need root key, pub/priv key for subscription signing
+    private_key = ecdsa.SigningKey.generate(curve=ecdsa.NIST256p)
+    public_key = private_key.verifying_key
+    root_key = token_bytes(32)
+
     secrets = {
         "channels": channels,
-        "some_secrets": "EXAMPLE",
+        # keys for subscription signing
+        "private_key": private_key.to_pem().decode(),
+        "public_key": public_key.to_pem().decode(),
+        # root key for frame encryption
+        "root_key": root_key.hex()
     }
 
-    # NOTE: if you choose to use JSON for your file type, you will not be able to
-    # store binary data, and must either use a different file type or encode the
-    # binary data to hex, base64, or another type of ASCII-only encoding
     return json.dumps(secrets).encode()
 
 

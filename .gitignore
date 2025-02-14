@@ -345,3 +345,5 @@ msdk/
 tooling-priv/usbutils/nohup.out
 nohup.out
 __pycache__
+
+ctf/secrets
