@@ -94,53 +94,49 @@ int ecdsa_verify(const uint8_t* in,
     ecc_key eccKey;
     mp_int r, s;
     if (wc_ecc_init(&eccKey) < 0) {
-        print_debug("Error initializing ecc key");
+        return ERROR;
     }
 
-    if (mp_init(&r) != MP_OKAY || mp_init(&s) != MP_OKAY) {
-        print_debug("Error initializing r and s");
+    if (mp_init(&r) != MP_OKAY) {
+        wc_ecc_free(&eccKey);
+        return ERROR;
+    }
+    if (mp_init(&s) != MP_OKAY) {
+        mp_clear(&r);
+        wc_ecc_free(&eccKey);
+        return ERROR;
     }
 
-    int status;
-    if ((status = wc_ecc_import_unsigned(&eccKey, pub + 1, pub + 1 + CRYPTO_ECC_KEY_SIZE / 2, NULL, ECC_CURVE)) != 0) {
-        print_debug("Pub key decode fail.\n");
-        if (status == BAD_FUNC_ARG) {
-            print_debug("bad argument, null\n");
-        } else if (status == ASN_PARSE_E) {
-            print_debug("Error parsing.\n");
-        } else if (status == ASN_ECC_KEY_E) {
-            print_debug("Error importing key");
-        }
+    if (wc_ecc_import_unsigned(&eccKey, pub + 1, pub + 1 + CRYPTO_ECC_KEY_SIZE / 2, NULL, ECC_CURVE) != 0) {
+        mp_clear(&r);
+        mp_clear(&s);
+        wc_ecc_free(&eccKey);
         return ERROR;
     }
 
     if (eccKey.type != ECC_PUBLICKEY) {
-        print_debug("Error with importing unsigned key.");
+        mp_clear(&r);
+        mp_clear(&s);
+        wc_ecc_free(&eccKey);
+        return ERROR;
     }
 
     mp_read_unsigned_bin(&r, sig, ECDSA_SIGNATURE_SIZE / 2);
     mp_read_unsigned_bin(&s, sig + ECDSA_SIGNATURE_SIZE / 2, ECDSA_SIGNATURE_SIZE / 2);
-
-    // if ((wc_ecc_set_curve(&eccKey, CRYPTO_ECC_KEY_SIZE, ECC_CURVE)) != 0) {
-    //     print_debug("Set curve fail.\n");
-    //     return ERROR;
-    // }
     
     uint8_t hash[32];
     int res = 0;
     if (wc_Sha256Hash(in, len, hash) != 0 ||
-        // (status = wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_SIZE, hash, sizeof(hash), &res, &eccKey)) != 1) {
-        (status = wc_ecc_verify_hash_ex(&r, &s, hash, sizeof(hash), &res, &eccKey)) != MP_OKAY) {
-
-        if (status == MEMORY_E) {
-            print_debug("MEMORY_E");
-        } else if (status == ECC_BAD_ARG_E) {
-            print_debug("ECC_BAD_ARG_E");
-        } else if (status == ASN_ECC_KEY_E) {
-            print_debug("ASN_ECC_KEY_E");
-        }
+        wc_ecc_verify_hash_ex(&r, &s, hash, sizeof(hash), &res, &eccKey) != MP_OKAY) {
+        mp_clear(&r);
+        mp_clear(&s);
+        wc_ecc_free(&eccKey);
         return ERROR;
     }
+
+    mp_clear(&r);
+    mp_clear(&s);
+    wc_ecc_free(&eccKey);
     if (res != 1) {
         return ECDSA_VERIFY_ERROR;
     }
