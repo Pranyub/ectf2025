@@ -27,6 +27,8 @@
 #include "simple_uart.h"
 #include "decoder.h"
 #include "crypto.h"
+#include "chacha20_tests.h"
+#include "crypto_tests.h"
 
 #define MAX_CHANNEL_COUNT 8
 
@@ -181,22 +183,6 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     memcpy(key, st[*sz - 1].key, sizeof(((key_entry_t) {}).key));
     return 1;
 }
-
-#include "crypto.h"
-#include "chacha20_tests.h"
-#include "crypto_tests.h"
-
-/* Code between this #ifdef and the subsequent #endif will
-*  be ignored by the compiler if CRYPTO_EXAMPLE is not set in
-*  the projectk.mk file. */
-#ifdef CRYPTO_EXAMPLE
-/* The simple crypto example included with the reference design is intended
-*  to be an example of how you *may* use cryptography in your design. You
-*  are not limited nor required to use this interface in your design. It is
-*  recommended for newer teams to start by only using the simple crypto
-*  library until they have a working design. */
-#include "simple_crypto.h"
-#endif  //CRYPTO_EXAMPLE
 
 /**********************************************************
  ******************* PRIMITIVE TYPES **********************
@@ -533,12 +519,6 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
-
-            #ifdef CRYPTO_EXAMPLE
-                // Run the crypto example
-                // TODO: Remove this from your design
-                crypto_example();
-            #endif // CRYPTO_EXAMPLE
 
             // tests
             chacha20_test_all();
