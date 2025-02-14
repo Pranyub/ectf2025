@@ -23,7 +23,6 @@
 #define CHACHA_KEY_SIZE 32
 #define NONCE_SIZE 12
 #define CRYPTO_FRAME_SIZE 256
-#define MAGIC_SIZE 3
 
 #define ECDSA_SIGNATURE_SIZE 64
 #define CRYPTO_ECC_KEY_SIZE 65
@@ -66,12 +65,12 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
  * @pre \p out is at least the same size as \p buf
  * @pre \p tag is a valid tag for the frame
  * @pre \p additional_data is the formatted additional data in the following order:
- *                                   3 bytes   1 byte      8 bytes           12 bytes
- *                                ---------------------------------------------------------
- *                                |           |       |               |                   |
- *                                |   MAGIC   | CH. # |    FRAME #    |       NONCE       |
- *                                |           |       |               |                   |
- *                                ---------------------------------------------------------
+ *                 1 byte      8 bytes           12 bytes
+ *                ---------------------------------------------
+ *                |       |               |                   |
+ *                | CH. # |    FRAME #    |       NONCE       |
+ *                |       |               |                   |
+ *                ---------------------------------------------
  * @post \p out now stores the decrypted frame
  * @param key the key used for decryption
  * @param additional_data the additional data to be used authentication
@@ -81,7 +80,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
-                         const uint8_t additional_data[MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t additional_data[sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
                          const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                          const uint8_t tag[TAG_LENGTH],
                          uint8_t* out);
@@ -92,19 +91,18 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
  * @post \p out now stores the decrypted frame
  * @param key the key used for decryption
  * @param in the input frame which includes the AD, encrypted frame, and tag formatted as such
- *      ------------------------- AD --------------------------
- *        3 bytes   1 byte      8 bytes           12 bytes                256 bytes             16 bytes
- *     -----------------------------------------------------------------------------------------------------
- *     |           |       |               |                   |                            |              |
- *     |   MAGIC   | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |
- *     |           |       |               |                   |                            |              |
- *     -----------------------------------------------------------------------------------------------------
+ *     -------------------- AD --------------------
+ *      1 byte      8 bytes           12 bytes                256 bytes             16 bytes
+ *     -----------------------------------------------------------------------------------------
+ *     |       |               |                   |                            |              |
+ *     | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |
+ *     |       |               |                   |                            |              |
+ *     -----------------------------------------------------------------------------------------
  * @param out the output buffer that will store the decrypted frame
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
-                      const uint8_t in[MAGIC_SIZE +
-                                       sizeof(uint8_t) +
+                      const uint8_t in[sizeof(uint8_t) +
                                        sizeof(uint64_t) +
                                        NONCE_SIZE +
                                        CRYPTO_FRAME_SIZE +
@@ -117,7 +115,6 @@ int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
  * @pre \p tag is a valid tag for the frame
  * @post \p out now stores the decrypted frame
  * @param key the key used for decryption
- * @param magic the magic used at the start of the frame
  * @param channel_no the channel number of the frame
  * @param frame_no the frame number
  * @param nonce the number used once
@@ -127,7 +124,6 @@ int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
-                  const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
