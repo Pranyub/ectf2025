@@ -81,7 +81,7 @@ int flash_simple_erase_page(uint32_t address) {
  * with the specified amount of bytes
 */
 void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
-    MXC_FLC_Read(address, (uint32_t *)buffer, size);
+    MXC_FLC_Read(address, buffer, size);
 }
 
 /**
