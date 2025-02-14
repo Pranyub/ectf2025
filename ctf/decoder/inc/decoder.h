@@ -1,7 +1,5 @@
 #include <stdint.h>
 
-#define NUM_CHANNELS 5
-
 // The level of the root key (leaf keys have level 1)
 #define ROOT_KEY_LEVEL 64
 
@@ -15,6 +13,7 @@ typedef struct {
 } key_entry_t;
 
 typedef struct {
+  bool active;
   uint8_t chan;
   uint8_t nkeys;
   uint64_t frame_start;

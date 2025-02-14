@@ -72,7 +72,6 @@ def gen_subscription(
         # print(f'adding key: frame_start={covered_start}, level={level}')
         curr_frame = covered_end + 1
 
-
     keys_serialized = b''
     for frame_start, level, key in keys:
         # This aligns with key_entry_packet_t
