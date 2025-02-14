@@ -28,11 +28,11 @@ static const uint8_t CHACHA20_TEST_CIPHER_LENGTH = 70;
 static const uint8_t CHACHA20_TEST_TAG[] = { 0x66, 0x3f, 0x30, 0xe5, 0x4b, 0xc4, 0xe7, 0xd6, 0x82, 0xea, 0x89, 0xa7, 0x65, 0xb0, 0x46, 0x5e };
 
 static int chacha20_test_decrypt_normal(void);
-// static int chacha20_test_decrypt_incorrect_key(void);
-// static int chacha20_test_decrypt_incorrect_incorrect_nonce(void);
-// static int chacha20_test_decrypt_incorrect_incorrect_ad(void);
-// static int chacha20_test_decrypt_incorrect_cipher(void);
-// static int chacha20_test_decrypt_incorrect_tag(void);
+static int chacha20_test_decrypt_incorrect_key(void);
+static int chacha20_test_decrypt_incorrect_nonce(void);
+static int chacha20_test_decrypt_incorrect_ad(void);
+static int chacha20_test_decrypt_incorrect_cipher(void);
+static int chacha20_test_decrypt_incorrect_tag(void);
 // static int chacha20_test_decrypt_incorrect_cipher_size(void);  // the actual cipher size itself
 // static int chacha20_test_decrypt_incorrect_cipher_length(void);  // as the parameter
 // static int chacha20_test_decrypt_incorrect_ad_size(void);  // the actual ad size itself
@@ -50,41 +50,36 @@ int chacha20_test_all(void) {
     } else {
         print_debug("Failed normal decyrption test.\n");
     }
-    print_debug("Finished chacha20 tests.\n");
 
-    return SUCCESS;
+    if (chacha20_test_decrypt_incorrect_key() == SUCCESS) {
+        print_debug("Passed the incorrect key decyrption test.\n");
+    } else {
+        print_debug("Failed the incorrect key decryption test.\n");
+    }
 
-    // int success = SUCCESS;
-    // printf("Starting tests...\n");
-    // if (chacha20_test_decrypt_normal() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the normal decryption test.\n");
-    //     success = ERROR;
-    // }
+    if (chacha20_test_decrypt_incorrect_nonce() == SUCCESS) {
+        print_debug("Passed the incorrect nonce decryption test.\n");
+    } else {
+        print_debug("Failed the incorrect nonce decryption test.\n");
+    }
 
-    // if (chacha20_test_decrypt_incorrect_key() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the incorrect key decryption test.\n");
-    //     success = ERROR;
-    // }
+    if (chacha20_test_decrypt_incorrect_ad() == SUCCESS) {
+        print_debug("Passed the incorrect ad decryption test.\n");
+    } else {
+        print_debug("Failed the incorrect ad decryption test.\n");
+    }
     
-    // if (chacha20_test_decrypt_incorrect_incorrect_nonce() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the incorrect nonce decryption test.\n");
-    //     success = ERROR;
-    // }
-
-    // if (chacha20_test_decrypt_incorrect_incorrect_ad() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the incorrect ad decryption test.\n");
-    //     success = ERROR;
-    // }
+    if (chacha20_test_decrypt_incorrect_cipher() == ERROR) {
+        print_debug("Passed the incorrect cipher decryption test.\n");
+    } else {
+        print_debug("Failed the incorrect cipher decryption test.\n");
+    }
     
-    // if (chacha20_test_decrypt_incorrect_cipher() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the cipher decryption test.\n");
-    //     success = ERROR;
-    // }
-    
-    // if (chacha20_test_decrypt_incorrect_tag() == ERROR) {
-    //     printf("ChaCha20-Poly1305 failed the tag decryption test.\n");
-    //     success = ERROR;
-    // }
+    if (chacha20_test_decrypt_incorrect_tag() == ERROR) {
+        print_debug("Passed the incorrect tag decryption test.\n");
+    } else {
+        print_debug("Failed the incorrect tag decryption test.\n");
+    }
     
     // if (chacha20_test_decrypt_incorrect_cipher_size() == ERROR) {
     //     printf("ChaCha20-Poly1305 failed the cipher size decryption test.\n");
@@ -106,8 +101,8 @@ int chacha20_test_all(void) {
     //     success = ERROR;
     // }
 
-    // printf("Testing complete.\n");
-    // return success;
+    print_debug("Finished chacha20 tests.\n");
+    return SUCCESS;
 }
 
 static int chacha20_test_decrypt_normal(void) {
@@ -131,25 +126,85 @@ static int chacha20_test_decrypt_normal(void) {
     return SUCCESS;
 }
 
-// static int chacha20_test_decrypt_incorrect_key(void) {
-//     return SUCCESS;
-// }
+static int chacha20_test_decrypt_incorrect_key(void) {
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
+    uint8_t incorrect_key[CHACHA_KEY_SIZE];
+    memcpy(incorrect_key, CHACHA20_TEST_KEY, CHACHA_KEY_SIZE);
+    incorrect_key[CHACHA_KEY_SIZE / 2] ^= 1 << 4;
+    if (chacha20_decrypt(incorrect_key,
+                         CHACHA20_TEST_ENCRYPTED_CIPHER,
+                         CHACHA20_TEST_CIPHER_LENGTH,
+                         CHACHA20_TEST_TAG,
+                         CHACHA20_TEST_AD,
+                         CHACHA20_TEST_AD_LENGTH,
+                         CHACHA20_TEST_NONCE,
+                         plaintext) == SUCCESS) { return ERROR; }
+    return SUCCESS;
+}
 
-// static int chacha20_test_decrypt_incorrect_incorrect_nonce(void) {
-//     return SUCCESS;
-// }
+static int chacha20_test_decrypt_incorrect_nonce(void) {
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
+    uint8_t incorrect_nonce[NONCE_SIZE];
+    memcpy(incorrect_nonce, CHACHA20_TEST_NONCE, NONCE_SIZE);
+    incorrect_nonce[NONCE_SIZE / 2] ^= 1 << 4;
+    if (chacha20_decrypt(CHACHA20_TEST_KEY,
+                         CHACHA20_TEST_ENCRYPTED_CIPHER,
+                         CHACHA20_TEST_CIPHER_LENGTH,
+                         CHACHA20_TEST_TAG,
+                         CHACHA20_TEST_AD,
+                         CHACHA20_TEST_AD_LENGTH,
+                         incorrect_nonce,
+                         plaintext) == SUCCESS) { return ERROR; }
+    return SUCCESS;
+}
 
-// static int chacha20_test_decrypt_incorrect_incorrect_ad(void) {
-//     return SUCCESS;
-// }
+static int chacha20_test_decrypt_incorrect_ad(void) {
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
+    uint8_t incorrect_ad[CHACHA20_TEST_AD_LENGTH];
+    memcpy(incorrect_ad, CHACHA20_TEST_AD, CHACHA20_TEST_AD_LENGTH);
+    incorrect_ad[CHACHA20_TEST_AD_LENGTH / 2] ^= 1 << 4;
+    if (chacha20_decrypt(CHACHA20_TEST_KEY,
+                         CHACHA20_TEST_ENCRYPTED_CIPHER,
+                         CHACHA20_TEST_CIPHER_LENGTH,
+                         CHACHA20_TEST_TAG,
+                         incorrect_ad,
+                         CHACHA20_TEST_AD_LENGTH,
+                         CHACHA20_TEST_NONCE,
+                         plaintext) == SUCCESS) { return ERROR; }
+    return SUCCESS;
+}
 
-// static int chacha20_test_decrypt_incorrect_cipher(void) {
-//     return SUCCESS;
-// }
+static int chacha20_test_decrypt_incorrect_cipher(void) {
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
+    uint8_t incorrect_cipher[CHACHA20_TEST_CIPHER_LENGTH];
+    memcpy(incorrect_cipher, CHACHA20_TEST_ENCRYPTED_CIPHER, CHACHA20_TEST_CIPHER_LENGTH);
+    incorrect_cipher[CHACHA20_TEST_CIPHER_LENGTH / 2] ^= 1 << 4;
+    if (chacha20_decrypt(CHACHA20_TEST_KEY,
+                         incorrect_cipher,
+                         CHACHA20_TEST_CIPHER_LENGTH,
+                         CHACHA20_TEST_TAG,
+                         CHACHA20_TEST_AD,
+                         CHACHA20_TEST_AD_LENGTH,
+                         CHACHA20_TEST_NONCE,
+                         plaintext) != TAG_ERROR) { return ERROR; }
+    return SUCCESS;
+}
 
-// static int chacha20_test_decrypt_incorrect_tag(void) {
-//     return SUCCESS;
-// }
+static int chacha20_test_decrypt_incorrect_tag(void) {
+    uint8_t plaintext[CHACHA20_TEST_CIPHER_LENGTH];
+    uint8_t incorrect_tag[TAG_LENGTH];
+    memcpy(incorrect_tag, CHACHA20_TEST_TAG, TAG_LENGTH);
+    incorrect_tag[TAG_LENGTH / 2] ^= 1 << 4;
+    if (chacha20_decrypt(CHACHA20_TEST_KEY,
+                         CHACHA20_TEST_ENCRYPTED_CIPHER,
+                         CHACHA20_TEST_CIPHER_LENGTH,
+                         incorrect_tag,
+                         CHACHA20_TEST_AD,
+                         CHACHA20_TEST_AD_LENGTH,
+                         CHACHA20_TEST_NONCE,
+                         plaintext) != TAG_ERROR) { return ERROR; }
+    return SUCCESS;
+}
 
 // static int chacha20_test_decrypt_incorrect_cipher_size(void) {
 //     return SUCCESS;
