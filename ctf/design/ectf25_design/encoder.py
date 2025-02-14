@@ -16,35 +16,52 @@ import json
 import hashlib
 import os
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+from secrets import token_bytes
+import ectf25_design
+import ectf25_design.encoder
 
 TOTAL_FRAMES = 3
 
-def encryptFrame(fNum, key, frame_data, magic, channel_num):
-    frameKey = calcKey(fNum, key)
-    nonce = os.urandom(12)
-    nonce = b'\xc3\x26\x6c\x7b\xe8\x14\x02\x3c\xae\x9b\x8e\x2c'
+def encryptFrame(fNum, root_key, frame_data, magic, channel_num):
+    frameKey = calcKey(root_key, fNum)
+    nonce = token_bytes(12)
+    
     ad = b''
     ad += magic
-    ad += channel_num
-    ad += fNum.to_bytes(8, 'big')
+    ad += struct.pack('<BQ', channel_num, fNum)
     ad += nonce
-    cipher = ChaCha20Poly1305(frameKey)
-    ciphertext = cipher.encrypt(nonce, frame_data, ad)
-    print(f"\n\nAdditional data: {ad.hex()}\nPlaintext frame: {frame_data.hex()}\nCipher text: {ciphertext[:-16].hex()}\nKey: {key.hex()}\nNonce: {nonce.hex()}\nTag: {ciphertext[-16:].hex()}\n\n")
-    return ciphertext
 
-def calcKey(fNum, currKey):
-    low = 0
-    high = TOTAL_FRAMES-1
-    while high - low > 1:
-        mid = low + (high - low) // 2
-        if fNum <= mid:
-            currKey = hash(currKey, low)
-            high = mid
-        else:
-            currKey = hash(currKey, mid + 1)
-            low = mid + 1
-    return currKey
+    # since this is a stream cipher, we must pad the plaintext to 64 bytes
+    assert len(frame_data) <= 64 # guaranteed by spec
+    frame_data += b'\00' * (64 - len(frame_data))
+
+    cipher = ChaCha20Poly1305(frameKey)
+    ciphertext_and_tag = cipher.encrypt(nonce, frame_data, ad)
+
+    ciphertext, tag = ciphertext_and_tag[:64], ciphertext_and_tag[64:]
+
+    return ciphertext, nonce, tag
+
+def calcKey(root_key: bytes, frame: int) -> bytes:
+    key, level = root_key, 63
+
+    # the range of frames the current key covers
+    covered_start, covered_end = 0, 2**64 - 1
+
+    while True:
+        if level <= 0:
+            break
+
+        if covered_start == frame and covered_end == frame:
+            break
+
+        child_level = level - 1
+        child_start = (frame >> child_level) << child_level # salt
+
+        key, level = ectf25_design.encoder.hash(key, child_start), child_level
+        covered_start, covered_end = child_start, child_start + (1 << level) - 1
+
+    return key
 
 def hash(currKey, fNum):
     #frame_bytes = str(fNum).encode('utf-8').rjust(64, b'0')
@@ -53,18 +70,7 @@ def hash(currKey, fNum):
     hash_result = hashlib.sha256(data).digest()
     return hash_result
 
-# TODO: delete
-def main():
-    key = bytes.fromhex("02a943ba302de0112c175a6f9e104bcbf4dd6bc9deff839699da8a383f976284")
-    magic = b'FRA'
-    channelNum = b'\x05'
-    frames = [b'apple\0', b'banana\0', b'grape\0']
-    for i in range (TOTAL_FRAMES):
-        #print(str(i) + ": ", encryptFrame(i, key, frames[i].encode('utf-8').rjust(256, b'0')).hex())
-        encFrameData = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), magic, channelNum)
-        #print(type(encFrameData))
-        frame = magic + channelNum + i.to_bytes(8, byteorder='big') + encFrameData
-        print(frame.hex())
+DECODE_MAGIC = b'FRA'
 
 class Encoder:
     def __init__(self, secrets: bytes):
@@ -79,10 +85,7 @@ class Encoder:
 
         # Load the json of the secrets file
         secrets = json.loads(secrets)
-
-        # Load the example secrets for use in Encoder.encode
-        # This will be "EXAMPLE" in the reference design"
-        self.some_secrets = secrets["some_secrets"]
+        self.root_key: bytes = bytes.fromhex(secrets['root_key'])
 
     def encode(self, channel: int, frame: bytes, timestamp: int) -> bytes:
         """The frame encoder function
@@ -102,11 +105,10 @@ class Encoder:
 
         :returns: The encoded frame, which will be sent to the Decoder
         """
-        # TODO: encode the satellite frames so that they meet functional and
-        #  security requirements
 
-        return struct.pack("<IQ", channel, timestamp) + frame
-
+        # TODO: make this faster by saving a stack of intermediate keys (one per channel)
+        ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, DECODE_MAGIC, channel)
+        return DECODE_MAGIC + struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame
