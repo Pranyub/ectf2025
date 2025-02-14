@@ -19,7 +19,6 @@
 #include <wolfssl/wolfcrypt/ecc.h>
 #include <wolfssl/wolfcrypt/sha256.h>
 
-
 #define TAG_LENGTH 16
 #define CHACHA_KEY_SIZE 32
 #define NONCE_SIZE 12
@@ -29,6 +28,7 @@
 #define SUBSCRIPTION_SIZE 176
 #define ECDSA_SIGNATURE_SIZE 64
 #define ECC_KEY_SIZE 65
+#define ECC_CURVE ECC_SECP256K1
 
 #define SUCCESS 0
 #define ERROR 1
@@ -145,7 +145,7 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
  * @param pub the public key to be used
  * @return SUCCESS on success, ERROR on error, ECDSA_VERIFY_ERROR on signature verification fail
  */
-int verify_ecdsa(const uint8_t* in,
+int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                  const uint8_t pub[ECC_KEY_SIZE]);

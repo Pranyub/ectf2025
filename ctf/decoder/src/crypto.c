@@ -87,18 +87,28 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     return decrypt_frame_ad_buf(key, additional_data, encrypted_frame, tag, out);
 }
 
-int verify_ecdsa(const uint8_t* in,
+int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                  const uint8_t pub[ECC_KEY_SIZE]) {
     ecc_key eccKey;
     size_t inOutIdx = 0;
     wc_ecc_init(&eccKey);
-    if ((wc_EccPublicKeyDecode(pub, &inOutIdx, &eccKey, ECC_KEY_SIZE)) != 0) {
+    int status;
+    if ((status = wc_EccPublicKeyDecode(pub, &inOutIdx, &eccKey, ECC_KEY_SIZE)) != 0) {
+        print_debug("Pub key decode fail.\n");
+        if (status == BAD_FUNC_ARG) {
+            print_debug("bad argument, null\n");
+        } else if (status == ASN_PARSE_E) {
+            print_debug("Error parsing.\n");
+        } else if (status == ASN_ECC_KEY_E) {
+            print_debug("Error importing key");
+        }
         return ERROR;
     }
 
-    if ((wc_ecc_set_curve(&eccKey, 32, ECC_SECP256K1)) != 0) {
+    if ((wc_ecc_set_curve(&eccKey, ECC_KEY_SIZE, ECC_CURVE)) != 0) {
+        print_debug("Set curve fail.\n");
         return ERROR;
     }
     
