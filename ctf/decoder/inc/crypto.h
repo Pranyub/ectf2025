@@ -3,6 +3,11 @@
 
 #include <string.h>
 
+// debug
+#include "simple_flash.h"
+#include "host_messaging.h"
+#include "simple_uart.h"
+
 // required wolfssl includes
 #include <wolfssl/options.h>
 #include <wolfssl/wolfcrypt/settings.h>
@@ -12,6 +17,7 @@
 #include <wolfssl/wolfcrypt/error-crypt.h>
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
 #include <wolfssl/wolfcrypt/ecc.h>
+#include <wolfssl/wolfcrypt/sha256.h>
 
 #define TAG_LENGTH 16
 #define CHACHA_KEY_SIZE 32
@@ -19,9 +25,14 @@
 #define CRYPTO_FRAME_SIZE 256
 #define MAGIC_SIZE 3
 
+#define ECDSA_SIGNATURE_SIZE 64
+#define CRYPTO_ECC_KEY_SIZE 65
+#define ECC_CURVE ECC_SECP256K1
+
 #define SUCCESS 0
 #define ERROR 1
 #define TAG_ERROR 2
+#define ECDSA_VERIFY_ERROR 3
 
 /**
  * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
@@ -76,6 +87,31 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
                          uint8_t* out);
 
 /**
+ * @brief decrypts a frame that is encoded as a raw byte array
+ * @pre \p out is at least the same size as the ciphertext
+ * @post \p out now stores the decrypted frame
+ * @param key the key used for decryption
+ * @param in the input frame which includes the AD, encrypted frame, and tag formatted as such
+ *      ------------------------- AD --------------------------
+ *        3 bytes   1 byte      8 bytes           12 bytes                256 bytes             16 bytes
+ *     -----------------------------------------------------------------------------------------------------
+ *     |           |       |               |                   |                            |              |
+ *     |   MAGIC   | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |
+ *     |           |       |               |                   |                            |              |
+ *     -----------------------------------------------------------------------------------------------------
+ * @param out the output buffer that will store the decrypted frame
+ * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
+ */
+int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
+                      const uint8_t in[MAGIC_SIZE +
+                                       sizeof(uint8_t) +
+                                       sizeof(uint64_t) +
+                                       NONCE_SIZE +
+                                       CRYPTO_FRAME_SIZE +
+                                       TAG_LENGTH],
+                      uint8_t* out);
+
+/**
  * @brief decrypts a frame with authentication checking
  * @pre \p out is at least the same size as \p buf
  * @pre \p tag is a valid tag for the frame
@@ -100,8 +136,17 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   uint8_t* out);
 
 /**
- * @brief verifies the ECDSA signature of a hash
- * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/ecc-params.c
+ * @brief verifies the ECDSA signature 
+ * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/
+ * @param in the signed data to be verified
+ * @param len the length of \p in
+ * @param sig the signature to be checked against \p data
+ * @param pub the public key to be used
+ * @return SUCCESS on success, ERROR on error, ECDSA_VERIFY_ERROR on signature verification fail
  */
+int ecdsa_verify(const uint8_t* in,
+                 size_t len,
+                 const uint8_t sig[ECDSA_SIGNATURE_SIZE],
+                 const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
 
 #endif

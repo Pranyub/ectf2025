@@ -27,6 +27,8 @@
 #include "simple_uart.h"
 #include "decoder.h"
 #include "crypto.h"
+#include "chacha20_tests.h"
+#include "crypto_tests.h"
 
 #define MAX_CHANNEL_COUNT 8
 
@@ -182,18 +184,6 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     return 1;
 }
 
-/* Code between this #ifdef and the subsequent #endif will
-*  be ignored by the compiler if CRYPTO_EXAMPLE is not set in
-*  the projectk.mk file. */
-#ifdef CRYPTO_EXAMPLE
-/* The simple crypto example included with the reference design is intended
-*  to be an example of how you *may* use cryptography in your design. You
-*  are not limited nor required to use this interface in your design. It is
-*  recommended for newer teams to start by only using the simple crypto
-*  library until they have a working design. */
-#include "simple_crypto.h"
-#endif  //CRYPTO_EXAMPLE
-
 /**********************************************************
  ******************* PRIMITIVE TYPES **********************
  **********************************************************/
@@ -218,7 +208,7 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
  **********************************************************/
 
 // Calculate the flash address where we will store channel info as the 2nd to last page available
-#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (2 * MXC_FLASH_PAGE_SIZE))
+#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
 
 
 /**********************************************************
@@ -483,7 +473,6 @@ void init() {
 
         // Write the starting channel subscriptions into flash.
         memcpy(&decoder_state.subscriptions, subs, MAX_CHANNEL_COUNT*sizeof(subscription_t));
-
         flash_simple_erase_page(FLASH_STATUS_ADDR);
         flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     }
@@ -529,6 +518,10 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
+
+            // tests
+            chacha20_test_all();
+            decrypt_frame_test_all();
             list_channels();
             break;
 
