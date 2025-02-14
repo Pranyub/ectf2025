@@ -86,16 +86,23 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     memcpy((void*)(additional_data + offset), (void*)nonce, NONCE_SIZE);  // copy the nonce to the AD
     return decrypt_frame_ad_buf(key, additional_data, encrypted_frame, tag, out);
 }
-
+// https://www.wolfssl.com/doxygen/group__ECC.html#ga5b1bb1c6ce3f9238c8f23a3e516952bb
 int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
-                 const uint8_t pub[ECC_KEY_SIZE]) {
+                 const uint8_t pub[CRYPTO_ECC_KEY_SIZE]) {
     ecc_key eccKey;
-    size_t inOutIdx = 0;
-    wc_ecc_init(&eccKey);
+    mp_int r, s;
+    if (wc_ecc_init(&eccKey) < 0) {
+        print_debug("Error initializing ecc key");
+    }
+
+    if (mp_init(&r) != MP_OKAY || mp_init(&s) != MP_OKAY) {
+        print_debug("Error initializing r and s");
+    }
+
     int status;
-    if ((status = wc_EccPublicKeyDecode(pub, &inOutIdx, &eccKey, ECC_KEY_SIZE)) != 0) {
+    if ((status = wc_ecc_import_unsigned(&eccKey, pub + 1, pub + 1 + CRYPTO_ECC_KEY_SIZE / 2, NULL, ECC_CURVE)) != 0) {
         print_debug("Pub key decode fail.\n");
         if (status == BAD_FUNC_ARG) {
             print_debug("bad argument, null\n");
@@ -107,20 +114,31 @@ int ecdsa_verify(const uint8_t* in,
         return ERROR;
     }
 
-    if ((wc_ecc_set_curve(&eccKey, ECC_KEY_SIZE, ECC_CURVE)) != 0) {
-        print_debug("Set curve fail.\n");
-        return ERROR;
+    if (eccKey.type != ECC_PUBLICKEY) {
+        print_debug("Error with importing unsigned key.");
     }
+
+    mp_read_unsigned_bin(&r, sig, ECDSA_SIGNATURE_SIZE / 2);
+    mp_read_unsigned_bin(&s, sig + ECDSA_SIGNATURE_SIZE / 2, ECDSA_SIGNATURE_SIZE / 2);
+
+    // if ((wc_ecc_set_curve(&eccKey, CRYPTO_ECC_KEY_SIZE, ECC_CURVE)) != 0) {
+    //     print_debug("Set curve fail.\n");
+    //     return ERROR;
+    // }
     
     uint8_t hash[32];
     int res = 0;
     if (wc_Sha256Hash(in, len, hash) != 0 ||
-        wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_SIZE, hash, 32, &res, &eccKey) != 0) {
-        char out[100];
-        for (int i = 0; i < 32; i++) {
-            sprintf(out + i * 2, "%02x", hash[i]);
+        // (status = wc_ecc_verify_hash(sig, ECDSA_SIGNATURE_SIZE, hash, sizeof(hash), &res, &eccKey)) != 1) {
+        (status = wc_ecc_verify_hash_ex(&r, &s, hash, sizeof(hash), &res, &eccKey)) != MP_OKAY) {
+
+        if (status == MEMORY_E) {
+            print_debug("MEMORY_E");
+        } else if (status == ECC_BAD_ARG_E) {
+            print_debug("ECC_BAD_ARG_E");
+        } else if (status == ASN_ECC_KEY_E) {
+            print_debug("ASN_ECC_KEY_E");
         }
-        print_debug(out);
         return ERROR;
     }
     if (res != 1) {

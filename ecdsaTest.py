@@ -16,6 +16,7 @@ def signHash(data: bytes, private_key: ec.EllipticCurvePrivateKey):
     digest = hasher.finalize()
     sig = private_key.sign(digest, ec.ECDSA(utils.Prehashed(hash_func)))
     r, s = utils.decode_dss_signature(sig)
+    print(f"Hash: {digest.hex()}")
     print(f"Signature: {r.to_bytes(32, byteorder='big').hex()}{s.to_bytes(32, byteorder='big').hex()}")
     return sig
 

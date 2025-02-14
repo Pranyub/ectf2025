@@ -27,7 +27,7 @@
 
 #define SUBSCRIPTION_SIZE 176
 #define ECDSA_SIGNATURE_SIZE 64
-#define ECC_KEY_SIZE 65
+#define CRYPTO_ECC_KEY_SIZE 65
 #define ECC_CURVE ECC_SECP256K1
 
 #define SUCCESS 0
@@ -148,6 +148,6 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
 int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
-                 const uint8_t pub[ECC_KEY_SIZE]);
+                 const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
 
 #endif
