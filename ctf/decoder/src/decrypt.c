@@ -103,13 +103,12 @@ void hash_key(key_entry key, uint64_t frame_num, key_entry* dst) {
 	Sha256 sha256;
 	wc_InitSha256(&sha256);
 
-    //fix padding so that it's same with Taylor
 	char padding[PAD_LENGTH];
-	memset(padding, 0, sizeof(PAD_LENGTH));
+	memset(padding, 0, PAD_LENGTH);
+
+	wc_Sha256Update(&sha256, &key.key, sizeof(key.key));
+	wc_Sha256Update(&sha256, &frame_num, sizeof(frame_num));
 	wc_Sha256Update(&sha256, padding, PAD_LENGTH - sizeof(frame_num));
-	
-    wc_Sha256Update(&sha256, (char*) &key.key, sizeof(key.key));
-	wc_Sha256Update(&sha256, (char*) &frame_num, sizeof(frame_num));
     
     // Finalize and store the result in output
     wc_Sha256Final(&sha256, dst->key);
