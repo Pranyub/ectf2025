@@ -24,11 +24,11 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
 }
 
 int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
-                         const uint8_t additional_data[MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t additional_data[sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
                          const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                          const uint8_t tag[TAG_LENGTH],
                          uint8_t* out) {
-    size_t ad_size = MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
+    size_t ad_size = sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
     return chacha20_decrypt(key,
                             encrypted_frame,
                             CRYPTO_FRAME_SIZE,
@@ -41,14 +41,13 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
 }
 
 int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
-                      const uint8_t in[MAGIC_SIZE +
-                                       sizeof(uint8_t) +
+                      const uint8_t in[sizeof(uint8_t) +
                                        sizeof(uint64_t) +
                                        NONCE_SIZE +
                                        CRYPTO_FRAME_SIZE +
                                        TAG_LENGTH],
                       uint8_t* out) {
-    size_t ad_size = MAGIC_SIZE + sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
+    size_t ad_size = sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
     return chacha20_decrypt(key,
                             in + ad_size,
                             CRYPTO_FRAME_SIZE,
@@ -61,7 +60,6 @@ int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
 }
 
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
-                  const uint8_t magic[MAGIC_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
@@ -71,11 +69,8 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     int offset = 0;
 
     // allocate buffer for additional data
-    size_t ad_size = MAGIC_SIZE + sizeof(channel_no) + sizeof(frame_no) + NONCE_SIZE;
+    size_t ad_size = sizeof(channel_no) + sizeof(frame_no) + NONCE_SIZE;
     uint8_t additional_data[ad_size];
-
-    memcpy((void*)(additional_data + offset), (void*)magic, MAGIC_SIZE);  // copy magic to AD
-    offset += MAGIC_SIZE;
 
     memcpy((void*)(additional_data + offset), (void*)(&channel_no), sizeof(channel_no));  // copy the channel number to the AD
     offset += sizeof(channel_no);

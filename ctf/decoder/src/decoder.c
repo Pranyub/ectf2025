@@ -221,7 +221,6 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
 
 // decrypted frame packet
 typedef struct {
-    uint8_t magic[3];
     uint8_t channel;
     uint64_t frame_number;
     uint8_t nonce[12];
@@ -420,10 +419,8 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
             return -1;
         }
 
-        // TODO: remove magic value
-
         uint8_t decoded_frame[FRAME_SIZE];
-        if (decrypt_frame(key, new_frame->magic, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
+        if (decrypt_frame(key, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
             // error
             sprintf(output_buf, "Decoding frame #%u failed: could not decrypt frame\n", frame);
             print_error(output_buf);

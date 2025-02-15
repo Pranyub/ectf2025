@@ -4,13 +4,12 @@ import os
 
 TOTAL_FRAMES = 3
 
-def encryptFrame(fNum, key, frame_data, magic, channel_num):
+def encryptFrame(fNum, key, frame_data, channel_num):
     frameKey = calcKey(fNum, key)
 
     nonce = os.urandom(12)
     # nonce = b'\xc3\x26\x6c\x7b\xe8\x14\x02\x3c\xae\x9b\x8e\x2c'
     ad = b''
-    ad += magic
     ad += channel_num
     ad += fNum.to_bytes(8, 'big')
     ad += nonce
@@ -41,12 +40,11 @@ def hash(currKey, fNum):
 
 def main():
     key = bytes.fromhex("02a943ba302de0112c175a6f9e104bcbf4dd6bc9deff839699da8a383f976284")
-    magic = b'FRA'
     channelNum = b'\x05'
     frames = [b'apple\0', b'banana\0', b'grape\0']
     for i in range (TOTAL_FRAMES):
         #print(str(i) + ": ", encryptFrame(i, key, frames[i].encode('utf-8').rjust(256, b'0')).hex())
-        encFrameData, ad = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), magic, channelNum)
+        encFrameData, ad = encryptFrame(i, key, frames[i].rjust(256, b'\x00'), channelNum)
         #print(type(encFrameData))
         frame = ad + encFrameData
         print(frame.hex(), end="\n\n")
