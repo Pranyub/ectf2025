@@ -518,7 +518,7 @@ int main(void) {
 
             // tests
             chacha20_test_all();
-            decrypt_frame_test_all();
+            crypto_test_all();
             list_channels();
             break;
 
