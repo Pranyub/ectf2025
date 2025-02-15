@@ -207,7 +207,7 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
  ********************* STATE MACROS ***********************
  **********************************************************/
 
-// Calculate the flash address where we will store channel info as the 2nd to last page available
+// Calculate the flash address where we will store channel info as the 8th to last page available
 #define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
 
 
