@@ -22,7 +22,7 @@
 #define TAG_LENGTH 16
 #define CHACHA_KEY_SIZE 32
 #define NONCE_SIZE 12
-#define CRYPTO_FRAME_SIZE 256
+#define CRYPTO_FRAME_SIZE 64
 
 #define ECDSA_SIGNATURE_SIZE 64
 #define CRYPTO_ECC_KEY_SIZE 65
@@ -92,7 +92,7 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
  * @param key the key used for decryption
  * @param in the input frame which includes the AD, encrypted frame, and tag formatted as such
  *     -------------------- AD --------------------
- *      1 byte      8 bytes           12 bytes                256 bytes             16 bytes
+ *      1 byte      8 bytes           12 bytes                 64 bytes             16 bytes
  *     -----------------------------------------------------------------------------------------
  *     |       |               |                   |                            |              |
  *     | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |

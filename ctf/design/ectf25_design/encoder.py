@@ -22,9 +22,25 @@ import ectf25_design.encoder
 
 TOTAL_FRAMES = 3
 
-def encryptFrame(fNum, root_key, frame_data, channel_num):
+## DELETE ME!!!
+def calcKey_test(fNum, currKey):
+    low = 0
+    high = TOTAL_FRAMES-1
+    while high - low > 1:
+        mid = low + (high - low) // 2
+        if fNum <= mid:
+            currKey = hash(currKey, low)
+            high = mid
+        else:
+            currKey = hash(currKey, mid + 1)
+            low = mid + 1
+    return currKey
+
+def encryptFrame(fNum, root_key, frame_data, channel_num, nonce=None):
     frameKey = calcKey(root_key, fNum)
-    nonce = token_bytes(12)
+
+    if nonce == None:
+        nonce = token_bytes(12)
     
     ad = b''
     ad += struct.pack('<BQ', channel_num, fNum)
@@ -39,7 +55,7 @@ def encryptFrame(fNum, root_key, frame_data, channel_num):
 
     ciphertext, tag = ciphertext_and_tag[:64], ciphertext_and_tag[64:]
 
-    return ciphertext, nonce, tag
+    return ciphertext, nonce, tag, ad, frameKey
 
 def calcKey(root_key: bytes, frame: int) -> bytes:
     key, level = root_key, 63
@@ -105,8 +121,8 @@ class Encoder:
         """
 
         # TODO: make this faster by saving a stack of intermediate keys (one per channel)
-        ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, channel)
-        return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
+        ciphertext, nonce, tag, ad, key = encryptFrame(timestamp, self.root_key, frame, channel)
+        return ad + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame

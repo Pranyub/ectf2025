@@ -56,7 +56,6 @@ int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
                             ad_size,
                             in + ad_size - NONCE_SIZE,
                             out);
-    // return decrypt_frame_ad_buf(key, in, in + ad_size, in + ad_size + CRYPTO_GRAME_SIZE);
 }
 
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
