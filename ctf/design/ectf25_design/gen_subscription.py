@@ -53,7 +53,6 @@ def gen_subscription(
         covered_start, covered_end = 0, 2**64 - 1
 
         while True:
-            print(level, key.hex())
             if level <= 0:
                 break
 
@@ -70,7 +69,7 @@ def gen_subscription(
             raise Exception(f'could not derive frame #{curr_frame}!')
 
         keys.append((covered_start, level, key))
-        print(f'adding key: frame_start={covered_start}, level={level}, key={key.hex()}')
+        # print(f'adding key: frame_start={covered_start}, level={level}, key={key.hex()}')
         curr_frame = covered_end + 1
 
     keys_serialized = b''

@@ -175,11 +175,9 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     // Pop the stack until the key on the top of the stack can be used to derive our frame
     while (!key_covers_frame(&st[*sz - 1], frame))
         (*sz)--;
-    key_print(st[*sz - 1].key);
 
     // Derive keys from the top of the stack until we get the level 0 key
     while (st[*sz - 1].level) {
-        key_print(st[*sz - 1].key);
         key_hash_towards_frame(&st[*sz - 1], frame, &st[*sz]);
         (*sz)++;
     }
@@ -468,19 +466,6 @@ int main(void) {
     // reset key stacks
     for (int i = 0; i < sizeof(key_stack_sz); i++) {
         key_stack_sz[i] = 0;
-    }
-
-    subscription_t* sub = &decoder_state.subscriptions[0];
-    if (sub->active && sub->nkeys) {
-        sprintf(output_buf, "active=%d, nkeys=%d, frame_start=%d, frame_end=%d\n", sub->active, sub->nkeys, sub->frame_start, sub->frame_end);
-        print_debug(output_buf);
-
-        uint8_t k[32];
-        if (!key_derive(1, 69, k)) {
-            print_error("failed to derive key");
-        } else {
-            key_print(k);
-        }
     }
 
     // process commands forever

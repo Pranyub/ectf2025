@@ -24,7 +24,7 @@ TOTAL_FRAMES = 3
 
 def encryptFrame(fNum, root_key, frame_data, channel_num):
     frameKey = calcKey(root_key, fNum)
-    print(frameKey.hex())
+    # print(frameKey.hex())
     nonce = token_bytes(12)
     
     ad = b''
@@ -49,7 +49,6 @@ def calcKey(root_key: bytes, frame: int) -> bytes:
     covered_start, covered_end = 0, 2**64 - 1
 
     while True:
-        print(level, key.hex())
         if level <= 0:
             break
 
