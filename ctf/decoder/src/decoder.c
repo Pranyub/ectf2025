@@ -45,6 +45,11 @@ typedef struct {
 
 flash_entry_t decoder_state;
 
+void key_print(uint8_t key[32]) {
+    write_hex(DEBUG_MSG, key, 32);
+    print_debug("\n");
+}
+
 /**
  * @brief Hashes an intermediate key to give the next key, which will eventually
  * yield a decryption key.
@@ -150,9 +155,11 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
         for (int i = 0; i < sub->nkeys; i++) {
             if (key_covers_frame(&sub->keys[i], frame)) {
                 // Setup the stack with the intermediate key
-                st[0] = sub->keys[i];
-                *sz = 1;
+                st[0].frame_start = sub->keys[i].frame_start;
+                st[0].level = sub->keys[i].level;
+                memcpy(st[0].key, sub->keys[i].key, 32);
 
+                *sz = 1;
                 key_found = 1;
                 break;
             }
@@ -168,26 +175,19 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     // Pop the stack until the key on the top of the stack can be used to derive our frame
     while (!key_covers_frame(&st[*sz - 1], frame))
         (*sz)--;
+    key_print(st[*sz - 1].key);
 
     // Derive keys from the top of the stack until we get the level 0 key
     while (st[*sz - 1].level) {
+        key_print(st[*sz - 1].key);
         key_hash_towards_frame(&st[*sz - 1], frame, &st[*sz]);
         (*sz)++;
     }
 
     // Copy the top key in stack to output
-    memcpy(key, st[*sz - 1].key, sizeof(((key_entry_t) {}).key));
+    memcpy(key, st[*sz - 1].key, 32);
     return 1;
 }
-
-/**********************************************************
- ******************* PRIMITIVE TYPES **********************
- **********************************************************/
-
-#define timestamp_t uint64_t
-#define channel_id_t uint32_t
-#define decoder_id_t uint32_t
-#define pkt_len_t uint16_t
 
 /**********************************************************
  *********************** CONSTANTS ************************
@@ -223,7 +223,7 @@ typedef struct {
 
 typedef struct {
     // TODO: add signature buf here
-    decoder_id_t decoder_id;
+    uint32_t decoder_id;
     uint8_t chan;
     uint8_t nkeys;
     uint64_t frame_start;
@@ -279,7 +279,7 @@ int is_subscribed(uint32_t chan) {
 */
 int list_channels() {
     list_response_t resp;
-    pkt_len_t len;
+    uint16_t len;
 
     resp.n_channels = 0;
 
@@ -342,7 +342,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     
     char output_buf[128];
-    sprintf(output_buf, "Wrote subscription to flash! %x\n", decoder_state.first_boot);
+    sprintf(output_buf, "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
     print_debug(output_buf);
 
     // Success message with an empty body
@@ -357,7 +357,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
  *
  *  @return 0 if successful. -1 if data is from unsubscribed channel.
  */
-int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
+int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     char output_buf[128] = {0};
 
     uint8_t chan = new_frame->channel;
@@ -464,7 +464,25 @@ int main(void) {
     init();
 
     print_debug("Decoder Booted!\n");
-    
+
+    // reset key stacks
+    for (int i = 0; i < sizeof(key_stack_sz); i++) {
+        key_stack_sz[i] = 0;
+    }
+
+    subscription_t* sub = &decoder_state.subscriptions[0];
+    if (sub->active && sub->nkeys) {
+        sprintf(output_buf, "active=%d, nkeys=%d, frame_start=%d, frame_end=%d\n", sub->active, sub->nkeys, sub->frame_start, sub->frame_end);
+        print_debug(output_buf);
+
+        uint8_t k[32];
+        if (!key_derive(1, 69, k)) {
+            print_error("failed to derive key");
+        } else {
+            key_print(k);
+        }
+    }
+
     // process commands forever
     while (1) {
         print_debug("Ready\n");

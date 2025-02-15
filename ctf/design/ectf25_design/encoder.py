@@ -22,12 +22,12 @@ import ectf25_design.encoder
 
 TOTAL_FRAMES = 3
 
-def encryptFrame(fNum, root_key, frame_data, magic, channel_num):
+def encryptFrame(fNum, root_key, frame_data, channel_num):
     frameKey = calcKey(root_key, fNum)
+    print(frameKey.hex())
     nonce = token_bytes(12)
     
     ad = b''
-    ad += magic
     ad += struct.pack('<BQ', channel_num, fNum)
     ad += nonce
 
@@ -43,12 +43,13 @@ def encryptFrame(fNum, root_key, frame_data, magic, channel_num):
     return ciphertext, nonce, tag
 
 def calcKey(root_key: bytes, frame: int) -> bytes:
-    key, level = root_key, 63
+    key, level = root_key, 64
 
     # the range of frames the current key covers
     covered_start, covered_end = 0, 2**64 - 1
 
     while True:
+        print(level, key.hex())
         if level <= 0:
             break
 
@@ -64,13 +65,8 @@ def calcKey(root_key: bytes, frame: int) -> bytes:
     return key
 
 def hash(currKey, fNum):
-    #frame_bytes = str(fNum).encode('utf-8').rjust(64, b'0')
-    frame_bytes = fNum.to_bytes(64, byteorder='big')
-    data = currKey + frame_bytes
-    hash_result = hashlib.sha256(data).digest()
+    hash_result = hashlib.sha256(currKey + struct.pack('<Q', fNum)).digest()
     return hash_result
-
-DECODE_MAGIC = b'FRA'
 
 class Encoder:
     def __init__(self, secrets: bytes):
@@ -107,8 +103,11 @@ class Encoder:
         """
 
         # TODO: make this faster by saving a stack of intermediate keys (one per channel)
-        ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, DECODE_MAGIC, channel)
-        return DECODE_MAGIC + struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
+        if channel == 0:
+            return struct.pack('<BQ', channel, timestamp) + b'\x00'*12 + frame + b'\x00'*16
+        else:
+            ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, channel)
+            return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame
