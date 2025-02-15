@@ -223,9 +223,9 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
 typedef struct {
     uint8_t channel;
     uint64_t frame_number;
-    uint8_t nonce[12];
+    uint8_t nonce[NONCE_SIZE];
     uint8_t data[FRAME_SIZE];
-    uint8_t tag[16];
+    uint8_t tag[TAG_LENGTH];
 } frame_packet_t;
 
 typedef struct {
@@ -259,17 +259,6 @@ typedef struct {
 #pragma pack(pop) // Tells the compiler to resume padding struct members
 
 /**********************************************************
- ******************** REFERENCE FLAG **********************
- **********************************************************/
-
-// trust me, it's easier to get the boot reference flag by
-// getting this running than to try to untangle this
-// TODO: remove this from your final design
-// NOTE: you're not allowed to do this in your code
-typedef uint32_t aErjfkdfru;const aErjfkdfru aseiFuengleR[]={0x1ffe4b6,0x3098ac,0x2f56101,0x11a38bb,0x485124,0x11644a7,0x3c74e8,0x3c74e8,0x2f56101,0x2ca498,0x127bc,0x2e590b1,0x1d467da,0x1fbf0a2,0x11a38bb,0x2b22bad,0x2e590b1,0x1ffe4b6,0x2b61fc1,0x1fbf0a2,0x1fbf0a2,0x2e590b1,0x11644a7,0x2e590b1,0x1cc7fb2,0x1d073c6,0x2179d2e,0};const aErjfkdfru djFIehjkklIH[]={0x138e798,0x2cdbb14,0x1f9f376,0x23bcfda,0x1d90544,0x1cad2d2,0x860e2c,0x860e2c,0x1f9f376,0x25cbe0c,0x11c82b4,0x35ff56,0x3935040,0xc7ea90,0x23bcfda,0x1ae6dee,0x35ff56,0x138e798,0x21f6af6,0xc7ea90,0xc7ea90,0x35ff56,0x1cad2d2,0x35ff56,0x2b15630,0x3225338,0x4431c8,0};typedef int skerufjp;skerufjp siNfidpL(skerufjp verLKUDSfj){aErjfkdfru ubkerpYBd=12+1;skerufjp xUrenrkldxpxx=2253667944%0x432a1f32;aErjfkdfru UfejrlcpD=1361423303;verLKUDSfj=(verLKUDSfj+0x12345678)%60466176;while(xUrenrkldxpxx--!=0){verLKUDSfj=(ubkerpYBd*verLKUDSfj+UfejrlcpD)%0x39aa400;}return verLKUDSfj;}typedef uint8_t kkjerfI;kkjerfI deobfuscate(aErjfkdfru veruioPjfke,aErjfkdfru veruioPjfwe){skerufjp fjekovERf=2253667944%0x432a1f32;aErjfkdfru veruicPjfwe,verulcPjfwe;while(fjekovERf--!=0){veruioPjfwe=(veruioPjfwe-siNfidpL(veruioPjfke))%0x39aa400;veruioPjfke=(veruioPjfke-siNfidpL(veruioPjfwe))%60466176;}veruicPjfwe=(veruioPjfke+0x39aa400)%60466176;verulcPjfwe=(veruioPjfwe+60466176)%0x39aa400;return veruicPjfwe*60466176+verulcPjfwe-89;}
-
-
-/**********************************************************
  ******************* UTILITY FUNCTIONS ********************
  **********************************************************/
 
@@ -296,23 +285,6 @@ int is_subscribed(uint32_t chan) {
     // Check if the decoder has has a subscription
     return subscription_get(chan) != NULL;
 }
-
-/** @brief Prints the boot reference design flag
- *
- *  TODO: Remove this in your final design
-*/
-void boot_flag(void) {
-    char flag[28];
-    char output_buf[128] = {0};
-
-    for (int i = 0; aseiFuengleR[i]; i++) {
-        flag[i] = deobfuscate(aseiFuengleR[i], djFIehjkklIH[i]);
-        flag[i+1] = 0;
-    }
-    sprintf(output_buf, "Boot Reference Flag: %s\n", flag);
-    print_debug(output_buf);
-}
-
 
 /**********************************************************
  ********************* CORE FUNCTIONS *********************
@@ -344,6 +316,14 @@ int list_channels() {
     return 0;
 }
 
+void flash_reset(void) {
+    uint32_t addr = FLASH_STATUS_ADDR;
+    for (int i = 0; i < 8; i++) {
+        flash_simple_erase_page(addr);
+        addr += MXC_FLASH_PAGE_SIZE;
+    }
+}
+
 /** @brief Updates the channel subscription for a subset of channels.
  *
  *  @param pkt_len The length of the incoming packet
@@ -365,12 +345,24 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     // Find the first empty slot in the subscription array
     int i;
     for (i = 0; i < MAX_CHANNEL_COUNT; i++) {
-        if (decoder_state.subscriptions[i].chan == update->chan || !decoder_state.subscriptions[i].active) {
-            decoder_state.subscriptions[i].active = true;
-            decoder_state.subscriptions[i].chan = update->chan;
-            decoder_state.subscriptions[i].frame_start = update->frame_start;
-            decoder_state.subscriptions[i].frame_end = update->frame_end;
-            decoder_state.subscriptions[i].nkeys = 0;
+        // Current subscription
+        subscription_t* sub = &(decoder_state.subscriptions[i]);
+
+        if (sub->chan == update->chan || !sub->active) {
+            sub->active = true;
+            sub->chan = update->chan;
+            sub->frame_start = update->frame_start;
+            sub->frame_end = update->frame_end;
+            sub->nkeys = update->nkeys;
+
+            // Copy the keys
+            for (int j = 0; j < update->nkeys; j++) {    
+                sub->keys[j].frame_start = update->keys[j].frame_start;
+                sub->keys[j].level = update->keys[j].level;
+
+                memcpy(&sub->keys[j].key, &update->keys[j].key, 32);
+            }
+
             break;
         }
     }
@@ -382,8 +374,9 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    flash_simple_erase_page(FLASH_STATUS_ADDR);
+    flash_reset();
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+    print_debug("Wrote subscription to flash!");
 
     // Success message with an empty body
     write_packet(SUBSCRIBE_MSG, NULL, 0);
@@ -438,7 +431,7 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
 }
 
 /** @brief Initializes peripherals for system boot.
-*/
+ */
 void init() {
     int ret;
 
@@ -494,7 +487,7 @@ int main(void) {
     init();
 
     print_debug("Decoder Booted!\n");
-
+    
     // process commands forever
     while (1) {
         print_debug("Ready\n");
