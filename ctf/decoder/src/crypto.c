@@ -197,41 +197,18 @@ int verify_subscription(const subscription_update_packet_t* update, const uint8_
         return ERROR;
     }
 
-    wc_Sha256Update(&sha256, (uint8_t*)(&(update->chan)), sizeof(update->chan));
-    wc_Sha256Update(&sha256, (uint8_t*)(&(update->nkeys)), sizeof(update->nkeys));
-    wc_Sha256Update(&sha256, (uint8_t*)(&(update->frame_start)), sizeof(update->frame_start));
-    wc_Sha256Update(&sha256, (uint8_t*)(&(update->frame_end)), sizeof(update->frame_end));
+    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->chan)), sizeof(update->chan));
+    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->nkeys)), sizeof(update->nkeys));
+    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->frame_start)), sizeof(update->frame_start));
+    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->frame_end)), sizeof(update->frame_end));
     for (int i = 0; i < update->nkeys; i++) {
-        const key_entry_packet_t* key = update->keys + i;
-        wc_Sha256Update(&sha256, (uint8_t*)(&(key->frame_start)), sizeof(key->frame_start));
-        wc_Sha256Update(&sha256, (uint8_t*)(&(key->level)), sizeof(key->level));
-        wc_Sha256Update(&sha256, (uint8_t*)(&(key->key)), sizeof(key->key));
-        wc_Sha256Update(&sha256, (uint8_t*)(&(key->frame_start)), sizeof(key->frame_start));
-        wc_Sha256Final(&sha256, hash);
-        wc_Sha256Free(&sha256);
+        const key_entry_packet_t* key = &((update->keys)[i]);
+        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->frame_start)), sizeof(key->frame_start));
+        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->level)), sizeof(key->level));
+        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->key)), sizeof(key->key));
     }
+    wc_Sha256Final(&sha256, hash);
+    wc_Sha256Free(&sha256);
 
     return ecdsa_verify_sha256hash(hash, update->signature, key);
-
-
-    /**
-     * decoder_id_t decoder_id;
-    uint8_t chan;
-    uint8_t nkeys;
-    uint64_t frame_start;
-    uint64_t frame_end;
-    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];
-     */
-    /**
-     * typedef struct {
-        uint64_t frame_start;
-        uint8_t level;
-        uint8_t key[32];
-       } key_entry_packet_t;
-     */
-    // for (int i = 0; i < update->nkeys; i++) {
-
-    // }
-
 }
-
