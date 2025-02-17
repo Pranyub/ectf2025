@@ -18,6 +18,9 @@
 #include <wolfssl/options.h>
 #include <wolfssl/wolfcrypt/sha256.h>
 
+#include "secrets.h"
+#include "constants.h"
+
 #include "mxc_device.h"
 #include "status_led.h"
 #include "board.h"
@@ -30,7 +33,6 @@
 #include "chacha20_tests.h"
 #include "crypto_tests.h"
 
-#define MAX_CHANNEL_COUNT 8
 
 // Stores the current "chain" of keys that have been derived
 static key_entry_t key_stack[MAX_CHANNEL_COUNT][ROOT_KEY_LEVEL];
@@ -188,75 +190,13 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
  ******************* PRIMITIVE TYPES **********************
  **********************************************************/
 
-#define timestamp_t uint64_t
-#define channel_id_t uint32_t
-#define decoder_id_t uint32_t
-#define pkt_len_t uint16_t
-
 /**********************************************************
  *********************** CONSTANTS ************************
  **********************************************************/
 
-#define EMERGENCY_CHANNEL 0
-#define FRAME_SIZE 64
-#define DEFAULT_CHANNEL_TIMESTAMP 0xFFFFFFFFFFFFFFFF
-// This is a canary value so we can confirm whether this decoder has booted before
-#define FLASH_FIRST_BOOT 0xDEADBEEF
-
 /**********************************************************
  ********************* STATE MACROS ***********************
  **********************************************************/
-
-// Calculate the flash address where we will store channel info as the 8th to last page available
-#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
-
-
-/**********************************************************
- *********** COMMUNICATION PACKET DEFINITIONS *************
- **********************************************************/
-
-#pragma pack(push, 1) // Tells the compiler not to pad the struct members
-// for more information on what struct padding does, see:
-// https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Structure-Layout.html
-
-// decrypted frame packet
-typedef struct {
-    uint8_t channel;
-    uint64_t frame_number;
-    uint8_t nonce[NONCE_SIZE];
-    uint8_t data[FRAME_SIZE];
-    uint8_t tag[TAG_LENGTH];
-} frame_packet_t;
-
-typedef struct {
-    uint64_t frame_start;
-    uint8_t level;
-    uint8_t key[32];
-} key_entry_packet_t;
-
-typedef struct {
-    uint8_t signature[ECDSA_SIGNATURE_SIZE];
-    decoder_id_t decoder_id;
-    uint8_t chan;
-    uint8_t nkeys;
-    uint64_t frame_start;
-    uint64_t frame_end;
-    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];
-} subscription_update_packet_t;
-
-// These structs are just for responding to the host according with the correct format
-typedef struct {
-    uint32_t channel;
-    uint64_t start;
-    uint64_t end;
-} channel_info_t;
-
-typedef struct {
-    uint32_t n_channels;
-    channel_info_t channel_info[MAX_CHANNEL_COUNT];
-} list_response_t;
-
-#pragma pack(pop) // Tells the compiler to resume padding struct members
 
 /**********************************************************
  ******************* UTILITY FUNCTIONS ********************
@@ -343,14 +283,14 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     }
 
     // verify the subscription signature
-    
-    // create flat array of subscription data to be verified
-    uint8_t flattened[sizeof()];
-    for (int i = 0; i < update->nkeys; i++) {
-
-    }
-    if (ecdsa_verify(update->keys, )) {
-
+    int status;
+    if ((status = verify_subscription(update, ECDSA_PUBLIC_KEY)) != SUCCESS) {
+        if (status == ECDSA_VERIFY_ERROR) {
+            print_error("Failed to update subscription - failed subscription verification\n");
+        } else {
+            print_error("Failed to update subscription - unable to verify\n");
+        }
+        return -1;
     }
 
     // Find the first empty slot in the subscription array
