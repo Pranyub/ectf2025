@@ -41,16 +41,18 @@ def gen_secrets(channels: list[int]) -> bytes:
     public_key = keys.public_key()
     root_key = token_bytes(32)
 
+    public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
+
     secrets = {
         "channels": channels,
         # keys for subscription signing
         "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
-        "public_key": public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex(),
+        "public_key": public_key_hex,
         # root key for frame encryption
         "root_key": root_key.hex()
     }
 
-    return json.dumps(secrets).encode()
+    return json.dumps(secrets).encode(), public_key_hex
 
 
 def parse_args():
@@ -88,7 +90,7 @@ def main():
     # Parse the command line arguments
     args = parse_args()
 
-    secrets = gen_secrets(args.channels)
+    secrets, pub = gen_secrets(args.channels)
 
     # Print the generated secrets for your own debugging
     # Attackers will NOT have access to the output of this, but feel free to remove
@@ -101,8 +103,14 @@ def main():
         # Dump the secrets to the file
         f.write(secrets)
 
+    pub_path = args.secrets_file.with_suffix('.pub')
+
+    with open(pub_path, "wb" if args.force else "xb") as f:
+        f.write(pub.encode('ascii'))
+
     # For your own debugging. Feel free to remove
     logger.success(f"Wrote secrets to {str(args.secrets_file.absolute())}")
+    logger.success(f"Wrote public key to {str(pub_path.absolute())}")
 
 
 if __name__ == "__main__":
