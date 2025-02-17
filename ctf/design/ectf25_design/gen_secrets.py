@@ -52,7 +52,13 @@ def gen_secrets(channels: list[int]) -> bytes:
         "root_key": root_key.hex()
     }
 
-    return json.dumps(secrets).encode(), public_key_hex
+    pub_as_bytes = []
+    for i in range(0, len(public_key_hex), 2):
+        pub_as_bytes += (public_key_hex[i:i+2],)
+    print(pub_as_bytes)
+    decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n#endif\n"
+
+    return json.dumps(secrets).encode(), decoder_file
 
 
 def parse_args():
@@ -90,7 +96,7 @@ def main():
     # Parse the command line arguments
     args = parse_args()
 
-    secrets, pub = gen_secrets(args.channels)
+    secrets, decoder_file = gen_secrets(args.channels)
 
     # Print the generated secrets for your own debugging
     # Attackers will NOT have access to the output of this, but feel free to remove
@@ -103,14 +109,15 @@ def main():
         # Dump the secrets to the file
         f.write(secrets)
 
-    pub_path = args.secrets_file.with_suffix('.pub')
+    decoder_secret_path = args.secrets_file.with_suffix('.h')
 
-    with open(pub_path, "wb" if args.force else "xb") as f:
-        f.write(pub.encode('ascii'))
+    with open(decoder_secret_path, "wb" if args.force else "xb") as f:
+        # dump file for including on the decoder
+        f.write(decoder_file.encode('ascii'))
 
     # For your own debugging. Feel free to remove
     logger.success(f"Wrote secrets to {str(args.secrets_file.absolute())}")
-    logger.success(f"Wrote public key to {str(pub_path.absolute())}")
+    logger.success(f"Wrote public key to {str(decoder_secret_path.absolute())}")
 
 
 if __name__ == "__main__":
