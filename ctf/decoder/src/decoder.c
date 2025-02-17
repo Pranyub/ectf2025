@@ -235,7 +235,7 @@ typedef struct {
 } key_entry_packet_t;
 
 typedef struct {
-    // TODO: add signature buf here
+    uint8_t signature[ECDSA_SIGNATURE_SIZE];
     decoder_id_t decoder_id;
     uint8_t chan;
     uint8_t nkeys;
@@ -340,6 +340,17 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         STATUS_LED_RED();
         print_error("Failed to update subscription - cannot subscribe to emergency channel\n");
         return -1;
+    }
+
+    // verify the subscription signature
+    
+    // create flat array of subscription data to be verified
+    uint8_t flattened[sizeof()];
+    for (int i = 0; i < update->nkeys; i++) {
+
+    }
+    if (ecdsa_verify(update->keys, )) {
+
     }
 
     // Find the first empty slot in the subscription array

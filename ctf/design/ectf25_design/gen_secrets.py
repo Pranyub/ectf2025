@@ -14,7 +14,10 @@ import argparse
 import json
 from pathlib import Path
 from secrets import token_bytes
-import ecdsa
+
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import utils
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
 
 from loguru import logger
 
@@ -33,15 +36,16 @@ def gen_secrets(channels: list[int]) -> bytes:
     """
 
     # we need root key, pub/priv key for subscription signing
-    private_key = ecdsa.SigningKey.generate(curve=ecdsa.NIST256p)
-    public_key = private_key.verifying_key
+    keys = ec.generate_private_key(ec.SECP256K1())
+    private_key = keys
+    public_key = keys.public_key()
     root_key = token_bytes(32)
 
     secrets = {
         "channels": channels,
         # keys for subscription signing
-        "private_key": private_key.to_pem().decode(),
-        "public_key": public_key.to_pem().decode(),
+        "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
+        "public_key": public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex(),
         # root key for frame encryption
         "root_key": root_key.hex()
     }
