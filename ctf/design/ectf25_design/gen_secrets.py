@@ -55,7 +55,7 @@ def gen_secrets(channels: list[int]) -> bytes:
     pub_as_bytes = []
     for i in range(0, len(public_key_hex), 2):
         pub_as_bytes += (public_key_hex[i:i+2],)
-    print(pub_as_bytes)
+
     decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n#endif\n"
 
     return json.dumps(secrets).encode(), decoder_file
