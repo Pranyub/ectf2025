@@ -284,7 +284,10 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     // verify the subscription signature
     int status;
-    if ((status = verify_subscription(update, ECDSA_PUBLIC_KEY)) != SUCCESS) {
+    if ((status = ecdsa_verify(update + sizeof(update->signature),
+                               pkt_len - sizeof(update->signature),
+                               update->signature,
+                               ECDSA_PUBLIC_KEY)) != SUCCESS) {
         if (status == ECDSA_VERIFY_ERROR) {
             print_error("Failed to update subscription - failed subscription verification\n");
         } else {
