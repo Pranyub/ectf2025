@@ -284,7 +284,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     // verify the subscription signature
     int status;
-    if ((status = ecdsa_verify(update + sizeof(update->signature),
+    if ((status = ecdsa_verify((const uint8_t*)(update + sizeof(update->signature)),
                                pkt_len - sizeof(update->signature),
                                update->signature,
                                ECDSA_PUBLIC_KEY)) != SUCCESS) {
