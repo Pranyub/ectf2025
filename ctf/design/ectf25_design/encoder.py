@@ -22,20 +22,6 @@ import ectf25_design.encoder
 
 TOTAL_FRAMES = 3
 
-## DELETE ME!!!
-def calcKey_test(fNum, currKey):
-    low = 0
-    high = TOTAL_FRAMES-1
-    while high - low > 1:
-        mid = low + (high - low) // 2
-        if fNum <= mid:
-            currKey = hash(currKey, low)
-            high = mid
-        else:
-            currKey = hash(currKey, mid + 1)
-            low = mid + 1
-    return currKey
-
 def encryptFrame(fNum, root_key, frame_data, channel_num, nonce=None):
     frameKey = calcKey(root_key, fNum)
 
