@@ -30,7 +30,7 @@ def hash(currKey, fNum):
     if fNum == 0:
         frame_bytes = b'\x00'  # Ensure 0 is represented at least with 1 byte
     else:
-        frame_bytes = n.to_bytes((n.bit_length() + 7) // 8, byteorder='big')
+        frame_bytes = fNum.to_bytes((fNum.bit_length() + 7) // 8, byteorder='big')
     data = currKey + frame_bytes
 
     hashable = data + b"\0" * (((int(len(data) / 64) + 1) * 64)-len(data))
