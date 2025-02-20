@@ -22,25 +22,10 @@ import ectf25_design.encoder
 
 TOTAL_FRAMES = 3
 
-## DELETE ME!!!
-def calcKey_test(fNum, currKey):
-    low = 0
-    high = TOTAL_FRAMES-1
-    while high - low > 1:
-        mid = low + (high - low) // 2
-        if fNum <= mid:
-            currKey = hash(currKey, low)
-            high = mid
-        else:
-            currKey = hash(currKey, mid + 1)
-            low = mid + 1
-    return currKey
-
-def encryptFrame(fNum, root_key, frame_data, channel_num, nonce=None):
+def encryptFrame(fNum, root_key, frame_data, channel_num):
     frameKey = calcKey(root_key, fNum)
-
-    if nonce == None:
-        nonce = token_bytes(12)
+    # print(frameKey.hex())
+    nonce = token_bytes(12)
     
     ad = b''
     ad += struct.pack('<BQ', channel_num, fNum)
@@ -58,7 +43,7 @@ def encryptFrame(fNum, root_key, frame_data, channel_num, nonce=None):
     return ciphertext, nonce, tag, ad, frameKey
 
 def calcKey(root_key: bytes, frame: int) -> bytes:
-    key, level = root_key, 63
+    key, level = root_key, 64
 
     # the range of frames the current key covers
     covered_start, covered_end = 0, 2**64 - 1
@@ -79,12 +64,8 @@ def calcKey(root_key: bytes, frame: int) -> bytes:
     return key
 
 def hash(currKey, fNum):
-    #frame_bytes = str(fNum).encode('utf-8').rjust(64, b'0')
-    frame_bytes = fNum.to_bytes(64, byteorder='big')
-    data = currKey + frame_bytes
-    hash_result = hashlib.sha256(data).digest()
+    hash_result = hashlib.sha256(currKey + struct.pack('<Q', fNum)).digest()
     return hash_result
-
 
 class Encoder:
     def __init__(self, secrets: bytes):
@@ -121,8 +102,11 @@ class Encoder:
         """
 
         # TODO: make this faster by saving a stack of intermediate keys (one per channel)
-        ciphertext, nonce, tag, ad, key = encryptFrame(timestamp, self.root_key, frame, channel)
-        return ad + ciphertext + tag
+        if channel == 0:
+            return struct.pack('<BQ', channel, timestamp) + b'\x00'*12 + frame + b'\x00'*16
+        else:
+            ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, channel)
+            return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame

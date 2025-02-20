@@ -38,16 +38,17 @@ static key_entry_t key_stack[MAX_CHANNEL_COUNT][ROOT_KEY_LEVEL];
 // Keeps track of the current number of keys derived for each channel
 static uint8_t key_stack_sz[MAX_CHANNEL_COUNT];
 
-// Stores subscriptions for all channels
-// Note: we add a zero root key for channel 0
-// static subscription_t subscriptions[MAX_CHANNEL_COUNT] = { { .frame_start = 0, .frame_end = 0, .chan = 0, .nkeys = 1 } };
-
 typedef struct {
     uint32_t first_boot; // if set to FLASH_FIRST_BOOT, device has booted before.
     subscription_t subscriptions[MAX_CHANNEL_COUNT];
 } flash_entry_t;
 
 flash_entry_t decoder_state;
+
+void key_print(uint8_t key[32]) {
+    write_hex(DEBUG_MSG, key, 32);
+    print_debug("\n");
+}
 
 /**
  * @brief Hashes an intermediate key to give the next key, which will eventually
@@ -140,23 +141,25 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
  */
 int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     // the "stack" of derived keys so far: this is a macro to save typing
-#define st (key_stack[chan])
+#define st (key_stack[chan - 1])
 
     // the stack size
-    uint8_t* sz = &key_stack_sz[chan];
+    uint8_t* sz = &key_stack_sz[chan - 1];
 
     // boolean flag
     uint8_t key_found = 0;
 
     if (*sz <= 0) {
         // Empty stack: find correct intermediate key
-        subscription_t* sub = &decoder_state.subscriptions[chan];
+        subscription_t* sub = &decoder_state.subscriptions[chan - 1];
         for (int i = 0; i < sub->nkeys; i++) {
             if (key_covers_frame(&sub->keys[i], frame)) {
                 // Setup the stack with the intermediate key
-                st[0] = sub->keys[i];
-                *sz = 1;
+                st[0].frame_start = sub->keys[i].frame_start;
+                st[0].level = sub->keys[i].level;
+                memcpy(st[0].key, sub->keys[i].key, 32);
 
+                *sz = 1;
                 key_found = 1;
                 break;
             }
@@ -180,25 +183,15 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
     }
 
     // Copy the top key in stack to output
-    memcpy(key, st[*sz - 1].key, sizeof(((key_entry_t) {}).key));
+    memcpy(key, st[*sz - 1].key, 32);
     return 1;
 }
-
-/**********************************************************
- ******************* PRIMITIVE TYPES **********************
- **********************************************************/
-
-#define timestamp_t uint64_t
-#define channel_id_t uint32_t
-#define decoder_id_t uint32_t
-#define pkt_len_t uint16_t
 
 /**********************************************************
  *********************** CONSTANTS ************************
  **********************************************************/
 
 #define EMERGENCY_CHANNEL 0
-#define FRAME_SIZE 64
 #define DEFAULT_CHANNEL_TIMESTAMP 0xFFFFFFFFFFFFFFFF
 // This is a canary value so we can confirm whether this decoder has booted before
 #define FLASH_FIRST_BOOT 0xDEADBEEF
@@ -209,7 +202,6 @@ int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
 
 // Calculate the flash address where we will store channel info as the 8th to last page available
 #define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
-
 
 /**********************************************************
  *********** COMMUNICATION PACKET DEFINITIONS *************
@@ -224,7 +216,7 @@ typedef struct {
     uint8_t channel;
     uint64_t frame_number;
     uint8_t nonce[NONCE_SIZE];
-    uint8_t data[FRAME_SIZE];
+    uint8_t data[CRYPTO_FRAME_SIZE];
     uint8_t tag[TAG_LENGTH];
 } frame_packet_t;
 
@@ -236,7 +228,7 @@ typedef struct {
 
 typedef struct {
     // TODO: add signature buf here
-    decoder_id_t decoder_id;
+    uint32_t decoder_id;
     uint8_t chan;
     uint8_t nkeys;
     uint64_t frame_start;
@@ -263,12 +255,9 @@ typedef struct {
  **********************************************************/
 
 subscription_t* subscription_get(uint32_t chan) {
-    for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {
-        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
-            return &decoder_state.subscriptions[i];
-        }
-    }
-    return NULL;
+    if (chan <= 0 || chan > 8)
+        return NULL;
+    return &decoder_state.subscriptions[chan - 1];
 }
 
 /** @brief Checks whether the decoder is subscribed to a given channel
@@ -278,9 +267,8 @@ subscription_t* subscription_get(uint32_t chan) {
 */
 int is_subscribed(uint32_t chan) {
     // Check if this is an emergency broadcast message
-    if (chan == EMERGENCY_CHANNEL) {
+    if (chan == EMERGENCY_CHANNEL)
         return 1;
-    }
 
     // Check if the decoder has has a subscription
     return subscription_get(chan) != NULL;
@@ -296,13 +284,13 @@ int is_subscribed(uint32_t chan) {
 */
 int list_channels() {
     list_response_t resp;
-    pkt_len_t len;
+    uint16_t len;
 
     resp.n_channels = 0;
 
     for (uint32_t i = 0; i < MAX_CHANNEL_COUNT; i++) {
         if (decoder_state.subscriptions[i].active) {
-            resp.channel_info[resp.n_channels].channel =  decoder_state.subscriptions[i].chan;
+            resp.channel_info[resp.n_channels].channel = i + 1;
             resp.channel_info[resp.n_channels].start = decoder_state.subscriptions[i].frame_start;
             resp.channel_info[resp.n_channels].end = decoder_state.subscriptions[i].frame_end;
             resp.n_channels++;
@@ -314,14 +302,6 @@ int list_channels() {
     // Success message
     write_packet(LIST_MSG, &resp, len);
     return 0;
-}
-
-void flash_reset(void) {
-    uint32_t addr = FLASH_STATUS_ADDR;
-    for (int i = 0; i < 8; i++) {
-        flash_simple_erase_page(addr);
-        addr += MXC_FLASH_PAGE_SIZE;
-    }
 }
 
 /** @brief Updates the channel subscription for a subset of channels.
@@ -342,41 +322,33 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    // Find the first empty slot in the subscription array
-    int i;
-    for (i = 0; i < MAX_CHANNEL_COUNT; i++) {
-        // Current subscription
-        subscription_t* sub = &(decoder_state.subscriptions[i]);
+    // Current subscription
+    subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
 
-        if (sub->chan == update->chan || !sub->active) {
-            sub->active = true;
-            sub->chan = update->chan;
-            sub->frame_start = update->frame_start;
-            sub->frame_end = update->frame_end;
-            sub->nkeys = update->nkeys;
-
-            // Copy the keys
-            for (int j = 0; j < update->nkeys; j++) {    
-                sub->keys[j].frame_start = update->keys[j].frame_start;
-                sub->keys[j].level = update->keys[j].level;
-
-                memcpy(&sub->keys[j].key, &update->keys[j].key, 32);
-            }
-
-            break;
-        }
+    if (!sub->active) {
+        sub->active = true;
     }
 
-    // If we do not have any room for more subscriptions
-    if (i == MAX_CHANNEL_COUNT) {
-        STATUS_LED_RED();
-        print_error("Failed to update subscription - max subscriptions installed\n");
-        return -1;
+    sub->frame_start = update->frame_start;
+    sub->frame_end = update->frame_end;
+    sub->nkeys = update->nkeys;
+
+    // Clear the old keys
+    memset(sub->keys, 0, MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_t));
+
+    // Copy the keys
+    for (int i = 0; i < sub->nkeys; i++) {
+        sub->keys[i].frame_start = update->keys[i].frame_start;
+        sub->keys[i].level = update->keys[i].level;
+        memcpy(&sub->keys[i].key, &update->keys[i].key, 32);
     }
 
     flash_reset();
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
-    print_debug("Wrote subscription to flash!");
+    
+    char output_buf[128];
+    sprintf(output_buf, "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
+    print_debug(output_buf);
 
     // Success message with an empty body
     write_packet(SUBSCRIBE_MSG, NULL, 0);
@@ -390,7 +362,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
  *
  *  @return 0 if successful. -1 if data is from unsubscribed channel.
  */
-int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
+int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     char output_buf[128] = {0};
 
     uint8_t chan = new_frame->channel;
@@ -404,6 +376,12 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
             && frame <= sub->frame_end) {
         print_debug("Subscription Valid\n");        
         
+        // Emergency channel
+        if (chan == EMERGENCY_CHANNEL) {
+            write_packet(DECODE_MSG, new_frame->data, CRYPTO_FRAME_SIZE);
+            return 0;
+        }
+
         uint8_t key[32];
         memset(key, 0, sizeof(key));
         if (!key_derive(chan, frame, key)) {
@@ -412,7 +390,7 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
             return -1;
         }
 
-        uint8_t decoded_frame[FRAME_SIZE];
+        uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         if (decrypt_frame(key, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
             // error
             sprintf(output_buf, "Decoding frame #%u failed: could not decrypt frame\n", frame);
@@ -420,7 +398,7 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
             return -1;
         }
 
-        write_packet(DECODE_MSG, decoded_frame, FRAME_SIZE);
+        write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
         return 0;
     } else {
         STATUS_LED_RED();
@@ -435,11 +413,24 @@ int decode(pkt_len_t pkt_len, frame_packet_t *new_frame) {
 void init() {
     int ret;
 
+    // Initialize the uart peripheral to enable serial I/O
+    ret = uart_init();
+    if (ret < 0) {
+        STATUS_LED_ERROR();
+        // if uart fails to initialize, do not continue to execute
+        while (1);
+    }
+
     // Initialize the flash peripheral to enable access to persistent memory
     flash_simple_init();
 
     // Read starting flash values into our flash status struct
     flash_simple_read(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+
+    char output_buf[128];
+    sprintf(output_buf, "decoder_state.first_boot = %x\n", decoder_state.first_boot);
+    print_debug(output_buf);
+
     if (decoder_state.first_boot != FLASH_FIRST_BOOT) {
         /* If this is the first boot of this decoder, mark all channels as unsubscribed.
          * This data will be persistent across reboots of the decoder. Whenever the decoder
@@ -453,26 +444,17 @@ void init() {
         memset(subs, 0, sizeof(subscription_t) * MAX_CHANNEL_COUNT);
 
         for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {
-            // TODO: check this
-            subs[i].chan = 0;
+            subs[i].active = 0;
             subs[i].frame_start = DEFAULT_CHANNEL_TIMESTAMP;
             subs[i].frame_end = DEFAULT_CHANNEL_TIMESTAMP;
             subs[i].nkeys = 0;
-            subs[i].active = false;
         }
 
         // Write the starting channel subscriptions into flash.
         memcpy(&decoder_state.subscriptions, subs, MAX_CHANNEL_COUNT*sizeof(subscription_t));
-        flash_simple_erase_page(FLASH_STATUS_ADDR);
+        // flash_simple_erase_page(FLASH_STATUS_ADDR);
+        flash_reset();
         flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
-    }
-
-    // Initialize the uart peripheral to enable serial I/O
-    ret = uart_init();
-    if (ret < 0) {
-        STATUS_LED_ERROR();
-        // if uart fails to initialize, do not continue to execute
-        while (1);
     }
 }
 
@@ -487,7 +469,12 @@ int main(void) {
     init();
 
     print_debug("Decoder Booted!\n");
-    
+
+    // reset key stacks
+    for (int i = 0; i < sizeof(key_stack_sz); i++) {
+        key_stack_sz[i] = 0;
+    }
+
     // process commands forever
     while (1) {
         print_debug("Ready\n");
@@ -508,10 +495,6 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
-
-            // tests
-            chacha20_test_all();
-            crypto_test_all();
             list_channels();
             break;
 

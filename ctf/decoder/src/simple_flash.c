@@ -101,3 +101,11 @@ void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
 int flash_simple_write(uint32_t address, void* buffer, uint32_t size) {
     return MXC_FLC_Write(address, size, (uint32_t *)buffer);
 }
+
+void flash_reset(void) {
+  uint32_t addr = FLASH_STATUS_ADDR;
+  for (int i = 0; i < FLASH_NUM_PAGES; i++) {
+    flash_simple_erase_page(addr);
+    addr += MXC_FLASH_PAGE_SIZE;
+  }
+}

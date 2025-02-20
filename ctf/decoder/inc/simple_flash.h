@@ -16,6 +16,9 @@
 
 #include <stdint.h>
 
+#define FLASH_NUM_PAGES 8
+#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (FLASH_NUM_PAGES * MXC_FLASH_PAGE_SIZE))
+
 /**
  * @brief Initialize the Simple Flash Interface
  * 
@@ -62,5 +65,10 @@ void flash_simple_read(uint32_t address, void* buffer, uint32_t size);
  * flash_simple_erase_page documentation.
 */
 int flash_simple_write(uint32_t address, void* buffer, uint32_t size);
+
+/**
+ * @brief Resets FLASH_NUM_PAGES of flash starting at FLASH_STATUS_ADDR
+ */
+void flash_reset(void);
 
 #endif

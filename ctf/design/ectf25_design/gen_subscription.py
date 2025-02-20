@@ -35,7 +35,7 @@ def gen_subscription(
     # Load the json of the secrets file
     secrets = json.loads(secrets)
 
-    root_key = secrets['root_key'].encode()
+    root_key = bytes.fromhex(secrets['root_key'])
 
     # Find the highest level intermediate key whose lowest covered frame equals
     # the current frame number and whose highest covered frame is less than or
@@ -48,7 +48,7 @@ def gen_subscription(
 
     while curr_frame <= end:
         # the current key under consideration
-        key, level = root_key, 63
+        key, level = root_key, 64
         # the range of frames the current key covers
         covered_start, covered_end = 0, 2**64 - 1
 
@@ -69,7 +69,7 @@ def gen_subscription(
             raise Exception(f'could not derive frame #{curr_frame}!')
 
         keys.append((covered_start, level, key))
-        # print(f'adding key: frame_start={covered_start}, level={level}')
+        # print(f'adding key: frame_start={covered_start}, level={level}, key={key.hex()}')
         curr_frame = covered_end + 1
 
     keys_serialized = b''

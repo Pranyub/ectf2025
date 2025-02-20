@@ -13,8 +13,7 @@ typedef struct {
 } key_entry_t;
 
 typedef struct {
-  bool active;
-  uint8_t chan;
+  uint8_t active; // a boolean flag
   uint8_t nkeys;
   uint64_t frame_start;
   uint64_t frame_end;
