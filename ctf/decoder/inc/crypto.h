@@ -19,19 +19,8 @@
 #include <wolfssl/wolfcrypt/ecc.h>
 #include <wolfssl/wolfcrypt/sha256.h>
 
-#define TAG_LENGTH 16
-#define CHACHA_KEY_SIZE 32
-#define NONCE_SIZE 12
-#define CRYPTO_FRAME_SIZE 64
-
-#define ECDSA_SIGNATURE_SIZE 64
-#define CRYPTO_ECC_KEY_SIZE 65
-#define ECC_CURVE ECC_SECP256K1
-
-#define SUCCESS 0
-#define ERROR 1
-#define TAG_ERROR 2
-#define ECDSA_VERIFY_ERROR 3
+#include "constants.h"
+#include "decoder.h"
 
 /**
  * @brief Decrypts a chacha20 encrypted cipher with a key and checks the tag
@@ -134,6 +123,7 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
 /**
  * @brief verifies the ECDSA signature 
  * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/
+ * @note To understand the verify function: https://www.wolfssl.com/doxygen/group__ECC.html#ga5b1bb1c6ce3f9238c8f23a3e516952bb
  * @param in the signed data to be verified
  * @param len the length of \p in
  * @param sig the signature to be checked against \p data
@@ -144,5 +134,24 @@ int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                  const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
+
+/**
+ * @brief verifies the ECDSA signature given the SHA256 hash and signature
+ * @param hash the hash to be verfiied
+ * @param sig the signature to be checked against \p data
+ * @param pub the public key to be used
+ * @return SUCCESS on success, ERROR on error, ECDSA_VERIFY_ERROR on signature verification fail
+ */
+int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
+                            const uint8_t sig[ECDSA_SIGNATURE_SIZE],
+                            const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
+
+/**
+ * @brief verfifies a subscription
+ * @param in a pointer to the subscription to verify
+ * @param pub the public key to be used
+ * @return SUCCESS on succes, ERROR on error, ECDSA_VERIFY_ERROR on subscription verfication fail
+ */
+int verify_subscription(const subscription_update_packet_t* update, const uint8_t key[CRYPTO_ECC_KEY_SIZE]);
 
 #endif

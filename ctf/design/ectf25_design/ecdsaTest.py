@@ -1,10 +1,11 @@
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import utils
-from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
 
 def generateKeys():
     keys = ec.generate_private_key(ec.SECP256K1())
+    print(f"Private key: {keys.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())}")
     print(f"Public key: {keys.public_key().public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()}")
     return keys
 

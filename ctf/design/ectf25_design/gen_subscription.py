@@ -16,6 +16,12 @@ import struct
 import ectf25_design.encoder
 
 from pathlib import Path
+
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import utils
+import cryptography.hazmat.primitives.serialization as ecc_serialization
+
 from loguru import logger
 
 def gen_subscription(
@@ -35,7 +41,10 @@ def gen_subscription(
     # Load the json of the secrets file
     secrets = json.loads(secrets)
 
-    root_key = bytes.fromhex(secrets['root_key'])
+    # load the private key for signing
+    private_key = ecc_serialization.load_pem_private_key(secrets['private_key'].encode(), password=None)
+
+    root_key = secrets['root_key'].encode()
 
     # Find the highest level intermediate key whose lowest covered frame equals
     # the current frame number and whose highest covered frame is less than or
@@ -77,9 +86,18 @@ def gen_subscription(
         # This aligns with key_entry_packet_t
         keys_serialized += struct.pack('<QB', frame_start, level) + key
 
+    packed_data = struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + keys_serialized
+    # sign the subscription
+    hash_func = hashes.SHA256()
+    hasher = hashes.Hash(hash_func)
+    hasher.update(packed_data)
+    digest = hasher.finalize()
+    sig = private_key.sign(digest, ec.ECDSA(utils.Prehashed(hash_func)))
+    r, s = utils.decode_dss_signature(sig)
+
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t
-    return struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + keys_serialized
+    return r.to_bytes(32, byteorder='big') + s.to_bytes(32, byteorder='big') + packed_data
 
 
 def parse_args():

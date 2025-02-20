@@ -1,9 +1,8 @@
+#ifndef DECODER_H
+#define DECODER_H
+
 #include <stdint.h>
-
-// The level of the root key (leaf keys have level 1)
-#define ROOT_KEY_LEVEL 64
-
-#define MAX_KEYS_PER_SUBSCRIPTION 128
+#include "constants.h"
 
 typedef struct {
   uint64_t frame_start;
@@ -19,3 +18,51 @@ typedef struct {
   uint64_t frame_end;
   key_entry_t keys[MAX_KEYS_PER_SUBSCRIPTION];
 } subscription_t;
+
+/**********************************************************
+ *********** COMMUNICATION PACKET DEFINITIONS *************
+ **********************************************************/
+
+#pragma pack(push, 1) // Tells the compiler not to pad the struct members
+// for more information on what struct padding does, see:
+// https://www.gnu.org/software/c-intro-and-ref/manual/html_node/Structure-Layout.html
+
+// decrypted frame packet
+typedef struct {
+    uint8_t channel;
+    uint64_t frame_number;
+    uint8_t nonce[NONCE_SIZE];
+    uint8_t data[FRAME_SIZE];
+    uint8_t tag[TAG_LENGTH];
+} frame_packet_t;
+
+typedef struct {
+    uint64_t frame_start;
+    uint8_t level;
+    uint8_t key[32];
+} key_entry_packet_t;
+
+typedef struct {
+    uint8_t signature[ECDSA_SIGNATURE_SIZE];  // signature of the entire update packet
+    decoder_id_t decoder_id;
+    uint8_t chan;
+    uint8_t nkeys;
+    uint64_t frame_start;
+    uint64_t frame_end;
+    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];
+} subscription_update_packet_t;
+
+// These structs are just for responding to the host according with the correct format
+typedef struct {
+    uint32_t channel;
+    uint64_t start;
+    uint64_t end;
+} channel_info_t;
+
+typedef struct {
+    uint32_t n_channels;
+    channel_info_t channel_info[MAX_CHANNEL_COUNT];
+} list_response_t;
+
+#pragma pack(pop) // Tells the compiler to resume padding struct members
+#endif

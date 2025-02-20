@@ -14,7 +14,10 @@ import argparse
 import json
 from pathlib import Path
 from secrets import token_bytes
-import ecdsa
+
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import utils
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
 
 from loguru import logger
 
@@ -33,20 +36,29 @@ def gen_secrets(channels: list[int]) -> bytes:
     """
 
     # we need root key, pub/priv key for subscription signing
-    private_key = ecdsa.SigningKey.generate(curve=ecdsa.NIST256p)
-    public_key = private_key.verifying_key
+    keys = ec.generate_private_key(ec.SECP256K1())
+    private_key = keys
+    public_key = keys.public_key()
     root_key = token_bytes(32)
+
+    public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
 
     secrets = {
         "channels": channels,
         # keys for subscription signing
-        "private_key": private_key.to_pem().decode(),
-        "public_key": public_key.to_pem().decode(),
+        "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
+        "public_key": public_key_hex,
         # root key for frame encryption
         "root_key": root_key.hex()
     }
 
-    return json.dumps(secrets).encode()
+    pub_as_bytes = []
+    for i in range(0, len(public_key_hex), 2):
+        pub_as_bytes += (public_key_hex[i:i+2],)
+
+    decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n#endif\n"
+
+    return json.dumps(secrets).encode(), decoder_file
 
 
 def parse_args():
@@ -84,7 +96,7 @@ def main():
     # Parse the command line arguments
     args = parse_args()
 
-    secrets = gen_secrets(args.channels)
+    secrets, decoder_file = gen_secrets(args.channels)
 
     # Print the generated secrets for your own debugging
     # Attackers will NOT have access to the output of this, but feel free to remove
@@ -97,8 +109,15 @@ def main():
         # Dump the secrets to the file
         f.write(secrets)
 
+    decoder_secret_path = args.secrets_file.with_suffix('.h')
+
+    with open(decoder_secret_path, "wb" if args.force else "xb") as f:
+        # dump file for including on the decoder
+        f.write(decoder_file.encode('ascii'))
+
     # For your own debugging. Feel free to remove
     logger.success(f"Wrote secrets to {str(args.secrets_file.absolute())}")
+    logger.success(f"Wrote public key to {str(decoder_secret_path.absolute())}")
 
 
 if __name__ == "__main__":
