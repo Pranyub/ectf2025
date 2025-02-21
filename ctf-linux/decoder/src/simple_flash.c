@@ -12,33 +12,18 @@
  */
 
 #include "simple_flash.h"
-
+#include "constants.h"  // for linux
+#include "unistd.h"  // for linux
 #include <stdio.h>
 
-#include "flc.h"
-#include "icc.h"
-#include "nvic_table.h"
-
-#include <stdio.h>
+#define FLASH_FILE "flash_file.bin"
 
 /**
  * @brief ISR for the Flash Controller
  * 
  * This ISR allows for access to the flash through simple_flash to operate
  */
-void flash_simple_irq(void) {
-    uint32_t temp;
-    temp = MXC_FLC0->intr;
-
-    if (temp & MXC_F_FLC_INTR_DONE) {
-        MXC_FLC0->intr &= ~MXC_F_FLC_INTR_DONE;
-    }
-
-    if (temp & MXC_F_FLC_INTR_AF) {
-        MXC_FLC0->intr &= ~MXC_F_FLC_INTR_AF;
-        printf(" -> Interrupt! (Flash access failure)\n\n");
-    }
-}
+void flash_simple_irq(void) {}
 
 /**
  * @brief Initialize the Simple Flash Interface
@@ -48,10 +33,13 @@ void flash_simple_irq(void) {
 */
 void flash_simple_init(void) {
     // Setup Flash
-    MXC_NVIC_SetVector(FLC0_IRQn, flash_simple_irq);
-    NVIC_EnableIRQ(FLC0_IRQn);
-    MXC_FLC_EnableInt(MXC_F_FLC_INTR_DONEIE | MXC_F_FLC_INTR_AFIE);
-    MXC_ICC_Disable(MXC_ICC0);
+    if (access(FLASH_FILE, F_OK) != 0) {
+        // create the file if it doesn't exist
+        FILE* fp = fopen(FLASH_FILE, "a");
+        fseek(fp, MXC_FLASH_MEM_SIZE, SEEK_SET);
+        fputc('\0', fp);
+        fclose(fp);
+    }
 }
 
 /**
@@ -67,7 +55,10 @@ void flash_simple_init(void) {
  * In order to be re-written the entire page must be erased.
 */
 int flash_simple_erase_page(uint32_t address) {
-    return MXC_FLC_PageErase(address);
+    FILE* fp = fopen(FLASH_FILE, "rb+");
+    fseek(fp, address, SEEK_SET);
+    fwrite('\0', 1, MXC_FLASH_PAGE_SIZE, fp);
+    fclose(fp);
 }
 
 /**
@@ -81,7 +72,10 @@ int flash_simple_erase_page(uint32_t address) {
  * with the specified amount of bytes
 */
 void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
-    MXC_FLC_Read(address, buffer, size);
+    FILE* fp = fopen(FLASH_FILE, "rb");
+    fseek(fp, address, SEEK_SET);
+    fread(buffer, 1, size, fp);
+    fclose(fp);
 }
 
 /**
@@ -99,7 +93,11 @@ void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
  * flash_simple_erase_page documentation.
 */
 int flash_simple_write(uint32_t address, void* buffer, uint32_t size) {
-    return MXC_FLC_Write(address, size, (uint32_t *)buffer);
+    FILE* fp = fopen(FLASH_FILE, "rb");
+    fseek(fp, address, SEEK_SET);
+    fwrite(buffer, 1, size, fp);
+    fclose(fp);
+    return 0;
 }
 
 void flash_reset(void) {
