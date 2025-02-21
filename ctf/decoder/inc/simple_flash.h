@@ -15,9 +15,7 @@
 #define __SIMPLE_FLASH__
 
 #include <stdint.h>
-
-#define FLASH_NUM_PAGES 8
-#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (FLASH_NUM_PAGES * MXC_FLASH_PAGE_SIZE))
+#include "constants.h"
 
 /**
  * @brief Initialize the Simple Flash Interface
