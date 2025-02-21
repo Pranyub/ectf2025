@@ -15,6 +15,7 @@
 #include "constants.h"  // for linux
 #include "unistd.h"  // for linux
 #include <stdio.h>
+#include <stdlib.h>
 
 #define FLASH_FILE "flash_file.bin"
 
@@ -35,9 +36,13 @@ void flash_simple_init(void) {
     // Setup Flash
     if (access(FLASH_FILE, F_OK) != 0) {
         // create the file if it doesn't exist
-        FILE* fp = fopen(FLASH_FILE, "a");
-        fseek(fp, MXC_FLASH_MEM_SIZE, SEEK_SET);
-        fputc('\0', fp);
+        FILE* fp = fopen(FLASH_FILE, "w+");
+        if (fp == NULL) {
+            fprintf(stderr, "Failed to create flash file for flash emulation.\n");
+            exit(EXIT_FAILURE);
+        }
+        fseek(fp, MXC_FLASH_MEM_SIZE - 1, SEEK_SET);
+        fwrite("", 1, sizeof(char), fp);
         fclose(fp);
     }
 }
@@ -57,7 +62,7 @@ void flash_simple_init(void) {
 int flash_simple_erase_page(uint32_t address) {
     FILE* fp = fopen(FLASH_FILE, "rb+");
     fseek(fp, address, SEEK_SET);
-    fwrite('\0', 1, MXC_FLASH_PAGE_SIZE, fp);
+    fwrite("", 1, MXC_FLASH_PAGE_SIZE, fp);
     fclose(fp);
 }
 
