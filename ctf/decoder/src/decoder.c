@@ -335,9 +335,9 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     print_debug("Checking subscription\n");
     subscription_t *sub = subscription_get(chan);
 
-    if (is_subscribed(chan)
-            && frame >= sub->frame_start
-            && frame <= sub->frame_end) {
+    if (chan == 0 || (is_subscribed(chan)
+                      && frame >= sub->frame_start
+                      && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
         
         // Emergency channel
