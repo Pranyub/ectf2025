@@ -11,7 +11,7 @@ IPATH += wolfssl
 
 IPATH+=../deployment
 IPATH+=inc/
-IPATH+=/secrets
+IPATH+=../secrets
 IPATH+=tests
 VPATH+=src/
 
@@ -55,4 +55,3 @@ all: $(OBJS)
 # Ensure the compiler sees the correct include paths
 %.o: %.c
 	$(CC) $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
-	

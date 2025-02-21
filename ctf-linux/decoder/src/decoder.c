@@ -21,17 +21,13 @@
 #include "secrets.h"
 #include "constants.h"
 
-#include "mxc_device.h"
-#include "status_led.h"
-#include "board.h"
-#include "mxc_delay.h"
 #include "simple_flash.h"
 #include "host_messaging.h"
 #include "simple_uart.h"
 #include "decoder.h"
 #include "crypto.h"
-#include "chacha20_tests.h"
-#include "crypto_tests.h"
+// #include "chacha20_tests.h"
+// #include "crypto_tests.h"
 
 
 // Stores the current "chain" of keys that have been derived
@@ -268,7 +264,7 @@ int list_channels() {
  */
 int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) {
     if (update->chan == EMERGENCY_CHANNEL) {
-        STATUS_LED_RED();
+        // STATUS_LED_RED();
         print_error("Failed to update subscription - cannot subscribe to emergency channel\n");
         return -1;
     }
@@ -365,7 +361,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
         write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
         return 0;
     } else {
-        STATUS_LED_RED();
+        // STATUS_LED_RED();
         snprintf(output_buf, sizeof(output_buf), "Receiving unsubscribed channel data. %u\n", chan);
         print_error(output_buf);
         return -1;
@@ -380,7 +376,7 @@ void init() {
     // Initialize the uart peripheral to enable serial I/O
     ret = uart_init();
     if (ret < 0) {
-        STATUS_LED_ERROR();
+        // STATUS_LED_ERROR();
         // if uart fails to initialize, do not continue to execute
         while (1);
     }
@@ -439,12 +435,12 @@ int main(void) {
     while (1) {
         print_debug("Ready\n");
 
-        STATUS_LED_GREEN();
+        // STATUS_LED_GREEN();
 
         result = read_packet(&cmd, uart_buf, &pkt_len);
 
         if (result < 0) {
-            STATUS_LED_ERROR();
+            // STATUS_LED_ERROR();
             print_error("Failed to receive cmd from host\n");
             continue;
         }
@@ -454,25 +450,25 @@ int main(void) {
 
         // Handle list command
         case LIST_MSG:
-            STATUS_LED_CYAN();
+            // STATUS_LED_CYAN();
             list_channels();
             break;
 
         // Handle decode command
         case DECODE_MSG:
-            STATUS_LED_PURPLE();
+            // STATUS_LED_PURPLE();
             decode(pkt_len, (frame_packet_t *)uart_buf);
             break;
 
         // Handle subscribe command
         case SUBSCRIBE_MSG:
-            STATUS_LED_YELLOW();
+            // STATUS_LED_YELLOW();
             update_subscription(pkt_len, (subscription_update_packet_t *)uart_buf);
             break;
 
         // Handle bad command
         default:
-            STATUS_LED_ERROR();
+            // STATUS_LED_ERROR();
             snprintf(output_buf, sizeof(output_buf), "Invalid Command: %c\n", cmd);
             print_error(output_buf);
             break;

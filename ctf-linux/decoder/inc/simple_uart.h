@@ -18,8 +18,6 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "uart.h"
-#include "nvic_table.h"
 #include "host_messaging.h"
 
 /******************************** MACRO DEFINITIONS ********************************/

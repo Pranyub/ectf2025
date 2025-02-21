@@ -15,11 +15,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "uart.h"
-#include "nvic_table.h"
 #include "host_messaging.h"
-#include "board.h"
-#include "mxc_device.h"
 
 
 /** @brief Initializes the UART Interrupt handler.
@@ -28,13 +24,6 @@
  *  @return 0 upon success.  Negative if error.
 */
 int uart_init(void){
-    int ret;
-
-    if ((ret = MXC_UART_Init(MXC_UART_GET_UART(CONSOLE_UART), UART_BAUD, MXC_UART_IBRO_CLK)) != E_NO_ERROR) {
-        printf("Error initializing UART: %d\n", ret);
-        return ret;
-    }
-
     return E_NO_ERROR;
 }
 
@@ -44,7 +33,7 @@ int uart_init(void){
  *      a list of return codes.
 */
 int uart_readbyte_raw(void){
-    int data = MXC_UART_ReadCharacterRaw(MXC_UART_GET_UART(CONSOLE_UART));
+    int data = getc();
     return data;
 }
 
@@ -54,7 +43,7 @@ int uart_readbyte_raw(void){
  *      a list of return codes.
 */
 int uart_readbyte(void){
-    int data = MXC_UART_ReadCharacter(MXC_UART_GET_UART(CONSOLE_UART));
+    int data = getc();
     return data;
 }
 
@@ -63,14 +52,16 @@ int uart_readbyte(void){
  *  @param data The byte to be written.
 */
 void uart_writebyte(uint8_t data) {
-    while (MXC_UART_GET_UART(CONSOLE_UART)->status & MXC_F_UART_STATUS_TX_FULL) {
-    }
-    MXC_UART_GET_UART(CONSOLE_UART)->fifo = data;
+    putchar(data);
 }
 
 /** @brief Flushes UART.
 */
 void uart_flush(void){
-    MXC_UART_ClearRXFIFO(MXC_UART_GET_UART(CONSOLE_UART));
-    MXC_UART_ClearTXFIFO(MXC_UART_GET_UART(CONSOLE_UART));
+    // flush stdin
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    // flush stdout
+    fflush(stdout);
 }

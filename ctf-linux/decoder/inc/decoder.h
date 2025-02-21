@@ -1,6 +1,7 @@
 #ifndef DECODER_H
 #define DECODER_H
 
+#include <stdbool.h>  // TODO: add to actual device
 #include <stdint.h>
 #include "constants.h"
 
