@@ -24,7 +24,7 @@
  *  @return 0 upon success.  Negative if error.
 */
 int uart_init(void){
-    return E_NO_ERROR;
+    return 0;
 }
 
 /** @brief Reads a byte from UART and reports an error if the read fails.
@@ -33,7 +33,7 @@ int uart_init(void){
  *      a list of return codes.
 */
 int uart_readbyte_raw(void){
-    int data = getc();
+    int data = getchar();
     return data;
 }
 
@@ -43,7 +43,7 @@ int uart_readbyte_raw(void){
  *      a list of return codes.
 */
 int uart_readbyte(void){
-    int data = getc();
+    int data = getchar();
     return data;
 }
 
