@@ -404,18 +404,15 @@ void init() {
 
         decoder_state.first_boot = FLASH_FIRST_BOOT;
 
-        subscription_t subs[MAX_CHANNEL_COUNT];
-        memset(subs, 0, sizeof(subscription_t) * MAX_CHANNEL_COUNT);
+        memset(decoder_state.subscriptions, 0, sizeof(subscription_t) * MAX_CHANNEL_COUNT);
 
         for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {
-            subs[i].active = 0;
-            subs[i].frame_start = DEFAULT_CHANNEL_TIMESTAMP;
-            subs[i].frame_end = DEFAULT_CHANNEL_TIMESTAMP;
-            subs[i].nkeys = 0;
+            decoder_state.subscriptions[i].active = 0;
+            decoder_state.subscriptions[i].frame_start = DEFAULT_CHANNEL_TIMESTAMP;
+            decoder_state.subscriptions[i].frame_end = DEFAULT_CHANNEL_TIMESTAMP;
+            decoder_state.subscriptions[i].nkeys = 0;
         }
 
-        // Write the starting channel subscriptions into flash.
-        memcpy(&decoder_state.subscriptions, subs, MAX_CHANNEL_COUNT*sizeof(subscription_t));
         flash_reset();
         flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     }
