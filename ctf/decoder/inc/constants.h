@@ -16,6 +16,7 @@
 #define FLASH_FIRST_BOOT 0xDEADBEEF
 
 // Calculate the flash address where we will store channel info as the 8th to last page available
+#define FLASH_NUM_PAGES 8
 #define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
 
 // The level of the root key (leaf keys have level 1)
