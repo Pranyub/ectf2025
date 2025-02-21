@@ -101,7 +101,7 @@ void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
  * flash_simple_erase_page documentation.
 */
 int flash_simple_write(uint32_t address, void* buffer, uint32_t size) {
-    FILE* fp = fopen(FLASH_FILE, "rb");
+    FILE* fp = fopen(FLASH_FILE, "rb+");
     fseek(fp, address, SEEK_SET);
     fwrite(buffer, 1, size, fp);
     fclose(fp);
