@@ -3,6 +3,7 @@ CC=gcc
 VPATH += .
 VPATH += src
 VPATH += wolfssl/wolfcrypt/src
+VPATH += wolfssl
 
 
 IPATH += .
@@ -13,7 +14,6 @@ IPATH+=../deployment
 IPATH+=inc/
 IPATH+=../secrets
 IPATH+=tests
-VPATH+=src/
 
 VPATH := $(VPATH)
 IPATH := $(IPATH)
@@ -32,6 +32,8 @@ PROJ_CFLAGS += -DHAVE_POLY1305  # compile with CHACHA
 PROJ_CFLAGS += -DECC_TIMING_RESISTANT  # compile ECC with timing attack resistance
 PROJ_CLFAGS += -DTFM_TIMING_RESISTANT
 PROJ_CFLAGS += -DNO_RSA
+# PROJ_CFLAGS += -DNO_SKID  # linux undefined linker error
+PROJ_CFLAGS += -DWOLFCRYPT_ONLY
 
 PROJ_CFLAGS += -DWOLFSSL_PUBLIC_MP
 PROJ_CFLAGS += -DHAVE_ECC
@@ -48,10 +50,17 @@ OBJS := $(SRCS:.c=.o)
 # Convert IPATH into -I flags for compiler
 INC_FLAGS := $(foreach dir, $(IPATH), -I$(dir))
 
-.PHONY: all
+.PHONY: all clean
 
-all: $(OBJS)
+TARGET := decoder
 
-# Ensure the compiler sees the correct include paths
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(OBJS) -o $(TARGET) -lm
+
 %.o: %.c
 	$(CC) $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJS) $(TARGET)
