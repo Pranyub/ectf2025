@@ -311,7 +311,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     
     char output_buf[128];
-    snprintf(output_buf, 128, "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
+    snprintf(output_buf, sizeof(output_buf), "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
     print_debug(output_buf);
 
     // Success message with an empty body
@@ -349,7 +349,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
         uint8_t key[32];
         memset(key, 0, sizeof(key));
         if (!key_derive(chan, frame, key)) {
-            sprintf(output_buf, "Decoding frame #%u failed: could not derive key\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not derive key\n", frame);
             print_error(output_buf);
             return -1;
         }
@@ -357,7 +357,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
         uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         if (decrypt_frame(key, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
             // error
-            sprintf(output_buf, "Decoding frame #%u failed: could not decrypt frame\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not decrypt frame\n", frame);
             print_error(output_buf);
             return -1;
         }
@@ -366,7 +366,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
         return 0;
     } else {
         STATUS_LED_RED();
-        sprintf(output_buf, "Receiving unsubscribed channel data. %u\n", chan);
+        snprintf(output_buf, sizeof(output_buf), "Receiving unsubscribed channel data. %u\n", chan);
         print_error(output_buf);
         return -1;
     }
@@ -392,7 +392,7 @@ void init() {
     flash_simple_read(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
 
     char output_buf[128];
-    sprintf(output_buf, "decoder_state.first_boot = %x\n", decoder_state.first_boot);
+    snprintf(output_buf, sizeof(output_buf), "decoder_state.first_boot = %x\n", decoder_state.first_boot);
     print_debug(output_buf);
 
     if (decoder_state.first_boot != FLASH_FIRST_BOOT) {
@@ -476,7 +476,7 @@ int main(void) {
         // Handle bad command
         default:
             STATUS_LED_ERROR();
-            sprintf(output_buf, "Invalid Command: %c\n", cmd);
+            snprintf(output_buf, sizeof(output_buf), "Invalid Command: %c\n", cmd);
             print_error(output_buf);
             break;
         }
