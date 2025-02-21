@@ -311,7 +311,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     
     char output_buf[128];
-    sprintf(output_buf, "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
+    snprintf(output_buf, 128, "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
     print_debug(output_buf);
 
     // Success message with an empty body
