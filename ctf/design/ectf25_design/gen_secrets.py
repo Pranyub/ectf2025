@@ -39,7 +39,11 @@ def gen_secrets(channels: list[int]) -> bytes:
     keys = ec.generate_private_key(ec.SECP256K1())
     private_key = keys
     public_key = keys.public_key()
-    root_key = token_bytes(32)
+    
+    # generate a root key per channel
+    root_keys = []
+    for i in range(8):
+        root_keys.append(token_bytes(32))
 
     public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
 
@@ -49,7 +53,7 @@ def gen_secrets(channels: list[int]) -> bytes:
         "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
         "public_key": public_key_hex,
         # root key for frame encryption
-        "root_key": root_key.hex()
+        "root_keys": [root_key.hex() for root_key in root_keys]
     }
 
     pub_as_bytes = []

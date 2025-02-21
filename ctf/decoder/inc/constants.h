@@ -20,7 +20,7 @@
 
 // The level of the root key (leaf keys have level 1)
 #define ROOT_KEY_LEVEL 64
-#define MAX_KEYS_PER_SUBSCRIPTION 128
+#define MAX_KEYS_PER_SUBSCRIPTION 256
 
 // CRYPTO.H
 #define TAG_LENGTH 16

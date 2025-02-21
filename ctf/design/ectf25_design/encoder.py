@@ -80,7 +80,7 @@ class Encoder:
 
         # Load the json of the secrets file
         secrets = json.loads(secrets)
-        self.root_key: bytes = bytes.fromhex(secrets['root_key'])
+        self.root_keys: bytes = bytes.fromhex(secrets['root_keys'])
 
     def encode(self, channel: int, frame: bytes, timestamp: int) -> bytes:
         """The frame encoder function
@@ -105,7 +105,7 @@ class Encoder:
         if channel == 0:
             return struct.pack('<BQ', channel, timestamp) + b'\x00'*12 + frame + b'\x00'*16
         else:
-            ciphertext, nonce, tag = encryptFrame(timestamp, self.root_key, frame, channel)
+            ciphertext, nonce, tag = encryptFrame(timestamp, self.root_keys[channel], frame, channel)
             return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
 
 def main():

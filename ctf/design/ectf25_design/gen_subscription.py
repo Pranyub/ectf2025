@@ -44,7 +44,7 @@ def gen_subscription(
     # load the private key for signing
     private_key = ecc_serialization.load_pem_private_key(secrets['private_key'].encode(), password=None)
 
-    root_key = secrets['root_key'].encode()
+    root_key = bytes.fromhex(secrets['root_keys'][channel])
 
     # Find the highest level intermediate key whose lowest covered frame equals
     # the current frame number and whose highest covered frame is less than or
