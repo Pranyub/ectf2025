@@ -62,7 +62,10 @@ void flash_simple_init(void) {
 int flash_simple_erase_page(uint32_t address) {
     FILE* fp = fopen(FLASH_FILE, "rb+");
     fseek(fp, address, SEEK_SET);
-    fwrite("", 1, MXC_FLASH_PAGE_SIZE, fp);
+    for (size_t i = 0; i < MXC_FLASH_PAGE_SIZE; i++) {
+        fputc('\0', fp);
+        fseek(fp, 1, SEEK_CUR);
+    }
     fclose(fp);
 }
 
