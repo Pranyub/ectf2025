@@ -33,7 +33,7 @@ PROJ_CFLAGS += -DECC_TIMING_RESISTANT  # compile ECC with timing attack resistan
 PROJ_CLFAGS += -DTFM_TIMING_RESISTANT
 PROJ_CFLAGS += -DNO_RSA
 # PROJ_CFLAGS += -DNO_SKID  # linux undefined linker error
-PROJ_CFLAGS += -DWOLFCRYPT_ONLY
+PROJ_CFLAGS += -DWOLFCRYPT_ONLY  # linux undefined linker error
 
 PROJ_CFLAGS += -DWOLFSSL_PUBLIC_MP
 PROJ_CFLAGS += -DHAVE_ECC
