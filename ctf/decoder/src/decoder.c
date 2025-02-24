@@ -420,7 +420,7 @@ void init() {
 
 int main(void) {
     char output_buf[128] = {0};
-    uint8_t uart_buf[5350];  // theorhetical max is 5334
+    uint8_t uart_buf[5350];  // theorhetical max is 5334 for the subscription packet, NEEDS TO BE UPDATED AND CHECKED
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;

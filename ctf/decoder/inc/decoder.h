@@ -49,7 +49,9 @@ typedef struct {
     uint8_t nkeys;
     uint64_t frame_start;
     uint64_t frame_end;
-    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];
+    uint8_t nonce[NONCE_SIZE];
+    uint8_t tag[TAG_LENGTH];
+    uint8_t encrypted_keys[MAX_KEYS_PER_SUBSCRIPTION * 41];  // MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_packet_t)
 } subscription_update_packet_t;
 
 // These structs are just for responding to the host according with the correct format
