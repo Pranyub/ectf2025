@@ -40,19 +40,22 @@ def gen_secrets(channels: list[int]) -> bytes:
     private_key = keys
     public_key = keys.public_key()
     
+    # create emergency key
+    root_keys = [{
+        "channel_num": 0,
+        "root_key": token_bytes(32).hex()
+    }]
+
     # generate a root key per channel
-    root_keys = []
-    for i in range(len(channels)):
+    for channel in channels:
         root_keys.append({
-            "channel_num": i,
+            "channel_num": channel,
             "root_key": token_bytes(32).hex()
         })
 
     public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
 
     secrets = {
-        # not sure if this is even used for anything
-        "channels": channels,
         # keys for subscription signing
         "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
         "public_key": public_key_hex,
@@ -64,7 +67,11 @@ def gen_secrets(channels: list[int]) -> bytes:
     for i in range(0, len(public_key_hex), 2):
         pub_as_bytes += (public_key_hex[i:i+2],)
 
-    decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n#endif\n"
+    emergency_as_bytes = []
+    for i in range(0, len(root_keys[0]['root_key']), 2):
+        emergency_as_bytes += (root_keys[0]['root_key'][i:i+2],)
+
+    decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\nconst uint8_t EMERGENCY_KEY[] = { 0x" + ', 0x'.join(emergency_as_bytes) + " };\n#endif\n"
 
     return json.dumps(secrets).encode(), decoder_file
 

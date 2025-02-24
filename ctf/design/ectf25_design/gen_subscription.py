@@ -95,17 +95,19 @@ def gen_subscription(
         keys_serialized += struct.pack('<QB', frame_start, level) + key
 
     packed_data = struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + keys_serialized
+
+    encrypted_data = None
     # sign the subscription
     hash_func = hashes.SHA256()
     hasher = hashes.Hash(hash_func)
-    hasher.update(packed_data)
+    hasher.update(encrypted_data)
     digest = hasher.finalize()
     sig = private_key.sign(digest, ec.ECDSA(utils.Prehashed(hash_func)))
     r, s = utils.decode_dss_signature(sig)
 
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t
-    return r.to_bytes(32, byteorder='big') + s.to_bytes(32, byteorder='big') + packed_data
+    return r.to_bytes(32, byteorder='big') + s.to_bytes(32, byteorder='big') + encrypted_data
 
 
 def parse_args():
