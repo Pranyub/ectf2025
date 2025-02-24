@@ -318,29 +318,34 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     print_debug("Checking subscription\n");
     subscription_t *sub = subscription_get(chan);
 
-    if (chan == 0 || (is_subscribed(chan)
+    if (chan == EMERGENCY_CHANNEL || (is_subscribed(chan)
                       && frame >= sub->frame_start
                       && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
         
+        uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         // Emergency channel
         if (chan == EMERGENCY_CHANNEL) {
-            write_packet(DECODE_MSG, new_frame->data, CRYPTO_FRAME_SIZE);
+            if (decrypt_frame(EMERGENCY_KEY, EMERGENCY_CHANNEL, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
+                snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not decrypt frame\n", frame);
+                print_error(output_buf);
+                return -1;
+            }
+            write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
             return 0;
         }
 
         uint8_t key[32];
         memset(key, 0, sizeof(key));
         if (!key_derive(chan, frame, key)) {
-            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not derive key\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not derive key\n", frame);
             print_error(output_buf);
             return -1;
         }
 
-        uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         if (decrypt_frame(key, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
             // error
-            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not decrypt frame\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not decrypt frame\n", frame);
             print_error(output_buf);
             return -1;
         }

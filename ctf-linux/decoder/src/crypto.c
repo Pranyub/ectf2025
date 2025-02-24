@@ -98,7 +98,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 update->encrypted_keys,
                                 update->nkeys * sizeof(key_entry_packet_t),
                                 update->tag,
-                                (const uint8_t*)&update->chan,
+                                (uint8_t*)&update->chan,
                                 sizeof(update->chan) + sizeof(update->nkeys) + sizeof(update->frame_start) + sizeof(update->frame_end) + sizeof(update->nonce),
                                 update->nonce,
                                 (uint8_t*)keys)) != SUCCESS) {
