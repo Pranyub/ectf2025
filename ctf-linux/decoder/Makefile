@@ -57,10 +57,10 @@ TARGET := decoder
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET) -lm
+	$(CC) -m32 $(OBJS) -o $(TARGET) -lm
 
 %.o: %.c
-	$(CC) $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
+	$(CC) -m32 $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJS) $(TARGET)
