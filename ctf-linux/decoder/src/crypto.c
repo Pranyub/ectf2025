@@ -87,7 +87,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
     // derive the key using the KDK
     unsigned int info = DECODER_ID;
     uint8_t derived_key[CHACHA_KEY_SIZE];
-    if (wc_HKDF(WC_SHA256, kdk, CHACHA_KEY_SIZE, update->nonce, NONCE_SIZE, (const uint8_t*)info, sizeof(info), derived_key, CHACHA_KEY_SIZE) != 0) {
+    if (wc_HKDF(WC_SHA256, kdk, CHACHA_KEY_SIZE, update->nonce, NONCE_SIZE, (const uint8_t*)&info, sizeof(info), derived_key, CHACHA_KEY_SIZE) != 0) {
         print_debug("Error deriving key");
         return ERROR;
     }
@@ -98,7 +98,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 update->encrypted_keys,
                                 update->nkeys * sizeof(key_entry_packet_t),
                                 update->tag,
-                                (uint8_t*)update->chan,
+                                (const uint8_t*)&update->chan,
                                 sizeof(update->chan) + sizeof(update->nkeys) + sizeof(update->frame_start) + sizeof(update->frame_end) + sizeof(update->nonce),
                                 update->nonce,
                                 (uint8_t*)keys)) != SUCCESS) {
