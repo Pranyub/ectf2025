@@ -40,6 +40,8 @@ PROJ_CFLAGS += -DHAVE_ECC
 PROJ_CFLAGS += -DHAVE_ECC_VERIFY
 PROJ_CFLAGS += -DWOLFSSL_CUSTOM_CURVES
 PROJ_CFLAGS += -DHAVE_ECC_KOBLITZ
+PROJ_CFLAGS += -DHAVE_HKDF
+PROJ_CFLAGS += -DDECODER_ID=$(DECODER_ID)
 
 # Collect all source files correctly
 SRCS := $(foreach dir, $(VPATH), $(wildcard $(dir)/*.c))
