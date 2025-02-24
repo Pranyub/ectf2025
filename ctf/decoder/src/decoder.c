@@ -287,8 +287,6 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    print_debug("Passed verification");
-
     subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
 
     // begin decryption and update
