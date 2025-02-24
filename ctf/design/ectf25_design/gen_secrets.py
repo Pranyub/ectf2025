@@ -42,18 +42,22 @@ def gen_secrets(channels: list[int]) -> bytes:
     
     # generate a root key per channel
     root_keys = []
-    for i in range(8):
-        root_keys.append(token_bytes(32))
+    for i in range(len(channels)):
+        root_keys.append({
+            "channel_num": i,
+            "root_key": token_bytes(32).hex()
+        })
 
     public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
 
     secrets = {
+        # not sure if this is even used for anything
         "channels": channels,
         # keys for subscription signing
         "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
         "public_key": public_key_hex,
         # root key for frame encryption
-        "root_keys": [root_key.hex() for root_key in root_keys]
+        "root_keys": root_keys
     }
 
     pub_as_bytes = []

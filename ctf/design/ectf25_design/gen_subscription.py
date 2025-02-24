@@ -44,7 +44,15 @@ def gen_subscription(
     # load the private key for signing
     private_key = ecc_serialization.load_pem_private_key(secrets['private_key'].encode(), password=None)
 
-    root_key = bytes.fromhex(secrets['root_keys'][channel])
+    root_key = None
+    root_keys = secrets['root_keys']
+    for rk_object in root_keys:
+        if rk_object['channel_num'] == channel:
+            root_key = bytes.fromhex(rk_object['root_key'])
+            break
+
+    if root_key == None:
+        raise Exception(f"Channel {channel} not included in the secrets.  Please run gen_secrets, making sure to include channel {channel}")
 
     # Find the highest level intermediate key whose lowest covered frame equals
     # the current frame number and whose highest covered frame is less than or
