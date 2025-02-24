@@ -54,11 +54,14 @@ def gen_secrets(channels: list[int]) -> bytes:
         })
 
     public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
+    sub_kdk = token_bytes(32).hex()
 
     secrets = {
         # keys for subscription signing
         "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
         "public_key": public_key_hex,
+        # key for encrypted subscriptions, to be used with the KDF
+        "subscription_kdk": sub_kdk,
         # root key for frame encryption
         "root_keys": root_keys
     }
@@ -71,7 +74,18 @@ def gen_secrets(channels: list[int]) -> bytes:
     for i in range(0, len(root_keys[0]['root_key']), 2):
         emergency_as_bytes += (root_keys[0]['root_key'][i:i+2],)
 
-    decoder_file = "#ifndef SECRETS_H\n#define SECRETS_H\n#include <stdint.h>\nconst uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\nconst uint8_t EMERGENCY_KEY[] = { 0x" + ', 0x'.join(emergency_as_bytes) + " };\n#endif\n"
+    subscription_kdk_as_bytes = []
+    for i in range(0, len(sub_kdk), 2):
+        subscription_kdk_as_bytes += (sub_kdk[i:i+2],)
+
+    decoder_file = "\
+#ifndef SECRETS_H\n#define SECRETS_H\n\
+#include <stdint.h>\n\
+const uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n\
+const uint8_t SUBSCRIPTION_KDK[] = { 0x" + ', 0x'.join(subscription_kdk_as_bytes) + "};\n\
+const uint8_t EMERGENCY_KEY[] = { 0x" + ', 0x'.join(emergency_as_bytes) + " };\n\
+#endif\n\
+"
 
     return json.dumps(secrets).encode(), decoder_file
 
@@ -131,8 +145,8 @@ def main():
         f.write(decoder_file.encode('ascii'))
 
     # For your own debugging. Feel free to remove
-    logger.success(f"Wrote secrets to {str(args.secrets_file.absolute())}")
-    logger.success(f"Wrote public key to {str(decoder_secret_path.absolute())}")
+    logger.success(f"Wrote encoder secrets to {str(args.secrets_file.absolute())}")
+    logger.success(f"Wrote decoder secrets to {str(decoder_secret_path.absolute())}")
 
 
 if __name__ == "__main__":
