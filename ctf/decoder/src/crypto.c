@@ -81,6 +81,45 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
     return decrypt_frame_ad_buf(key, additional_data, encrypted_frame, tag, out);
 }
 
+int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
+                                const subscription_update_packet_t* update,
+                                subscription_t* sub) {
+    // derive the key using the KDK
+    unsigned int info = DECODER_ID;
+    uint8_t derived_key[CHACHA_KEY_SIZE];
+    if (wc_HKDF(WC_SHA256, kdk, CHACHA_KEY_SIZE, update->nonce, NONCE_SIZE, (const uint8_t*)info, sizeof(info), derived_key, CHACHA_KEY_SIZE) != 0) {
+        print_debug("Error deriving key");
+        return ERROR;
+    }
+
+    key_entry_packet_t keys[sizeof(update->encrypted_keys)];
+    int ret;
+    if ((ret = chacha20_decrypt(derived_key,
+                                update->encrypted_keys,
+                                update->nkeys * sizeof(key_entry_packet_t),
+                                update->tag,
+                                (uint8_t*)update->chan,
+                                sizeof(update->chan) + sizeof(update->nkeys) + sizeof(update->frame_start) + sizeof(update->frame_end) + sizeof(update->nonce),
+                                update->nonce,
+                                (uint8_t*)keys)) != SUCCESS) {
+        return ret;
+    }
+
+    sub->active = true;
+    sub->frame_start = update->frame_start;
+    sub->frame_end = update->frame_end;
+    sub->nkeys = update->nkeys;
+    // Clear the old keys
+    memset(sub->keys, 0, MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_t));
+    // Copy the keys
+    for (int i = 0; i < sub->nkeys; i++) {
+        sub->keys[i].frame_start = keys[i].frame_start;
+        sub->keys[i].level = keys[i].level;
+        memcpy(&sub->keys[i].key, &keys[i].key, 32);
+    }
+    return SUCCESS;
+}
+
 int ecdsa_verify(const uint8_t* in,
                  size_t len,
                  const uint8_t sig[ECDSA_SIGNATURE_SIZE],
@@ -188,27 +227,4 @@ int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
         return ECDSA_VERIFY_ERROR;
     }
     return SUCCESS;
-}
-
-int verify_subscription(const subscription_update_packet_t* update, const uint8_t key[CRYPTO_ECC_KEY_SIZE]) {
-    Sha256 sha256;
-    uint8_t hash[SHA256_DIGEST_SIZE];
-    if (wc_InitSha256(&sha256) != 0) {
-        return ERROR;
-    }
-
-    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->chan)), sizeof(update->chan));
-    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->nkeys)), sizeof(update->nkeys));
-    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->frame_start)), sizeof(update->frame_start));
-    wc_Sha256Update(&sha256, (const uint8_t*)(&(update->frame_end)), sizeof(update->frame_end));
-    for (int i = 0; i < update->nkeys; i++) {
-        const key_entry_packet_t* key = &((update->keys)[i]);
-        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->frame_start)), sizeof(key->frame_start));
-        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->level)), sizeof(key->level));
-        wc_Sha256Update(&sha256, (const uint8_t*)(&(key->key)), sizeof(key->key));
-    }
-    wc_Sha256Final(&sha256, hash);
-    wc_Sha256Free(&sha256);
-
-    return ecdsa_verify_sha256hash(hash, update->signature, key);
 }

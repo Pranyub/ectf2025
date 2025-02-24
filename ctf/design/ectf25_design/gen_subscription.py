@@ -101,13 +101,14 @@ def gen_subscription(
 
 
     nonce = token_bytes(12)
-    meta_data = struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + nonce
+    meta_data = struct.pack('<BBQQ', channel, len(keys), start, end) + nonce
     # encrypting the subscription using a key derived from the kdk
     subscription_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=nonce, info=device_id.to_bytes(4, byteorder='big')).derive(sub_kdk)  # might need to use little byteorder
     cipher = ChaCha20Poly1305(subscription_key)
     encrypted_keys = cipher.encrypt(nonce, keys_serialized, meta_data)  # includes the tag at the end after the data
 
     packed_data = meta_data + encrypted_keys[-16:] + encrypted_keys[:-16]  # metadata + tag + encrypted keys
+    
     # sign the subscription
     hash_func = hashes.SHA256()
     hasher = hashes.Hash(hash_func)
@@ -118,12 +119,12 @@ def gen_subscription(
 
     """
     |------ Signature ------|
-        32 bytes   32 bytes   4 bytes    1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    |           |           |           |       |        |             |             |                 |                       |                                       |
-    |     r     |     s     | Device ID | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
-    |           |           |           |       |        |             |             |                 |                       |                                       |
-    --------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        32 bytes   32 bytes  1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
+    --------------------------------------------------------------------------------------------------------------------------------------------------------
+    |           |           |       |        |             |             |                 |                       |                                       |
+    |     r     |     s     | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
+    |           |           |       |        |             |             |                 |                       |                                       |
+    --------------------------------------------------------------------------------------------------------------------------------------------------------
     """
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t

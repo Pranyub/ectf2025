@@ -287,24 +287,13 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
+    print_debug("Passed verification");
+
     subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
 
-    if (!sub->active) {
-        sub->active = true;
-    }
-
-    sub->frame_start = update->frame_start;
-    sub->frame_end = update->frame_end;
-    sub->nkeys = update->nkeys;
-
-    // Clear the old keys
-    memset(sub->keys, 0, MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_t));
-
-    // Copy the keys
-    for (int i = 0; i < sub->nkeys; i++) {
-        sub->keys[i].frame_start = update->keys[i].frame_start;
-        sub->keys[i].level = update->keys[i].level;
-        memcpy(&sub->keys[i].key, &update->keys[i].key, 32);
+    // begin decryption and update
+    if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
+        print_debug("Error decrypting the subscription");
     }
 
     flash_reset();
@@ -420,7 +409,7 @@ void init() {
 
 int main(void) {
     char output_buf[128] = {0};
-    uint8_t uart_buf[5350];  // theorhetical max is 5334 for the subscription packet, NEEDS TO BE UPDATED AND CHECKED
+    uint8_t uart_buf[sizeof(subscription_update_packet_t)];  // TODO: check
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;
