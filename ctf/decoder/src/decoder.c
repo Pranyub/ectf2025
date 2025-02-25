@@ -21,12 +21,15 @@
 #include "secrets.h"
 #include "constants.h"
 
+#ifndef LINUX_BUILD
 #include "mxc_device.h"
-#include "status_led.h"
-#include "board.h"
 #include "mxc_delay.h"
-#include "simple_flash.h"
+#include "board.h"
+#endif
+
+#include "status_led.h"
 #include "host_messaging.h"
+#include "simple_flash.h"
 #include "simple_uart.h"
 #include "decoder.h"
 #include "crypto.h"

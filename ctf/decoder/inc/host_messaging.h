@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include <stddef.h>
 #include <stdint.h>
+#ifdef LINUX_BUILD
+#include <stdbool.h>
+#endif
 #include "simple_uart.h"
 
 #define CMD_TYPE_LEN sizeof(char)

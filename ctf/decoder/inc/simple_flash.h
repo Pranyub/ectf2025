@@ -14,7 +14,17 @@
 #ifndef __SIMPLE_FLASH__
 #define __SIMPLE_FLASH__
 
+#include <stdio.h>
 #include <stdint.h>
+#ifdef LINUX_BUILD
+#include <stdlib.h>
+#include "unistd.h" 
+#define FLASH_FILE "flash_file.bin"
+#else
+#include "flc.h"
+#include "icc.h"
+#include "nvic_table.h"
+#endif
 #include "constants.h"
 
 /**

@@ -18,8 +18,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#ifndef LINUX_BUILD
 #include "uart.h"
 #include "nvic_table.h"
+#include "board.h"
+#include "mxc_device.h"
+#endif
 #include "host_messaging.h"
 
 /******************************** MACRO DEFINITIONS ********************************/
