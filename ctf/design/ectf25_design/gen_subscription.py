@@ -104,6 +104,7 @@ def gen_subscription(
     meta_data = struct.pack('<BBQQ', channel, len(keys), start, end) + nonce
     # encrypting the subscription using a key derived from the kdk
     subscription_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=nonce, info=device_id.to_bytes(4, byteorder='big')).derive(sub_kdk)  # might need to use little byteorder
+    # print(f"Subscription key: {subscription_key.hex()}\nKDK: {sub_kdk.hex()}\nDecoder ID: {device_id.to_bytes(4, byteorder='big').hex()}\nNonce: {nonce.hex()}\n")
     cipher = ChaCha20Poly1305(subscription_key)
     encrypted_keys = cipher.encrypt(nonce, keys_serialized, meta_data)  # includes the tag at the end after the data
 

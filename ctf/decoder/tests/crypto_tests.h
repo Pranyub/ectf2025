@@ -32,6 +32,18 @@ static const uint8_t ECDSA_PUBLIC_KEY_TEST[] = { 0x04, 0x89, 0x43, 0x8d, 0x93, 0
 static const uint8_t ECDSA_TEST_DATA[] = "Im seeing signs...";
 static const uint8_t ECDSA_TEST_SIGNATURE[] = { 0x31, 0x7a, 0xce, 0x72, 0xf7, 0x6b, 0xc7, 0xab, 0x4c, 0x87, 0xae, 0xbe, 0x88, 0x6b, 0xbd, 0x25, 0x80, 0x16, 0x37, 0x51, 0xb3, 0xa2, 0x86, 0x4f, 0xb3, 0x88, 0x5e, 0x90, 0xea, 0x78, 0xea, 0x93, 0xb2, 0xad, 0xda, 0xb3, 0x2e, 0xf7, 0xcc, 0x0f, 0x87, 0x5a, 0x43, 0x6f, 0x5e, 0x33, 0x9e, 0xbb, 0x2a, 0x44, 0x95, 0xd5, 0x05, 0x9d, 0xa5, 0x35, 0x5b, 0xff, 0xd4, 0xaa, 0x8d, 0x33, 0xea, 0x4a };
 
+/**
+ * HMAC Key derivation test:
+ * Subscription key: 52b59125ea2bde1ef26d1ba6fd72eeda38559021745fb594c3e802f19f02bc78
+ * kdk: d65090839699348cc831f51dd35e2b2d382c734f565406d2c8ca7bdfa4c4f31f
+ * Device id: 00000000
+ * Nonce: 861794cb3a76a6bb0682af9f
+ */
+static const uint8_t HKDF_TEST_SUBSCRIPTION_KEY[] = { 0x52, 0xb5, 0x91, 0x25, 0xea, 0x2b, 0xde, 0x1e, 0xf2, 0x6d, 0x1b, 0xa6, 0xfd, 0x72, 0xee, 0xda, 0x38, 0x55, 0x90, 0x21, 0x74, 0x5f, 0xb5, 0x94, 0xc3, 0xe8, 0x02, 0xf1, 0x9f, 0x02, 0xbc, 0x78 };
+static const uint8_t HKDF_TEST_KDK[] = { 0xd6, 0x50, 0x90, 0x83, 0x96, 0x99, 0x34, 0x8c, 0xc8, 0x31, 0xf5, 0x1d, 0xd3, 0x5e, 0x2b, 0x2d, 0x38, 0x2c, 0x73, 0x4f, 0x56, 0x54, 0x06, 0xd2, 0xc8, 0xca, 0x7b, 0xdf, 0xa4, 0xc4, 0xf3, 0x1f };
+static const uint8_t HKDF_TEST_DECODER_ID[] = { 0x00, 0x00, 0x00, 0x00 };
+static const uint8_t HKDF_TEST_NONCE[] = { 0x86, 0x17, 0x94, 0xcb, 0x3a, 0x76, 0xa6, 0xbb, 0x06, 0x82, 0xaf, 0x9f };
+
 static int decrypt_frame_ad_buf_test_normal(void);
 
 static int decrypt_frame_raw_test_normal(void);
@@ -41,6 +53,7 @@ static int ecdsa_verify_test_normal(void);
 static int ecdsa_verify_test_incorrect_text(void);
 static int ecdsa_verify_test_incorrect_signature(void);
 static int ecdsa_verify_test_incorrect_key(void);
+static int hkdf_normal_test(void);
 
 int crypto_test_all(void) {
     print_debug("Performing crypto tests...\n");
@@ -97,6 +110,12 @@ int crypto_test_all(void) {
         print_debug("Passed ECDSA incorrect key verification test.\n");
     } else {
         print_debug("Failed ECDSA incorrect key verification test.\n");
+    }
+
+    if (hkdf_normal_test() == SUCCESS) {
+        print_debug("Passed HKDF normal test.\n");
+    } else {
+        print_debug("Failed HKDF normal test.\n");
     }
 
     print_debug("Finished crypto tests.\n");
@@ -178,6 +197,22 @@ static int ecdsa_verify_test_incorrect_key(void) {
         return ERROR;
     }
 
+    return SUCCESS;
+}
+
+static int hkdf_normal_test(void) {
+    uint8_t out_key[32];
+    if (hkdf_derive_key(HKDF_TEST_KDK,
+                        HKDF_TEST_DECODER_ID,
+                        sizeof(HKDF_TEST_DECODER_ID),
+                        HKDF_TEST_NONCE,
+                        sizeof(HKDF_TEST_NONCE),
+                        out_key) != SUCCESS) {
+        return ERROR;
+    }
+    if (memcmp(out_key, HKDF_TEST_SUBSCRIPTION_KEY, 32) != 0) {
+        return ERROR;
+    }
     return SUCCESS;
 }
 

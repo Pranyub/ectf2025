@@ -20,6 +20,7 @@
 #include <wolfssl/wolfcrypt/sha256.h>
 #include <wolfssl/wolfcrypt/hmac.h>
 
+#include "status_led.h"
 #include "constants.h"
 #include "decoder.h"
 
@@ -156,5 +157,23 @@ int ecdsa_verify(const uint8_t* in,
 int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
                             const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                             const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
+
+/**
+ * @brief derives a key using HKDF and SHA-256
+ * @pre \p out is at least 32 bytes long.
+ * @post \p out now stores the derived key.
+ * @param kdk the input key to derive other keys from.
+ * @param info the additional information to be used to derived the key (e.g., decoder_id).
+ * @param info_length the length of \p info in bytes.
+ * @param salt the salt to be used.  Probably going to be a nonce of some kind.
+ * @param salt_length the length of the \p salt in bytes.
+ * @param out a pointer to where the derived key should be stored.
+ */
+int hkdf_derive_key(const uint8_t kdk[CHACHA_KEY_SIZE],
+                    const uint8_t* info,
+                    size_t info_length,
+                    const uint8_t* salt,
+                    uint8_t salt_length,
+                    uint8_t* out);
 
 #endif

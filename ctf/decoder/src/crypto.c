@@ -8,6 +8,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
                      size_t ad_len,
                      const uint8_t nonce[NONCE_SIZE],
                      uint8_t* out) {
+    // this call is causing freezes when decrypting subscription keys
     int status = wc_ChaCha20Poly1305_Decrypt(key, nonce, ad, ad_len, in, len, tag, out);
     if (status == 0) {
         return SUCCESS;
@@ -85,25 +86,34 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 const subscription_update_packet_t* update,
                                 subscription_t* sub) {
     // derive the key using the KDK
-    unsigned int info = DECODER_ID;
+    uint32_t info = DECODER_ID;
     uint8_t derived_key[CHACHA_KEY_SIZE];
-    if (wc_HKDF(WC_SHA256, kdk, CHACHA_KEY_SIZE, update->nonce, NONCE_SIZE, (const uint8_t*)&info, sizeof(info), derived_key, CHACHA_KEY_SIZE) != 0) {
+
+    if (hkdf_derive_key(kdk, (uint8_t*)(&info), sizeof(info), update->nonce, NONCE_SIZE, derived_key) != 0) {
         print_debug("Error deriving key");
         return ERROR;
     }
 
+    // char buffer[1000];
+    // sprintf(buffer, "Decoder ID: %4x\nsize of keys: %d\n", info, sizeof(update->encrypted_keys));
+    // print_debug(buffer);
+
     key_entry_packet_t keys[sizeof(update->encrypted_keys)];
     int ret;
+
+    // this call is causing the freezing
     if ((ret = chacha20_decrypt(derived_key,
                                 update->encrypted_keys,
                                 update->nkeys * sizeof(key_entry_packet_t),
                                 update->tag,
-                                (uint8_t*)&update->chan,
-                                sizeof(update->chan) + sizeof(update->nkeys) + sizeof(update->frame_start) + sizeof(update->frame_end) + sizeof(update->nonce),
+                                (uint8_t*)(&update->chan),
+                                30,
                                 update->nonce,
                                 (uint8_t*)keys)) != SUCCESS) {
         return ret;
     }
+
+    STATUS_LED_RED();
 
     sub->active = true;
     sub->frame_start = update->frame_start;
@@ -225,6 +235,30 @@ int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
     wc_ecc_free(&eccKey);
     if (res != 1) {
         return ECDSA_VERIFY_ERROR;
+    }
+    return SUCCESS;
+}
+
+
+int hkdf_derive_key(const uint8_t kdk[CHACHA_KEY_SIZE],
+                    const uint8_t* info,
+                    size_t info_length,
+                    const uint8_t* salt,
+                    uint8_t salt_length,
+                    uint8_t* out) {
+    // derive the key using the KDK
+    int ret;
+    if ((ret = wc_HKDF(WC_SHA256,
+                       kdk,
+                       CHACHA_KEY_SIZE,
+                       salt,
+                       salt_length,
+                       info,
+                       info_length,
+                       out,
+                       CHACHA_KEY_SIZE)) != 0) {
+        print_debug("Error deriving key");
+        return ERROR;
     }
     return SUCCESS;
 }

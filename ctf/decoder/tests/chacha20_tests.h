@@ -122,9 +122,7 @@ static int chacha20_test_decrypt_normal(void) {
 
     int memcmp_ret;
     if ((memcmp_ret = memcmp(plaintext, CHACHA20_TEST_PLAINTEXT, CHACHA20_TEST_CIPHER_LENGTH)) != 0) { 
-        char buf[48 + 2 * CHACHA20_TEST_CIPHER_LENGTH];
-        snprintf(buf, sizeof(buf), "Expected `%s` got `%s`\nThe memcmp returned %d\n", CHACHA20_TEST_PLAINTEXT, plaintext);
-        print_debug(buf);
+        print_debug("plaintext mismatch.\n");
         return ERROR;
     }
     return SUCCESS;

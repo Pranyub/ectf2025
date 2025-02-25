@@ -450,6 +450,7 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
+            crypto_test_all();
             list_channels();
             break;
 
