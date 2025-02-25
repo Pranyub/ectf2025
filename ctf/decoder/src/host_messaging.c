@@ -14,6 +14,7 @@
 #include <stdio.h>
 
 #include "host_messaging.h"
+#include "decoder.h"
 
 
 /** @brief Read len bytes from UART, acknowledging after every 256 bytes.
@@ -27,7 +28,7 @@ int read_bytes(void *buf, uint16_t len) {
     int result;
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len && i < MAX_MESSAGE_LEN; i++) {
         if (i % 256 == 0 && i != 0) { // Send an ACK after receiving 256 bytes
             write_ack();
         }
@@ -54,6 +55,7 @@ void read_header(msg_header_t *hdr) {
     }
     hdr->cmd = uart_readbyte();
     read_bytes(&hdr->len, sizeof(hdr->len));
+    if (hdr->len > MAX_MESSAGE_LEN) hdr->len = MAX_MESSAGE_LEN;
 }
 
 /** @brief Receive an ACK from UART.
@@ -184,8 +186,13 @@ int read_packet(msg_type_t* cmd, void *buf, uint16_t *len) {
     }
 
     read_header(&header);
-
+    if (header.len > MAX_MESSAGE_LEN) {
+        return -1;
+    }
     *cmd = header.cmd;
+    if (header.len > MAX_MESSAGE_LEN) {
+        return -1;
+    }
 
     if (len != NULL) {
         *len = header.len;

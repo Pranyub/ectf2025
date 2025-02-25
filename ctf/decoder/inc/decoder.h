@@ -66,4 +66,8 @@ typedef struct {
 } list_response_t;
 
 #pragma pack(pop) // Tells the compiler to resume padding struct members
+
+#define MESSAGE_ALIGNMENT 256
+#define MAX_MESSAGE_LEN ((sizeof(subscription_update_packet_t) + (MESSAGE_ALIGNMENT - 1)) & ~(MESSAGE_ALIGNMENT - 1))
+
 #endif

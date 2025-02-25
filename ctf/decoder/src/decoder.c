@@ -415,7 +415,7 @@ void init() {
 
 int main(void) {
     char output_buf[128] = {0};
-    uint8_t uart_buf[sizeof(subscription_update_packet_t)];  // TODO: check
+    uint8_t uart_buf[MAX_MESSAGE_LEN];  // TODO: check
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;
