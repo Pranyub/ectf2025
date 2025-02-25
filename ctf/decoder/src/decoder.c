@@ -295,6 +295,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     // begin decryption and update
     if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
         print_debug("Error decrypting the subscription.\n");
+        return -1;
     }
 
     flash_reset();
