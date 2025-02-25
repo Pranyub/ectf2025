@@ -98,7 +98,8 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
     // sprintf(buffer, "Decoder ID: %4x\nsize of keys: %d\n", info, sizeof(update->encrypted_keys));
     // print_debug(buffer);
 
-    key_entry_packet_t keys[sizeof(update->encrypted_keys)];
+    key_entry_packet_t keys[update->nkeys];  // might want to change this to just the maximum # of keys
+
     int ret;
 
     // this call is causing the freezing
@@ -112,9 +113,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 (uint8_t*)keys)) != SUCCESS) {
         return ret;
     }
-
-    STATUS_LED_RED();
-
+    
     sub->active = true;
     sub->frame_start = update->frame_start;
     sub->frame_end = update->frame_end;
