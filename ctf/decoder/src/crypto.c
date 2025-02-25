@@ -94,7 +94,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
         return ERROR;
     }
 
-    key_entry_packet_t keys[update->nkeys];  // might want to change this to just the maximum # of keys
+    key_entry_packet_t keys[MAX_KEYS_PER_SUBSCRIPTION];  // might want to change this to just the maximum # of keys
 
     int ret;
 
