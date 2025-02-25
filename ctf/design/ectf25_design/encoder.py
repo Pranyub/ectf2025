@@ -24,7 +24,9 @@ TOTAL_FRAMES = 3
 
 def encryptFrame(fNum, root_key, frame_data, channel_num):
     frameKey = calcKey(root_key, fNum)
-    # print(frameKey.hex())
+    if channel_num == 0:
+        frameKey = root_key
+
     nonce = token_bytes(12)
     
     ad = b''
@@ -103,7 +105,8 @@ class Encoder:
 
         # TODO: make this faster by saving a stack of intermediate keys (one per channel)
         if channel == 0:
-            return struct.pack('<BQ', channel, timestamp) + b'\x00'*12 + frame + b'\x00'*16
+            ciphertext, nonce, tag = encryptFrame(timestamp, bytes.fromhex(self.root_keys[0]), frame, 0)
+            return struct.pack('<BQ', channel, timestamp) + nonce + ciphertext + tag
         else:
             ciphertext, nonce, tag = encryptFrame(timestamp, bytes.fromhex(self.root_keys[channel]), frame, channel)
             return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag

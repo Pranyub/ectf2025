@@ -289,22 +289,9 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
 
-    if (!sub->active) {
-        sub->active = true;
-    }
-
-    sub->frame_start = update->frame_start;
-    sub->frame_end = update->frame_end;
-    sub->nkeys = update->nkeys;
-
-    // Clear the old keys
-    memset(sub->keys, 0, MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_t));
-
-    // Copy the keys
-    for (int i = 0; i < sub->nkeys; i++) {
-        sub->keys[i].frame_start = update->keys[i].frame_start;
-        sub->keys[i].level = update->keys[i].level;
-        memcpy(&sub->keys[i].key, &update->keys[i].key, 32);
+    // begin decryption and update
+    if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
+        print_debug("Error decrypting the subscription.\n");
     }
 
     flash_reset();
@@ -335,29 +322,34 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     print_debug("Checking subscription\n");
     subscription_t *sub = subscription_get(chan);
 
-    if (chan == 0 || (is_subscribed(chan)
+    if (chan == EMERGENCY_CHANNEL || (is_subscribed(chan)
                       && frame >= sub->frame_start
                       && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
         
         // Emergency channel
+        uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         if (chan == EMERGENCY_CHANNEL) {
-            write_packet(DECODE_MSG, new_frame->data, CRYPTO_FRAME_SIZE);
+            if (decrypt_frame(EMERGENCY_KEY, EMERGENCY_CHANNEL, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
+                snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not decrypt frame\n", frame);
+                print_error(output_buf);
+                return -1;
+            }
+            write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
             return 0;
         }
 
         uint8_t key[32];
         memset(key, 0, sizeof(key));
         if (!key_derive(chan, frame, key)) {
-            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not derive key\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not derive key\n", frame);
             print_error(output_buf);
             return -1;
         }
 
-        uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
         if (decrypt_frame(key, chan, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
             // error
-            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%u failed: could not decrypt frame\n", frame);
+            snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not decrypt frame\n", frame);
             print_error(output_buf);
             return -1;
         }
@@ -420,7 +412,7 @@ void init() {
 
 int main(void) {
     char output_buf[128] = {0};
-    uint8_t uart_buf[5350];  // theorhetical max is 5334
+    uint8_t uart_buf[sizeof(subscription_update_packet_t)];  // TODO: check
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;

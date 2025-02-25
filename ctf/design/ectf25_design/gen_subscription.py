@@ -17,10 +17,13 @@ import ectf25_design.encoder
 
 from pathlib import Path
 
+from secrets import token_bytes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import utils
 import cryptography.hazmat.primitives.serialization as ecc_serialization
+from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 
 from loguru import logger
 
@@ -44,7 +47,17 @@ def gen_subscription(
     # load the private key for signing
     private_key = ecc_serialization.load_pem_private_key(secrets['private_key'].encode(), password=None)
 
-    root_key = bytes.fromhex(secrets['root_keys'][channel])
+    root_key = None
+    root_keys = secrets['root_keys']
+    for rk_object in root_keys:
+        if rk_object['channel_num'] == channel:
+            root_key = bytes.fromhex(rk_object['root_key'])
+            break
+
+    if root_key == None:
+        raise Exception(f"Channel {channel} not included in the secrets.  Please run gen_secrets, making sure to include channel {channel}")
+
+    sub_kdk = bytes.fromhex(secrets['subscription_kdk'])
 
     # Find the highest level intermediate key whose lowest covered frame equals
     # the current frame number and whose highest covered frame is less than or
@@ -86,7 +99,16 @@ def gen_subscription(
         # This aligns with key_entry_packet_t
         keys_serialized += struct.pack('<QB', frame_start, level) + key
 
-    packed_data = struct.pack('<IBBQQ', device_id, channel, len(keys), start, end) + keys_serialized
+
+    nonce = token_bytes(12)
+    meta_data = struct.pack('<BBQQ', channel, len(keys), start, end) + nonce
+    # encrypting the subscription using a key derived from the kdk
+    subscription_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=nonce, info=device_id.to_bytes(4, byteorder='big')).derive(sub_kdk)  # might need to use little byteorder
+    cipher = ChaCha20Poly1305(subscription_key)
+    encrypted_keys = cipher.encrypt(nonce, keys_serialized, meta_data)  # includes the tag at the end after the data
+
+    packed_data = meta_data + encrypted_keys[-16:] + encrypted_keys[:-16]  # metadata + tag + encrypted keys
+    
     # sign the subscription
     hash_func = hashes.SHA256()
     hasher = hashes.Hash(hash_func)
@@ -95,6 +117,15 @@ def gen_subscription(
     sig = private_key.sign(digest, ec.ECDSA(utils.Prehashed(hash_func)))
     r, s = utils.decode_dss_signature(sig)
 
+    """
+    |------ Signature ------|
+        32 bytes   32 bytes  1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
+    --------------------------------------------------------------------------------------------------------------------------------------------------------
+    |           |           |       |        |             |             |                 |                       |                                       |
+    |     r     |     s     | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
+    |           |           |       |        |             |             |                 |                       |                                       |
+    --------------------------------------------------------------------------------------------------------------------------------------------------------
+    """
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t
     return r.to_bytes(32, byteorder='big') + s.to_bytes(32, byteorder='big') + packed_data

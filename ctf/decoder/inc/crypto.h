@@ -18,6 +18,7 @@
 #include <wolfssl/wolfcrypt/chacha20_poly1305.h>
 #include <wolfssl/wolfcrypt/ecc.h>
 #include <wolfssl/wolfcrypt/sha256.h>
+#include <wolfssl/wolfcrypt/hmac.h>
 
 #include "constants.h"
 #include "decoder.h"
@@ -121,6 +122,16 @@ int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   uint8_t* out);
 
 /**
+ * @brief decrypts a subscription using the KDK and the device ID
+ * @pre \p update is a valid structured update packet
+ * @post the subscription is now stored in \p sub
+ * @return SUCCESS on success, ERROR on general error, TAG_ERROR on tag mismatch
+ */
+int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
+                                const subscription_update_packet_t* update,
+                                subscription_t* sub);
+
+/**
  * @brief verifies the ECDSA signature 
  * @see https://github.com/wolfSSL/wolfssl-examples/blob/master/ecc/
  * @note To understand the verify function: https://www.wolfssl.com/doxygen/group__ECC.html#ga5b1bb1c6ce3f9238c8f23a3e516952bb
@@ -145,13 +156,5 @@ int ecdsa_verify(const uint8_t* in,
 int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
                             const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                             const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
-
-/**
- * @brief verfifies a subscription
- * @param in a pointer to the subscription to verify
- * @param pub the public key to be used
- * @return SUCCESS on succes, ERROR on error, ECDSA_VERIFY_ERROR on subscription verfication fail
- */
-int verify_subscription(const subscription_update_packet_t* update, const uint8_t key[CRYPTO_ECC_KEY_SIZE]);
 
 #endif
