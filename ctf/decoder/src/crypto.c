@@ -94,15 +94,10 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
         return ERROR;
     }
 
-    // char buffer[1000];
-    // sprintf(buffer, "Decoder ID: %4x\nsize of keys: %d\n", info, sizeof(update->encrypted_keys));
-    // print_debug(buffer);
-
     key_entry_packet_t keys[update->nkeys];  // might want to change this to just the maximum # of keys
 
     int ret;
 
-    // this call is causing the freezing
     if ((ret = chacha20_decrypt(derived_key,
                                 update->encrypted_keys,
                                 update->nkeys * sizeof(key_entry_packet_t),

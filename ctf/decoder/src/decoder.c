@@ -292,7 +292,6 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
 
-    // begin decryption and update
     if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
         print_debug("Error decrypting the subscription.\n");
         return -1;
