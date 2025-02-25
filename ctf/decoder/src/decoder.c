@@ -326,8 +326,8 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     subscription_t *sub = subscription_get(chan);
 
     if (chan == EMERGENCY_CHANNEL || (is_subscribed(chan)
-                      && frame >= sub->frame_start
-                      && frame <= sub->frame_end)) {
+                                     && frame >= sub->frame_start
+                                     && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
         
         // Emergency channel
@@ -361,7 +361,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
         return 0;
     } else {
         STATUS_LED_RED();
-        snprintf(output_buf, sizeof(output_buf), "Receiving unsubscribed channel data. %u\n", chan);
+        snprintf(output_buf, sizeof(output_buf), "Receiving unsubscribed channel data. # %u. Frame # %llu\n", chan, frame);
         print_error(output_buf);
         return -1;
     }
