@@ -339,3 +339,4 @@ msdk/
 *.subscription
 flash_file.bin
 decoder/decoder
+pts
