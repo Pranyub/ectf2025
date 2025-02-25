@@ -104,12 +104,16 @@ class Encoder:
         """
 
         # TODO: make this faster by saving a stack of intermediate keys (one per channel)
-        if channel == 0:
-            ciphertext, nonce, tag = encryptFrame(timestamp, bytes.fromhex(self.root_keys[0]), frame, 0)
-            return struct.pack('<BQ', channel, timestamp) + nonce + ciphertext + tag
-        else:
-            ciphertext, nonce, tag = encryptFrame(timestamp, bytes.fromhex(self.root_keys[channel]), frame, channel)
-            return struct.pack("<BQ", channel, timestamp) + nonce + ciphertext + tag
+        key = None
+        for key_obj in self.root_keys:
+            if (key_obj['channel_num'] == channel):
+                key = key_obj['root_key']
+                break
+        if key == None:
+            raise Exception(f'No key defined for channel {channel}')
+        
+        ciphertext, nonce, tag, ad, frameKey = encryptFrame(timestamp, bytes.fromhex(key), frame, channel)
+        return struct.pack('<BQ', channel, timestamp) + nonce + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame
