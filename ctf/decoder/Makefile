@@ -479,6 +479,7 @@ PROJ_CFLAGS += -DWOLFSSL_CUSTOM_CURVES
 PROJ_CFLAGS += -DHAVE_ECC_KOBLITZ
 PROJ_CFLAGS += -DHAVE_HKDF
 PROJ_CFLAGS += -DDECODER_ID=$(DECODER_ID)
+PROJ_CFLAGS += -DLINUX_BUILD
 
 # Collect all source files correctly
 SRCS := $(foreach dir, $(VPATH), $(wildcard $(dir)/*.c))
@@ -496,7 +497,7 @@ TARGET := decoder
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -m32 $(OBJS) -o $(TARGET) -lm
+	$(CC) -m32 $(OBJS) -o $(TARGET) -lm 
 
 %.o: %.c
 	$(CC) -m32 $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
@@ -504,3 +505,6 @@ $(TARGET): $(OBJS)
 clean:
 	rm -f $(OBJS) $(TARGET)
 endif  # LINUX_BUILD
+
+# to build for linux, run `make DECODER_ID=0xdeadbeef LINUX_BUILD=1`
+# to clean, run `make clean LINUX_BUILD=1`
