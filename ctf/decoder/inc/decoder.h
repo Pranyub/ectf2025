@@ -12,11 +12,14 @@ typedef struct {
 } key_entry_t;
 
 typedef struct {
+  uint32_t chan;
   uint8_t active; // a boolean flag
   uint8_t nkeys;
+  uint8_t stk_sz;
   uint64_t frame_start;
   uint64_t frame_end;
   key_entry_t keys[MAX_KEYS_PER_SUBSCRIPTION];
+  key_entry_t stk[ROOT_KEY_LEVEL];
 } subscription_t;
 
 /**********************************************************

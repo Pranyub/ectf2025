@@ -323,6 +323,7 @@ cython_debug/
 
 # WolfSSL
 wolfssl/
+wolfssl-5.7.6/
 
 # PyCharm
 #  JetBrains specific template is maintainted in a separate JetBrains.gitignore that can

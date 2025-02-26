@@ -8,6 +8,7 @@
 #define pkt_len_t uint16_t
 
 #define MAX_CHANNEL_COUNT 8
+#define NUM_SUBSCRIPTIONS
 
 #define EMERGENCY_CHANNEL 0
 #define FRAME_SIZE 64

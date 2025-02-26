@@ -36,16 +36,9 @@
 // #include "chacha20_tests.h"
 // #include "crypto_tests.h"
 
-
-// Stores the current "chain" of keys that have been derived
-static key_entry_t key_stack[MAX_CHANNEL_COUNT][ROOT_KEY_LEVEL];
-
-// Keeps track of the current number of keys derived for each channel
-static uint8_t key_stack_sz[MAX_CHANNEL_COUNT];
-
 typedef struct {
     uint32_t first_boot; // if set to FLASH_FIRST_BOOT, device has booted before.
-    subscription_t subscriptions[MAX_CHANNEL_COUNT];
+    subscription_t subscriptions[NUM_SUBSCRIPTIONS];
 } flash_entry_t;
 
 flash_entry_t decoder_state;
@@ -144,51 +137,48 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
  * @param key output parameter that will hold the decryption key
  * @return 1 if key was successfully found, 0 otherwise
  */
-int key_derive(uint8_t chan, uint64_t frame, uint8_t key[32]) {
-    // the "stack" of derived keys so far: this is a macro to save typing
-#define st (key_stack[chan - 1])
+int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
+    // find subscription
+    subscription_t* sub = NULL;
+    for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
+        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
+            sub = &(decoder_state.subscriptions[i]);
+            break;
+        }
+    }
+    if (sub == NULL) return 0;
 
-    // the stack size
-    uint8_t* sz = &key_stack_sz[chan - 1];
-
-    // boolean flag
-    uint8_t key_found = 0;
-
-    if (*sz <= 0) {
-        // Empty stack: find correct intermediate key
-        subscription_t* sub = &decoder_state.subscriptions[chan - 1];
-        for (int i = 0; i < sub->nkeys; i++) {
+    if (sub->stk_sz == 0 || !key_covers_frame(sub.stk[0], frame)) {
+        // empty stack or stack that doesn't cover our needed frame
+        // check for correct key presence in lib
+        for (uint8_t i = 0; i < sub->nkeys; i++) {
             if (key_covers_frame(&sub->keys[i], frame)) {
-                // Setup the stack with the intermediate key
-                st[0].frame_start = sub->keys[i].frame_start;
-                st[0].level = sub->keys[i].level;
-                memcpy(st[0].key, sub->keys[i].key, 32);
-
-                *sz = 1;
-                key_found = 1;
-                break;
+                sub->stk[0] = sub->keys[i];
+                sub->stk_sz = 1;
+                goto key_found;
             }
         }
-    } else if (key_covers_frame(&st[0], frame)) {
-        // It is possible, through repeated hashing, to derive a key for frame
-        key_found = 1;
-    }
-
-    if (!key_found)
+        
+        // no valid key found
         return 0;
-
+    }
+    
+  key_found:
     // Pop the stack until the key on the top of the stack can be used to derive our frame
-    while (!key_covers_frame(&st[*sz - 1], frame))
-        (*sz)--;
+    while (!key_covers_frame(&sub->stk[sub->stk_sz - 1], frame)) sub->stk_sz--;
 
     // Derive keys from the top of the stack until we get the level 0 key
-    while (st[*sz - 1].level) {
-        key_hash_towards_frame(&st[*sz - 1], frame, &st[*sz]);
-        (*sz)++;
-    }
+    while (sub->stk[sub->stk_sz - 1].level)
+        key_hash_towards_frame(&sub->stk[sub->stk_sz - 1], frame, &sub.stk[sub->stk_sz++]);
+
+    // Ensure we didn't skip an instruction
+    if (!sub->active || sub->chan != chan)
+        return 0;
+    if (sub->stk[sub->stk_sz - 1].level || sub->stk[sub->stk_sz].frame_start != frame)
+        return 0;
 
     // Copy the top key in stack to output
-    memcpy(key, st[*sz - 1].key, 32);
+    memcpy(key, sub->stk[sub->stk_sz - 1].key, 32);
     return 1;
 }
 
