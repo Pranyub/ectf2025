@@ -139,13 +139,7 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
  */
 int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
     // find subscription
-    subscription_t* sub = NULL;
-    for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
-        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
-            sub = &(decoder_state.subscriptions[i]);
-            break;
-        }
-    }
+    subscription_t* sub = subscription_get(chan);
     if (sub == NULL) return 0;
 
     if (sub->stk_sz == 0 || !key_covers_frame(sub.stk[0], frame)) {
@@ -183,25 +177,16 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
 }
 
 /**********************************************************
- ******************* PRIMITIVE TYPES **********************
- **********************************************************/
-
-/**********************************************************
- *********************** CONSTANTS ************************
- **********************************************************/
-
-/**********************************************************
- ********************* STATE MACROS ***********************
- **********************************************************/
-
-/**********************************************************
  ******************* UTILITY FUNCTIONS ********************
  **********************************************************/
 
 subscription_t* subscription_get(uint32_t chan) {
-    if (chan <= 0 || chan > 8)
-        return NULL;
-    return &decoder_state.subscriptions[chan - 1];
+    for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
+        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
+            return &(decoder_state.subscriptions[i]);
+        }
+    }
+    return NULL;
 }
 
 /** @brief Checks whether the decoder is subscribed to a given channel
@@ -210,10 +195,6 @@ subscription_t* subscription_get(uint32_t chan) {
  *  @return 1 if the the decoder is subscribed to the channel.  0 if not.
 */
 int is_subscribed(uint32_t chan) {
-    // Check if this is an emergency broadcast message
-    if (chan == EMERGENCY_CHANNEL)
-        return 1;
-
     // Check if the decoder has has a subscription
     return subscription_get(chan) != NULL;
 }
@@ -280,7 +261,20 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    subscription_t* sub = &(decoder_state.subscriptions[update->chan - 1]);
+    // get pointer to subscription
+    subscription_t* sub = subscription_get(update->chan);
+    if (sub == NULL) {
+        for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
+            if (!decoder_state.subscriptions[i].active) {
+                sub = &decoder_state.subscriptions[i];
+                goto sub_found;
+            }
+        }
+        print_debug("Failed to update subscription - no available slots\n");
+        return -1;
+
+      sub_found:
+    }
 
     if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
         print_debug("Error decrypting the subscription.\n");
@@ -309,7 +303,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     char output_buf[128] = {0};
 
-    uint8_t chan = new_frame->channel;
+    uint32_t chan = new_frame->channel;
     uint64_t frame = new_frame->frame_number;
 
     print_debug("Checking subscription\n");
@@ -396,6 +390,7 @@ void init() {
             decoder_state.subscriptions[i].frame_start = DEFAULT_CHANNEL_TIMESTAMP;
             decoder_state.subscriptions[i].frame_end = DEFAULT_CHANNEL_TIMESTAMP;
             decoder_state.subscriptions[i].nkeys = 0;
+            decoder_state.subscriptions[i].stk_sz = 0;
         }
 
         flash_reset();
