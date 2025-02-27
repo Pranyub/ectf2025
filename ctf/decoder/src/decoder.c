@@ -314,21 +314,12 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
                                      && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
         
-        // Emergency channel
         uint8_t decoded_frame[CRYPTO_FRAME_SIZE];
-        if (chan == EMERGENCY_CHANNEL) {
-            if (decrypt_frame(EMERGENCY_KEY, EMERGENCY_CHANNEL, frame, new_frame->nonce, new_frame->data, new_frame->tag, decoded_frame)) {
-                snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not decrypt frame\n", frame);
-                print_error(output_buf);
-                return -1;
-            }
-            write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
-            return 0;
-        }
-
+        
+        // Either use the emergency channel key, get the correct key, or fail
         uint8_t key[32];
-        memset(key, 0, sizeof(key));
-        if (!key_derive(chan, frame, key)) {
+        memcpy(key, EMERGENCY_KEY, sizeof(key));
+        if (chan != EMERGENCY_CHANNEL && !key_derive(chan, frame, key)) {
             snprintf(output_buf, sizeof(output_buf), "Decoding frame #%llu failed: could not derive key\n", frame);
             print_error(output_buf);
             return -1;
