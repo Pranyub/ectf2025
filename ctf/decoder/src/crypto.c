@@ -8,7 +8,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
                      size_t ad_len,
                      const uint8_t nonce[NONCE_SIZE],
                      uint8_t* out) {
-    // this call is causing freezes when decrypting subscription keys
+    print_debug("Decrypting\n");
     int status = wc_ChaCha20Poly1305_Decrypt(key, nonce, ad, ad_len, in, len, tag, out);
     if (status == 0) {
         return SUCCESS;
@@ -20,6 +20,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
     if (status == MAC_CMP_FAILED_E) {
         return TAG_ERROR;
     }
+    print_debug("Decrypting done.\n");
 
     return ERROR;  // generic error
 }
@@ -90,7 +91,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
     uint8_t derived_key[CHACHA_KEY_SIZE];
 
     if (hkdf_derive_key(kdk, (uint8_t*)(&info), sizeof(info), update->nonce, NONCE_SIZE, derived_key) != 0) {
-        print_debug("Error deriving key");
+        print_debug("Error deriving key using kdk\n");
         return ERROR;
     }
 
@@ -108,7 +109,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 (uint8_t*)keys)) != SUCCESS) {
         return ret;
     }
-    
+    print_debug("Flashing keys\n");
     sub->active = true;
     sub->frame_start = update->frame_start;
     sub->frame_end = update->frame_end;
@@ -124,6 +125,8 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
         sub->keys[i].level = keys[i].level;
         memcpy(&sub->keys[i].key, &keys[i].key, 32);
     }
+    print_debug("Flashing keys done.\n");
+
     return SUCCESS;
 }
 

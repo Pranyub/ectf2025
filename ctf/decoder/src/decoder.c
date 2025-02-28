@@ -250,6 +250,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     // verify the subscription signature
     int status;
+    print_debug("Computing ED25519 signature");
     if ((status = ed25519_verify((const uint8_t*)(update) + ED25519_SIGNATURE_SIZE,
                                  pkt_len - ED25519_SIGNATURE_SIZE,
                                  update->signature,
@@ -261,6 +262,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         }
         return -1;
     }
+    print_debug("Computing SUBSCRIPTION GET.");
 
     // get pointer to subscription
     subscription_t* sub = subscription_get(update->chan);
