@@ -33,8 +33,8 @@
 #include "simple_uart.h"
 #include "decoder.h"
 #include "crypto.h"
-// #include "chacha20_tests.h"
-// #include "crypto_tests.h"
+#include "chacha20_tests.h"
+#include "crypto_tests.h"
 
 typedef struct {
     uint32_t first_boot; // if set to FLASH_FIRST_BOOT, device has booted before.
@@ -426,6 +426,7 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
+            crypto_test_all();
             list_channels();
             break;
 

@@ -116,20 +116,18 @@ def gen_subscription(
     # sign the subscription
     sig = private_key.sign(packed_data)
     print(sig)
-    r, s = (0, 0)
 
     """
-    |------ Signature ------|
-        32 bytes   32 bytes  1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
+             64 bytes        1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
     --------------------------------------------------------------------------------------------------------------------------------------------------------
-    |           |           |       |        |             |             |                 |                       |                                       |
-    |     r     |     s     | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
-    |           |           |       |        |             |             |                 |                       |                                       |
+    |                       |       |        |             |             |                 |                       |                                       |
+    |       Signature       | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
+    |                       |       |        |             |             |                 |                       |                                       |
     --------------------------------------------------------------------------------------------------------------------------------------------------------
     """
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t
-    return r.to_bytes(32, byteorder='big') + s.to_bytes(32, byteorder='big') + packed_data
+    return sig + packed_data
 
 
 def parse_args():

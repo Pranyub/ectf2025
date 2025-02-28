@@ -2,6 +2,7 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import utils
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 def generateKeys():
     keys = ec.generate_private_key(ec.SECP256K1())
@@ -22,8 +23,12 @@ def signHash(data: bytes, private_key: ec.EllipticCurvePrivateKey):
     return sig
 
 def main():
-    keys = generateKeys()
     data = b'Im seeing signs...\0'
-    signature = signHash(data, keys)
+    # keys = generateKeys()
+    # signature = signHash(data, keys)
+    keys = Ed25519PrivateKey.generate()
+    signature = keys.sign(data)
+
+    print(f"Data: {data}, Public Key: {keys.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()}, Signature: {signature.hex()}")
 
 main()
