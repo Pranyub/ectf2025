@@ -393,7 +393,7 @@ void init() {
         flash_reset();
         char buffer[100];
         sprintf(buffer, "Starting write of size %lu", sizeof(flash_entry_t));
-        print_debug("");
+        print_debug(buffer);
         flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     }
 }
