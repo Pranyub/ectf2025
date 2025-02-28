@@ -40,24 +40,6 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
     
 }
 
-int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
-                      const uint8_t in[sizeof(uint8_t) +
-                                       sizeof(uint64_t) +
-                                       NONCE_SIZE +
-                                       CRYPTO_FRAME_SIZE +
-                                       TAG_LENGTH],
-                      uint8_t* out) {
-    size_t ad_size = sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
-    return chacha20_decrypt(key,
-                            in + ad_size,
-                            CRYPTO_FRAME_SIZE,
-                            in + ad_size + CRYPTO_FRAME_SIZE,
-                            in,
-                            ad_size,
-                            in + ad_size - NONCE_SIZE,
-                            out);
-}
-
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
                   uint8_t channel_no,
                   uint64_t frame_no,

@@ -78,30 +78,6 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
                          uint8_t* out);
 
 /**
- * @brief decrypts a frame that is encoded as a raw byte array
- * @pre \p out is at least the same size as the ciphertext
- * @post \p out now stores the decrypted frame
- * @param key the key used for decryption
- * @param in the input frame which includes the AD, encrypted frame, and tag formatted as such
- *     -------------------- AD --------------------
- *      1 byte      8 bytes           12 bytes                 64 bytes             16 bytes
- *     -----------------------------------------------------------------------------------------
- *     |       |               |                   |                            |              |
- *     | CH. # |    FRAME #    |       NONCE       |        Encrypted Frame     |   Auth Tag   |
- *     |       |               |                   |                            |              |
- *     -----------------------------------------------------------------------------------------
- * @param out the output buffer that will store the decrypted frame
- * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
- */
-int decrypt_frame_raw(const uint8_t key[CHACHA_KEY_SIZE],
-                      const uint8_t in[sizeof(uint8_t) +
-                                       sizeof(uint64_t) +
-                                       NONCE_SIZE +
-                                       CRYPTO_FRAME_SIZE +
-                                       TAG_LENGTH],
-                      uint8_t* out);
-
-/**
  * @brief decrypts a frame with authentication checking
  * @pre \p out is at least the same size as \p buf
  * @pre \p tag is a valid tag for the frame

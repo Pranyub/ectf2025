@@ -56,9 +56,6 @@ static const uint8_t ED25519_TEST_SIGNATURE[] = { 0x54, 0xc6, 0x61, 0x14, 0x3c, 
 
 static int decrypt_frame_ad_buf_test_normal(void);
 
-static int decrypt_frame_raw_test_normal(void);
-static int decrypt_frame_raw_test_garbage(void);
-
 static int ecdsa_verify_test_normal(void);
 static int ecdsa_verify_test_incorrect_text(void);
 static int ecdsa_verify_test_incorrect_signature(void);
@@ -84,21 +81,6 @@ int crypto_test_all(void) {
         }
         print_debug("Failed normal ad_buf decryption test.\n");
 
-    }
-
-    if ((status = decrypt_frame_raw_test_normal()) == SUCCESS) {
-        print_debug("Passed normal raw frame test\n");
-    } else {
-        if (status == TAG_ERROR) {
-            print_debug("Tag mismatch.\n");
-        }
-        print_debug("Failed normal raw frame test\n");
-    }
-
-    if (decrypt_frame_raw_test_garbage() == SUCCESS) {
-        print_debug("Passed garbage raw frame test.\n");
-    } else {
-        print_debug("Failed garbage raw frame test.\n");
     }
 
     if ((status = ecdsa_verify_test_normal()) == SUCCESS) {
@@ -178,31 +160,6 @@ static int decrypt_frame_ad_buf_test_normal(void) {
     }
 
     return status;
-}
-
-static int decrypt_frame_raw_test_normal(void) {
-    uint8_t out[CRYPTO_FRAME_SIZE];
-    int status;
-    if ((status = decrypt_frame_raw(CRYPTO_TEST_KEY, CRYPTO_TEST_RAW, out)) != SUCCESS) {
-        return status;
-    }
-    
-    if (memcmp(out, CRYPTO_TEST_PLAIN, CRYPTO_FRAME_SIZE) != 0) {
-        print_debug("Failed comparison test.\n");
-    }
-
-    return status;
-}
-
-static int decrypt_frame_raw_test_garbage(void) {
-    uint8_t out[CRYPTO_FRAME_SIZE];
-    uint8_t garbage[] = { 0xd7, 0xb8, 0xc6, 0x34, 0xa6, 0x15, 0x80, 0x80, 0x07, 0xb6, 0xae, 0xd8, 0x3e, 0xaa, 0x1a, 0xfb, 0x38, 0x7c, 0xc5, 0xd9, 0xcf, 0xe7, 0xcf, 0x68, 0xb9, 0xa9, 0xfc, 0x12, 0xdf, 0x58, 0x03, 0x1a, 0xed, 0xc6, 0x4a, 0x24, 0xd5, 0xfb, 0x5a, 0x59, 0x1f, 0xf4, 0x30, 0x7c, 0xd2, 0xff, 0x15, 0x6c, 0x0f, 0x75, 0xfb, 0x54, 0x51, 0xef, 0xfd, 0xc0, 0xd5, 0xbd, 0x5f, 0x58, 0xe1, 0x95, 0xd1, 0x5e, 0x16, 0xb1, 0xd9, 0xcb, 0x56, 0x0a, 0xe1, 0x7a, 0xe9, 0x44, 0x34, 0x4a, 0xb9, 0x86, 0xa8, 0x44, 0xc7, 0x59, 0x0f, 0x48, 0x54, 0x27, 0xf3, 0x60, 0x19, 0x5b, 0x34, 0xf0, 0x00, 0xb8, 0xaf, 0x3b, 0xcb, 0x96, 0x17, 0x61, 0xf9 };
-
-    if (decrypt_frame_raw(CRYPTO_TEST_KEY, garbage, out) == SUCCESS) {
-        return ERROR;
-    }
-
-    return SUCCESS;
 }
 
 static int ecdsa_verify_test_normal(void) {
