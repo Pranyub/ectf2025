@@ -250,11 +250,11 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     // verify the subscription signature
     int status;
-    if ((status = ecdsa_verify((const uint8_t*)(update) + ECDSA_SIGNATURE_SIZE,
-                               pkt_len - ECDSA_SIGNATURE_SIZE,
-                               update->signature,
-                               ECDSA_PUBLIC_KEY)) != SUCCESS) {
-        if (status == ECDSA_VERIFY_ERROR) {
+    if ((status = ed25519_verify((const uint8_t*)(update) + ED25519_SIGNATURE_SIZE,
+                                 pkt_len - ED25519_SIGNATURE_SIZE,
+                                 update->signature,
+                                 ED25519_PUBLIC_KEY)) != SUCCESS) {
+        if (status == ED25519_VERIFY_ERROR) {
             print_error("Failed to update subscription - failed subscription verification\n");
         } else {
             print_error("Failed to update subscription - unable to verify\n");
@@ -426,7 +426,7 @@ int main(void) {
         // Handle list command
         case LIST_MSG:
             STATUS_LED_CYAN();
-            crypto_test_all();
+            // crypto_test_all();
             list_channels();
             break;
 

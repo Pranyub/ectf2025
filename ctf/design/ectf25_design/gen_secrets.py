@@ -84,7 +84,7 @@ def gen_secrets(channels: list[int]) -> bytes:
     decoder_file = "\
 #ifndef SECRETS_H\n#define SECRETS_H\n\
 #include <stdint.h>\n\
-const uint8_t ECDSA_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n\
+const uint8_t ED25519_PUBLIC_KEY[] = { 0x" + ', 0x'.join(pub_as_bytes) + " };\n\
 const uint8_t SUBSCRIPTION_KDK[] = { 0x" + ', 0x'.join(subscription_kdk_as_bytes) + "};\n\
 const uint8_t EMERGENCY_KEY[] = { 0x" + ', 0x'.join(emergency_as_bytes) + " };\n\
 #endif\n\

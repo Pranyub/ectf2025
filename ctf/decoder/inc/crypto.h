@@ -170,7 +170,7 @@ int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
 int ed25519_verify(const uint8_t* message,
                    size_t m_length,
                    const uint8_t signature[ED25519_SIGNATURE_SIZE],
-                   uint8_t public_key[ED25519_KEY_SIZE]);
+                   const uint8_t public_key[ED25519_KEY_SIZE]);
 
 
 
