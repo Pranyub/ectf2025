@@ -63,7 +63,12 @@ static int ecdsa_verify_test_normal(void);
 static int ecdsa_verify_test_incorrect_text(void);
 static int ecdsa_verify_test_incorrect_signature(void);
 static int ecdsa_verify_test_incorrect_key(void);
+
 static int ed25519_verify_test_normal(void);
+static int ed25519_verify_test_incorrect_text(void);
+static int ed25519_verify_test_incorrect_signature(void);
+static int ed25519_verify_test_incorrect_key(void);
+
 static int hkdf_normal_test(void);
 
 int crypto_test_all(void) {
@@ -133,6 +138,24 @@ int crypto_test_all(void) {
         print_debug("Passed ED25519 normal test");
     } else {
         print_debug("Failed ED25519 normal test.");
+    }
+
+    if (ed25519_verify_test_incorrect_text() == SUCCESS) {
+        print_debug("Passed ED25519 incorrect text test");
+    } else {
+        print_debug("Failed ED25519 incorrect text test");
+    }
+
+    if (ed25519_verify_test_incorrect_signature() == SUCCESS) {
+        print_debug("Passed ED25519 incorrect signature test");
+    } else {
+        print_debug("Failed ED25519 incorrect signature test");
+    }
+
+    if (ed25519_verify_test_incorrect_key() == SUCCESS) {
+        print_debug("Passed ED25519 incorrect key test");
+    } else {
+        print_debug("Failed ED25519 incorrect key test");
     }
 
     print_debug("Finished crypto tests.\n");
@@ -219,6 +242,34 @@ static int ecdsa_verify_test_incorrect_key(void) {
 
 static int ed25519_verify_test_normal(void) {
     if (ed25519_verify(ED25519_TEST_DATA, sizeof(ED25519_TEST_DATA), ED25519_TEST_SIGNATURE, ED25519_PUBLIC_KEY_TEST) != SUCCESS) {
+        return ERROR;
+    }
+    return SUCCESS;
+}
+
+static int ed25519_verify_test_incorrect_text(void) {
+    char incorrect_data = "This is wrong...";
+    if (ed25519_verify(incorrect_data, sizeof(incorrect_data), ED25519_TEST_SIGNATURE, ED25519_PUBLIC_KEY_TEST) == SUCCESS) {
+        return ERROR;
+    }
+    return SUCCESS;
+}
+
+static int ed25519_verify_test_incorrect_signature(void) {
+    uint8_t incorrect_signature[ED25519_SIGNATURE_SIZE];
+    memcpy(incorrect_signature, ED25519_TEST_SIGNATURE, ED25519_SIGNATURE_SIZE);
+    incorrect_signature[ED25519_SIGNATURE_SIZE / 2] ^= 1 << 4;
+    if (ed25519_verify(ED25519_TEST_DATA, sizeof(ED25519_TEST_DATA), incorrect_signature, ED25519_PUBLIC_KEY_TEST) == SUCCESS) {
+        return ERROR;
+    }
+    return SUCCESS;
+}
+
+static int ed25519_verify_test_incorrect_key(void) {
+    uint8_t incorrect_key[ED25519_KEY_SIZE];
+    memcpy(incorrect_key, ED25519_PUBLIC_KEY_TEST, ED25519_KEY_SIZE);
+    incorrect_key[ED25519_KEY_SIZE / 2] ^= 1 << 4;
+    if (ed25519_verify(ED25519_TEST_DATA, sizeof(ED25519_TEST_DATA), ED25519_TEST_SIGNATURE, incorrect_key) == SUCCESS) {
         return ERROR;
     }
     return SUCCESS;
