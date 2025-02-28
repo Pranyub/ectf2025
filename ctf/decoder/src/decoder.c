@@ -284,7 +284,8 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    flash_reset();
+    print_debug("Flashing...");
+    flash_reset();  // flash will not write unless it has been erased
     flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     
     char output_buf[128];
