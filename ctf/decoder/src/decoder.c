@@ -47,9 +47,19 @@ flash_entry_t decoder_state;
  ******************* UTILITY FUNCTIONS ********************
  **********************************************************/
 
- subscription_t* subscription_get(uint32_t chan) {
+/**
+ * @brief finds a subscription in the decoder_state global
+ * @param chan the channel number to find
+ * @param index a pointer to where the index of \p chan in the subscriptions array
+ *          of the decoder_state global should be stored. Ignored if NULL.  Will be unchanged if not found.
+ * @return NULL if the subscription was not found, or the pointer to the subscription holding \p chan
+ */
+ subscription_t* subscription_get(uint32_t chan, uint8_t* index) {
     for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
         if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
+            if (index != NULL) {
+                *index = i;
+            }
             return &(decoder_state.subscriptions[i]);
         }
     }
@@ -63,7 +73,7 @@ flash_entry_t decoder_state;
 */
 int is_subscribed(uint32_t chan) {
     // Check if the decoder has has a subscription
-    return subscription_get(chan) != NULL;
+    return subscription_get(chan, NULL) != NULL;
 }
 
 void key_print(uint8_t key[32]) {
@@ -162,7 +172,7 @@ int key_covers_frame(key_entry_t* k, uint64_t frame) {
  */
 int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
     // find subscription
-    subscription_t* sub = subscription_get(chan);
+    subscription_t* sub = subscription_get(chan, NULL);
     if (sub == NULL) return 0;
 
 
@@ -262,12 +272,14 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
+    uint8_t index;
     // get pointer to subscription
-    subscription_t* sub = subscription_get(update->chan);
+    subscription_t* sub = subscription_get(update->chan, &index);
     if (sub == NULL) {
         for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
             if (!decoder_state.subscriptions[i].active) {
                 sub = &decoder_state.subscriptions[i];
+                index = i;
                 goto sub_found;
             }
         }
@@ -282,9 +294,9 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    print_debug("Flashing...");
-    flash_reset();  // flash will not write unless it has been erased
-    flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+    uint32_t sub_flash_address = FLASH_STATUS_ADDR + 1 + index * 2;
+    flash_simple_erase_page(sub_flash_address);
+    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));
     
     char output_buf[128];
     snprintf(output_buf, sizeof(output_buf), "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
@@ -309,7 +321,7 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     uint64_t frame = new_frame->frame_number;
 
     print_debug("Checking subscription\n");
-    subscription_t *sub = subscription_get(chan);
+    subscription_t *sub = subscription_get(chan, NULL);
 
     //char potato[128];
     //sprintf(potato, sizeof(potato), "channel number: %d,  \n" chan, sub->frame_start, sub->frame_end);
@@ -389,12 +401,11 @@ void init() {
             decoder_state.subscriptions[i].stk_sz = 0;
         }
 
-        print_debug("starting reset");
         flash_reset();
-        char buffer[100];
-        sprintf(buffer, "Starting write of size %lu", sizeof(flash_entry_t));
-        print_debug(buffer);
-        flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+        flash_simple_write(FLASH_STATUS_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
+        for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {  // flash each blank subscription to each of their own 2 pages
+            flash_simple_write(FLASH_STATUS_ADDR + 1 + i * 2, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
+        }
     }
 }
 

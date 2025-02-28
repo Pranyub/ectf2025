@@ -16,8 +16,9 @@
 // This is a canary value so we can confirm whether this decoder has booted before
 #define FLASH_FIRST_BOOT 0xDEADBEEF
 
-// Calculate the flash address where we will store channel info as the 8th to last page available
-#define FLASH_NUM_PAGES 10
+// Calculate the flash address where we will store channel info as the 17th to last page available, with each subscription
+// taking up two pages, and the first page is reserved for teh flash boot canary
+#define FLASH_NUM_PAGES 18
 #ifdef LINUX_BUILD
 #define MXC_FLASH_MEM_BASE 0
 #define MXC_FLASH_MEM_SIZE 128000  // doesn't have to be the actual size of memory

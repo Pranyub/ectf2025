@@ -83,6 +83,7 @@ int flash_simple_erase_page(uint32_t address) {
         fseek(fp, 1, SEEK_CUR);
     }
     fclose(fp);
+    return 0;
     #else
     return MXC_FLC_PageErase(address);
     #endif
