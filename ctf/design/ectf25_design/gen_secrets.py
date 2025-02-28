@@ -19,6 +19,8 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric import utils
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, PrivateFormat, NoEncryption
 
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 from loguru import logger
 
 
@@ -36,7 +38,8 @@ def gen_secrets(channels: list[int]) -> bytes:
     """
 
     # we need root key, pub/priv key for subscription signing
-    keys = ec.generate_private_key(ec.SECP256K1())
+    keys = Ed25519PrivateKey.generate()
+    
     private_key = keys
     public_key = keys.public_key()
     
@@ -53,12 +56,12 @@ def gen_secrets(channels: list[int]) -> bytes:
             "root_key": token_bytes(32).hex()
         })
 
-    public_key_hex = public_key.public_bytes(Encoding.X962, PublicFormat.UncompressedPoint).hex()
+    public_key_hex = public_key.public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
     sub_kdk = token_bytes(32).hex()
 
     secrets = {
         # keys for subscription signing
-        "private_key": private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption()).decode('ascii'),
+        "private_key": private_key.private_bytes(Encoding.Raw, PrivateFormat.Raw, NoEncryption()).hex(),
         "public_key": public_key_hex,
         # key for encrypted subscriptions, to be used with the KDF
         "subscription_kdk": sub_kdk,

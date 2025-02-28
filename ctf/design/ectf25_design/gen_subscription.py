@@ -24,6 +24,9 @@ from cryptography.hazmat.primitives.asymmetric import utils
 import cryptography.hazmat.primitives.serialization as ecc_serialization
 from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from cryptography.hazmat.primitives.asymmetric import ed25519
+
 
 from loguru import logger
 
@@ -45,7 +48,7 @@ def gen_subscription(
     secrets = json.loads(secrets)
 
     # load the private key for signing
-    private_key = ecc_serialization.load_pem_private_key(secrets['private_key'].encode(), password=None)
+    private_key = Ed25519PrivateKey.from_private_bytes(bytes.fromhex(secrets['private_key']))
 
     root_key = None
     root_keys = secrets['root_keys']
@@ -111,12 +114,9 @@ def gen_subscription(
     packed_data = meta_data + encrypted_keys[-16:] + encrypted_keys[:-16]  # metadata + tag + encrypted keys
     
     # sign the subscription
-    hash_func = hashes.SHA256()
-    hasher = hashes.Hash(hash_func)
-    hasher.update(packed_data)
-    digest = hasher.finalize()
-    sig = private_key.sign(digest, ec.ECDSA(utils.Prehashed(hash_func)))
-    r, s = utils.decode_dss_signature(sig)
+    sig = private_key.sign(packed_data)
+    print(sig)
+    r, s = (0, 0)
 
     """
     |------ Signature ------|
