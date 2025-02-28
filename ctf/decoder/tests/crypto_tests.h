@@ -44,6 +44,16 @@ static const uint8_t HKDF_TEST_KDK[] = { 0xd6, 0x50, 0x90, 0x83, 0x96, 0x99, 0x3
 static const uint8_t HKDF_TEST_DECODER_ID[] = { 0x00, 0x00, 0x00, 0x00 };
 static const uint8_t HKDF_TEST_NONCE[] = { 0x86, 0x17, 0x94, 0xcb, 0x3a, 0x76, 0xa6, 0xbb, 0x06, 0x82, 0xaf, 0x9f };
 
+/**
+ * GROUND TRUTHS FOR ED25519:
+ * PUBLIC KEY 
+ * TEST MESSAGE 
+ * SIGNATURE 
+ */
+static const uint8_t ED25519_PUBLIC_KEY_TEST[] = {  };
+static const uint8_t ED25519_TEST_DATA[] = "Im seeing signs...";
+static const uint8_t ED25519_TEST_SIGNATURE[] = {  };
+
 static int decrypt_frame_ad_buf_test_normal(void);
 
 static int decrypt_frame_raw_test_normal(void);
@@ -197,6 +207,13 @@ static int ecdsa_verify_test_incorrect_key(void) {
         return ERROR;
     }
 
+    return SUCCESS;
+}
+
+static int ed25519_verify_test_normal(void) {
+    if (ed25519_verify(ED25519_TEST_DATA, sizeof(ED25519_TEST_DATA), ED25519_TEST_SIGNATURE, ED25519_PUBLIC_KEY_TEST) != SUCCESS) {
+        return ERROR;
+    }
     return SUCCESS;
 }
 

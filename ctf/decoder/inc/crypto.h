@@ -19,6 +19,7 @@
 #include <wolfssl/wolfcrypt/ecc.h>
 #include <wolfssl/wolfcrypt/sha256.h>
 #include <wolfssl/wolfcrypt/hmac.h>
+#include <wolfssl/wolfcrypt/ed25519.h>
 
 #include "status_led.h"
 #include "constants.h"
@@ -157,6 +158,21 @@ int ecdsa_verify(const uint8_t* in,
 int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
                             const uint8_t sig[ECDSA_SIGNATURE_SIZE],
                             const uint8_t pub[CRYPTO_ECC_KEY_SIZE]);
+
+/**
+ * @brief verifies a signed message using ed25519
+ * @param message a pointer to the message to be checked
+ * @param m_length the length of the message to be checked
+ * @param signature an array with the signature to be checked against
+ * @param public_key an array with the public key for the signed message
+ * @return SUCCESS on success, ERROR on error, ED25519_VERIFY_ERROR on signature verification fail
+ */
+int ed25519_verify(const uint8_t* message,
+                   size_t m_length,
+                   const uint8_t[ED25519_SIGNATURE_SIZE] signature,
+                   const uint8_t[ED25519_KEY_SIZE] public_key);
+
+
 
 /**
  * @brief derives a key using HKDF and SHA-256

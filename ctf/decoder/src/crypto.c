@@ -236,6 +236,30 @@ int ecdsa_verify_sha256hash(const uint8_t hash[SHA256_DIGEST_SIZE],
     return SUCCESS;
 }
 
+int ed25519_verify(const uint8_t* message,
+                   size_t m_length,
+                   const uint8_t[ED25519_SIGNATURE_SIZE] signature,
+                   const uint8_t[ED25519_KEY_SIZE] public_key) {
+    ed25519_key ed_key;
+    if (wc_ed25519_make_public(&ed_key, public_key, ED25519_KEY_SIZE) != 0) {
+        print_debug("Failed to make key.");
+        return ERROR;
+    }
+
+    int ret;
+    int ret2;
+    if ((ret2 = wc_ed25519_verify_msg(signature, ED25519_SIGNATURE_SIZE, message, m_length, &ret, ed25519_key * key)) != 0) {
+        if (ret2 == SIG_VERIFY_E) {
+            return ED25519_VERIFY_ERROR;
+        }
+        return ERROR;
+    }
+    if (ret != 1) {
+        return ERROR;
+    }
+
+    return SUCCESS;
+}
 
 int hkdf_derive_key(const uint8_t kdk[CHACHA_KEY_SIZE],
                     const uint8_t* info,
