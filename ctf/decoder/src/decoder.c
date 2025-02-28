@@ -226,7 +226,7 @@ int list_channels() {
 
     for (uint32_t i = 0; i < MAX_CHANNEL_COUNT; i++) {
         if (decoder_state.subscriptions[i].active) {
-            resp.channel_info[resp.n_channels].channel = i + 1;
+            resp.channel_info[resp.n_channels].channel = decoder_state.subscriptions[i].chan;
             resp.channel_info[resp.n_channels].start = decoder_state.subscriptions[i].frame_start;
             resp.channel_info[resp.n_channels].end = decoder_state.subscriptions[i].frame_end;
             resp.n_channels++;
