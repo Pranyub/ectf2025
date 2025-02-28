@@ -250,7 +250,6 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
 
     // verify the subscription signature
     int status;
-    print_debug("Computing ED25519 signature");
     if ((status = ed25519_verify((const uint8_t*)(update) + ED25519_SIGNATURE_SIZE,
                                  pkt_len - ED25519_SIGNATURE_SIZE,
                                  update->signature,
@@ -262,7 +261,6 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         }
         return -1;
     }
-    print_debug("Computing SUBSCRIPTION GET.");
 
     // get pointer to subscription
     subscription_t* sub = subscription_get(update->chan);
@@ -391,19 +389,22 @@ void init() {
             decoder_state.subscriptions[i].stk_sz = 0;
         }
 
+        print_debug("starting reset");
         flash_reset();
+        char buffer[100];
+        sprintf(buffer, "Starting write of size %lu", sizeof(flash_entry_t));
+        print_debug("");
         flash_simple_write(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
     }
 }
 
 int main(void) {
     char output_buf[128] = {0};
-    uint8_t uart_buf[MAX_MESSAGE_LEN];  // TODO: check
+    uint8_t uart_buf[MAX_MESSAGE_LEN];
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;
     
-
     // initialize the device
     init();
 

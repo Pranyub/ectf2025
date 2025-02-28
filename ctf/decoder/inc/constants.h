@@ -17,13 +17,13 @@
 #define FLASH_FIRST_BOOT 0xDEADBEEF
 
 // Calculate the flash address where we will store channel info as the 8th to last page available
-#define FLASH_NUM_PAGES 20
+#define FLASH_NUM_PAGES 10
 #ifdef LINUX_BUILD
 #define MXC_FLASH_MEM_BASE 0
 #define MXC_FLASH_MEM_SIZE 128000  // doesn't have to be the actual size of memory
 #define MXC_FLASH_PAGE_SIZE 0x2000
 #endif
-#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (FLASH_NUM_AGES * MXC_FLASH_PAGE_SIZE))
+#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (FLASH_NUM_PAGES * MXC_FLASH_PAGE_SIZE))
 
 // The level of the root key (leaf keys have level 1)
 #define ROOT_KEY_LEVEL 64
