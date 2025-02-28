@@ -43,6 +43,29 @@ typedef struct {
 
 flash_entry_t decoder_state;
 
+/**********************************************************
+ ******************* UTILITY FUNCTIONS ********************
+ **********************************************************/
+
+ subscription_t* subscription_get(uint32_t chan) {
+    for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
+        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
+            return &(decoder_state.subscriptions[i]);
+        }
+    }
+    return NULL;
+}
+
+/** @brief Checks whether the decoder is subscribed to a given channel
+ *
+ *  @param channel The channel number to be checked.
+ *  @return 1 if the the decoder is subscribed to the channel.  0 if not.
+*/
+int is_subscribed(uint32_t chan) {
+    // Check if the decoder has has a subscription
+    return subscription_get(chan) != NULL;
+}
+
 void key_print(uint8_t key[32]) {
     write_hex(DEBUG_MSG, key, 32);
     print_debug("\n");
@@ -142,7 +165,8 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
     subscription_t* sub = subscription_get(chan);
     if (sub == NULL) return 0;
 
-    if (sub->stk_sz == 0 || !key_covers_frame(sub.stk[0], frame)) {
+
+    if (sub->stk_sz == 0 || !key_covers_frame(&sub->stk[0], frame)) {
         // empty stack or stack that doesn't cover our needed frame
         // check for correct key presence in lib
         for (uint8_t i = 0; i < sub->nkeys; i++) {
@@ -163,40 +187,17 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
 
     // Derive keys from the top of the stack until we get the level 0 key
     while (sub->stk[sub->stk_sz - 1].level)
-        key_hash_towards_frame(&sub->stk[sub->stk_sz - 1], frame, &sub.stk[sub->stk_sz++]);
+        key_hash_towards_frame(&sub->stk[sub->stk_sz - 1], frame, &sub->stk[sub->stk_sz++]);
 
     // Ensure we didn't skip an instruction
     if (!sub->active || sub->chan != chan)
         return 0;
-    if (sub->stk[sub->stk_sz - 1].level || sub->stk[sub->stk_sz].frame_start != frame)
+    if (sub->stk[sub->stk_sz - 1].level || sub->stk[sub->stk_sz - 1].frame_start != frame)
         return 0;
 
     // Copy the top key in stack to output
     memcpy(key, sub->stk[sub->stk_sz - 1].key, 32);
     return 1;
-}
-
-/**********************************************************
- ******************* UTILITY FUNCTIONS ********************
- **********************************************************/
-
-subscription_t* subscription_get(uint32_t chan) {
-    for (uint8_t i = 0; i < NUM_SUBSCRIPTIONS; i++) {
-        if (decoder_state.subscriptions[i].chan == chan && decoder_state.subscriptions[i].active) {
-            return &(decoder_state.subscriptions[i]);
-        }
-    }
-    return NULL;
-}
-
-/** @brief Checks whether the decoder is subscribed to a given channel
- *
- *  @param channel The channel number to be checked.
- *  @return 1 if the the decoder is subscribed to the channel.  0 if not.
-*/
-int is_subscribed(uint32_t chan) {
-    // Check if the decoder has has a subscription
-    return subscription_get(chan) != NULL;
 }
 
 /**********************************************************
@@ -309,7 +310,10 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     print_debug("Checking subscription\n");
     subscription_t *sub = subscription_get(chan);
 
-    if (chan == EMERGENCY_CHANNEL || (is_subscribed(chan)
+    //char potato[128];
+    //sprintf(potato, sizeof(potato), "channel number: %d,  \n" chan, sub->frame_start, sub->frame_end);
+
+    if (chan == EMERGENCY_CHANNEL || (sub != NULL
                                      && frame >= sub->frame_start
                                      && frame <= sub->frame_end)) {
         print_debug("Subscription Valid\n");        
@@ -395,16 +399,12 @@ int main(void) {
     msg_type_t cmd;
     int result;
     uint16_t pkt_len;
+    
 
     // initialize the device
     init();
 
     print_debug("Decoder Booted!\n");
-
-    // reset key stacks
-    for (int i = 0; i < sizeof(key_stack_sz); i++) {
-        key_stack_sz[i] = 0;
-    }
 
     // process commands forever
     while (1) {

@@ -113,6 +113,7 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
     sub->frame_start = update->frame_start;
     sub->frame_end = update->frame_end;
     sub->nkeys = update->nkeys;
+    sub->chan = update->chan;
     sub->stk_sz = 0;
     // Clear the old keys
     memset(sub->keys, 0, MAX_KEYS_PER_SUBSCRIPTION * sizeof(key_entry_t));

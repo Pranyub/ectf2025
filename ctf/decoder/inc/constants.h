@@ -8,7 +8,7 @@
 #define pkt_len_t uint16_t
 
 #define MAX_CHANNEL_COUNT 8
-#define NUM_SUBSCRIPTIONS
+#define NUM_SUBSCRIPTIONS 8
 
 #define EMERGENCY_CHANNEL 0
 #define FRAME_SIZE 64
@@ -23,7 +23,7 @@
 #define MXC_FLASH_MEM_SIZE 128000  // doesn't have to be the actual size of memory
 #define MXC_FLASH_PAGE_SIZE 0x2000
 #endif
-#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (8 * MXC_FLASH_PAGE_SIZE))
+#define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (20 * MXC_FLASH_PAGE_SIZE))
 
 // The level of the root key (leaf keys have level 1)
 #define ROOT_KEY_LEVEL 64
