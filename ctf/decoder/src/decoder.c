@@ -258,7 +258,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    // verify the subscription signature
+    // verify the subscription signature, can remove to ensure <500ms runtime
     int status;
     if ((status = ed25519_verify((const uint8_t*)(update) + ED25519_SIGNATURE_SIZE,
                                  pkt_len - ED25519_SIGNATURE_SIZE,
