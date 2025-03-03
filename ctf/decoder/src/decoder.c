@@ -186,7 +186,6 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
                 goto key_found;
             }
         }
-        
         // no valid key found
         return 0;
     }
@@ -202,7 +201,7 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
     // Ensure we didn't skip an instruction
     if (!sub->active || sub->chan != chan)
         return 0;
-    if (sub->stk[sub->stk_sz - 1].level || sub->stk[sub->stk_sz - 1].frame_start != frame)
+    if (sub->stk[sub->stk_sz - 1].level || sub->stk[sub->stk_sz - 1].frame_start != frame)  // this keeps failing!!!
         return 0;
 
     // Copy the top key in stack to output
