@@ -294,9 +294,9 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         return -1;
     }
 
-    uint32_t sub_flash_address = FLASH_STATUS_ADDR + index * 2;
+    uint32_t sub_flash_address = FLASH_STATUS_ADDR + (index * 2) * MXC_FLASH_PAGE_SIZE;
     flash_simple_erase_page(sub_flash_address);
-    flash_simple_erase_page(sub_flash_address + 1);
+    flash_simple_erase_page(sub_flash_address + MXC_FLASH_PAGE_SIZE);
     flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
     // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
     
@@ -375,11 +375,8 @@ void init() {
     // Initialize the flash peripheral to enable access to persistent memory
     flash_simple_init();
 
-    // Read starting flash values into our flash status struct
-    // flash_simple_read(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
-
-    // reconstruct the decoder_state from flash
-    flash_simple_read(FLASH_FIRST_BOOT_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
+    // reconstruct the decoder_state first boot canary
+    flash_simple_read(FLASH_FIRST_BOOT_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));
 
     char output_buf[128];
     snprintf(output_buf, sizeof(output_buf), "decoder_state.first_boot = 0x%08x\n", decoder_state.first_boot);
@@ -407,16 +404,16 @@ void init() {
         flash_reset();
         flash_simple_write(FLASH_FIRST_BOOT_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
         for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {  // flash each blank subscription to each of their own 2 pages
-            flash_simple_write(FLASH_STATUS_ADDR + i * 2, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
+            flash_simple_write(FLASH_STATUS_ADDR + (i * 2) * MXC_FLASH_PAGE_SIZE, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
         }
     } else {  // we've booted before, read the subscriptions from flash
         for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {  // read each subscription
             subscription_t sub;
-            flash_simple_read(FLASH_STATUS_ADDR + i * 2, &sub, sizeof(subscription_t));
+            flash_simple_read(FLASH_STATUS_ADDR + (i * 2) * MXC_FLASH_PAGE_SIZE, &sub, sizeof(subscription_t));
             if (sub.active) {
                 memcpy(&(decoder_state.subscriptions[i]), &sub, sizeof(subscription_t));
             }
-            flash_simple_read(FLASH_STATUS_ADDR + i * 2, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
+            flash_simple_read(FLASH_STATUS_ADDR + (i * 2) * MXC_FLASH_PAGE_SIZE, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
         }
     }
 }
