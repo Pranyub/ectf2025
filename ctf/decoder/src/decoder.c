@@ -297,8 +297,8 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     uint32_t sub_flash_address = FLASH_STATUS_ADDR + (index * 2) * MXC_FLASH_PAGE_SIZE;
     flash_simple_erase_page(sub_flash_address);
     flash_simple_erase_page(sub_flash_address + MXC_FLASH_PAGE_SIZE);
-    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
-    // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
+    // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
+    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
     
     char output_buf[128];
     snprintf(output_buf, sizeof(output_buf), "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
