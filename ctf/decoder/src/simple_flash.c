@@ -137,7 +137,7 @@ int flash_simple_write(uint32_t address, void* buffer, uint32_t size) {
 }
 
 void flash_reset(void) {
-    uint32_t addr = FLASH_STATUS_ADDR;
+    uint32_t addr = FLASH_FIRST_BOOT_ADDR;
     for (int i = 0; i < FLASH_NUM_PAGES; i++) {
         flash_simple_erase_page(addr);
         addr += MXC_FLASH_PAGE_SIZE;
