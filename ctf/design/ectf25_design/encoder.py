@@ -35,9 +35,9 @@ def encryptFrame(fNum, root_key, frame_data, channel_num):
 
     # since this is a stream cipher, we must pad the plaintext to 64 bytes
     assert len(frame_data) <= 64 # guaranteed by spec
-    
-    frame_data += len(frame_data).to_bytes(1, byteorder='big') + b'\00' * (64 - len(frame_data))
-    # frame_data += b'\00' * (64 - len(frame_data))
+    length = len(frame_data)
+    frame_data += b'\00' * (64 - len(frame_data))
+    frame_data = length.to_bytes(1, byteorder='big') + frame_data
 
     cipher = ChaCha20Poly1305(frameKey)
     ciphertext_and_tag = cipher.encrypt(nonce, frame_data, ad)
