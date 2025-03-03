@@ -297,8 +297,8 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     uint32_t sub_flash_address = FLASH_STATUS_ADDR + 1 + index * 2;
     flash_simple_erase_page(sub_flash_address);
     flash_simple_erase_page(sub_flash_address + 1);
-    // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
-    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
+    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
+    // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
     
     char output_buf[128];
     snprintf(output_buf, sizeof(output_buf), "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
@@ -325,9 +325,6 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
     print_debug("Checking subscription\n");
     subscription_t *sub = subscription_get(chan, NULL);
 
-    //char potato[128];
-    //sprintf(potato, sizeof(potato), "channel number: %d,  \n" chan, sub->frame_start, sub->frame_end);
-
     if (chan == EMERGENCY_CHANNEL || (sub != NULL
                                      && frame >= sub->frame_start
                                      && frame <= sub->frame_end)) {
@@ -351,7 +348,8 @@ int decode(uint16_t pkt_len, frame_packet_t *new_frame) {
             return -1;
         }
 
-        write_packet(DECODE_MSG, decoded_frame, CRYPTO_FRAME_SIZE);
+        uint16_t decoded_size = *((uint8_t*)(&decoded_frame));
+        write_packet(DECODE_MSG, decoded_frame + 1, decoded_size);
         return 0;
     } else {
         STATUS_LED_RED();
@@ -378,10 +376,13 @@ void init() {
     flash_simple_init();
 
     // Read starting flash values into our flash status struct
-    flash_simple_read(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+    // flash_simple_read(FLASH_STATUS_ADDR, &decoder_state, sizeof(flash_entry_t));
+
+    // reconstruct the decoder_state from flash
+    flash_simple_read(FLASH_FIRST_BOOT_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
 
     char output_buf[128];
-    snprintf(output_buf, sizeof(output_buf), "decoder_state.first_boot = %x\n", decoder_state.first_boot);
+    snprintf(output_buf, sizeof(output_buf), "decoder_state.first_boot = 0x%08x\n", decoder_state.first_boot);
     print_debug(output_buf);
 
     if (decoder_state.first_boot != FLASH_FIRST_BOOT) {
@@ -404,9 +405,18 @@ void init() {
         }
 
         flash_reset();
-        flash_simple_write(FLASH_STATUS_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
+        flash_simple_write(FLASH_FIRST_BOOT_ADDR, &(decoder_state.first_boot), sizeof(decoder_state.first_boot));  // canary
         for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {  // flash each blank subscription to each of their own 2 pages
             flash_simple_write(FLASH_STATUS_ADDR + 1 + i * 2, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
+        }
+    } else {  // we've booted before, read the subscriptions from flash
+        for (int i = 0; i < MAX_CHANNEL_COUNT; i++) {  // read each subscription
+            subscription_t sub;
+            flash_simple_read(FLASH_STATUS_ADDR + 1 + i * 2, &sub, sizeof(subscription_t));
+            if (sub.active) {
+                memcpy(&(decoder_state.subscriptions[i]), &sub, sizeof(subscription_t));
+            }
+            flash_simple_read(FLASH_STATUS_ADDR + 1 + i * 2, &(decoder_state.subscriptions[i]), sizeof(subscription_t));
         }
     }
 }

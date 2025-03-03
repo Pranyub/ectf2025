@@ -35,7 +35,7 @@ typedef struct {
     uint8_t channel;
     uint64_t frame_number;
     uint8_t nonce[NONCE_SIZE];
-    uint8_t data[FRAME_SIZE];
+    uint8_t data[FRAME_SIZE + 1];
     uint8_t tag[TAG_LENGTH];
 } frame_packet_t;
 
