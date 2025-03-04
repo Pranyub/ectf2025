@@ -193,8 +193,10 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
     while (!key_covers_frame(&sub->stk[sub->stk_sz - 1], frame)) sub->stk_sz--;
 
     // Derive keys from the top of the stack until we get the level 0 key
-    while (sub->stk[sub->stk_sz - 1].level)
-        key_hash_towards_frame(&sub->stk[sub->stk_sz - 1], frame, &sub->stk[sub->stk_sz++]);
+    while (sub->stk[sub->stk_sz - 1].level) {
+        key_hash_towards_frame(&sub->stk[sub->stk_sz - 1], frame, &sub->stk[sub->stk_sz]);
+        sub->stk_sz++;
+    }
 
     // Ensure we didn't skip an instruction
     if (!sub->active || sub->chan != chan)
