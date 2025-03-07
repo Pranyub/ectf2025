@@ -13,13 +13,15 @@
 
 #ifndef __SIMPLE_FLASH__
 #define __SIMPLE_FLASH__
-
 #include <stdio.h>
 #include <stdint.h>
 #ifdef LINUX_BUILD
 #include <stdlib.h>
 #include "unistd.h" 
 #define FLASH_FILE "flash_file.bin"
+#ifdef ANGR_BUILD
+#include "string.h"
+#endif
 #else
 #include "flc.h"
 #include "icc.h"

@@ -13,6 +13,11 @@
 
 #include "simple_flash.h"
 
+#ifdef LINUX_BUILD
+#ifdef ANGR_BUILD
+uint8_t* ANGR_FLASH = NULL;
+#endif
+#endif
 /**
  * @brief ISR for the Flash Controller
  * 
@@ -43,6 +48,13 @@ void flash_simple_irq(void) {
 void flash_simple_init(void) {
     // Setup Flash
     #ifdef LINUX_BUILD
+    #ifdef ANGR_BUILD
+    ANGR_FLASH = (uint8_t*)malloc(MXC_FLASH_MEM_SIZE);
+    if (ANGR_FLASH == NULL) {
+        fprintf(stderr, "Failed to malloc for ANGR flash.\n.");
+        exit(EXIT_FAILURE);
+    }
+    #else
     if (access(FLASH_FILE, F_OK) != 0) {
         // create the file if it doesn't exist
         FILE* fp = fopen(FLASH_FILE, "w+");
@@ -54,6 +66,7 @@ void flash_simple_init(void) {
         fwrite("", 1, sizeof(char), fp);
         fclose(fp);
     }
+    #endif
     #else
     MXC_NVIC_SetVector(FLC0_IRQn, flash_simple_irq);
     NVIC_EnableIRQ(FLC0_IRQn);
@@ -76,6 +89,12 @@ void flash_simple_init(void) {
 */
 int flash_simple_erase_page(uint32_t address) {
     #ifdef LINUX_BUILD
+    #ifdef ANGR_BUILD
+    for (size_t i = 0; i < MXC_FLASH_PAGE_SIZE; i++) {
+        ANGR_FLASH[address + i] = 1;
+    }
+    return 0;
+    #else
     FILE* fp = fopen(FLASH_FILE, "rb+");
     fseek(fp, address, SEEK_SET);
     for (size_t i = 0; i < MXC_FLASH_PAGE_SIZE; i++) {
@@ -84,6 +103,7 @@ int flash_simple_erase_page(uint32_t address) {
     }
     fclose(fp);
     return 0;
+    #endif
     #else
     return MXC_FLC_PageErase(address);
     #endif
@@ -101,10 +121,14 @@ int flash_simple_erase_page(uint32_t address) {
 */
 void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
     #ifdef LINUX_BUILD
+    #ifdef ANGR_BUILD
+    memcpy(buffer, &ANGR_FLASH[address], size);
+    #else
     FILE* fp = fopen(FLASH_FILE, "rb");
     fseek(fp, address, SEEK_SET);
     fread(buffer, 1, size, fp);
     fclose(fp);
+    #endif
     #else
     MXC_FLC_Read(address, buffer, size);
     #endif
@@ -126,11 +150,15 @@ void flash_simple_read(uint32_t address, void* buffer, uint32_t size) {
 */
 int flash_simple_write(uint32_t address, void* buffer, uint32_t size) {
     #ifdef LINUX_BUILD
+    #ifdef ANGR_BUILD
+    memcpy(&ANGR_FLASH[address], buffer, size);
+    #else
     FILE* fp = fopen(FLASH_FILE, "rb+");
     fseek(fp, address, SEEK_SET);
     fwrite(buffer, 1, size, fp);
     fclose(fp);
     return 0;
+    #endif
     #else
     return MXC_FLC_Write(address, size, (uint32_t *)buffer);
     #endif

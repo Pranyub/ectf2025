@@ -485,6 +485,9 @@ PROJ_CFLAGS += -DUSE_FAST_MATH
 
 PROJ_CFLAGS += -DDECODER_ID=$(DECODER_ID)
 PROJ_CFLAGS += -DLINUX_BUILD
+ifdef ANGR_BUILD
+PROJ_CFLAGS += -DANGR_BUILD
+endif
 
 # Collect all source files correctly
 SRCS := $(foreach dir, $(VPATH), $(wildcard $(dir)/*.c))
