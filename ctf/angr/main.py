@@ -45,12 +45,13 @@ def main():
     # simgr.use_technique(SearchForInsane())
     simgr.run(until=run_until)
 
+
     if simgr.found:
         crash_state = simgr.found[0]
         print("Crash found!")
         print("Input causing crash:", crash_state.posix.dumps(0))
     else:
-        print("Found nothing.")
+        print("Exploration found nothing.")
 
     if simgr.errored:
         for error in simgr.errored:
@@ -58,6 +59,8 @@ def main():
             print("Crash found: ")
             print("\tState:", state)
             print("\tInput:", repr(simgr.posix.dumps(0)))
+    else:
+        print("No errored states found")
     
 
 main()
