@@ -25,7 +25,9 @@ def run_until(simgr):
 def simple_opcode_packets(opcodes=None):
     magic = claripy.BVV(b'%')
     length = claripy.BVS('opcode', 8)
-    max_length = 64
+    # max_length = 64
+    max_length = 5358  # max message length supported by the decoder; might wanna test something larger
+    max_length *= 2
     body = claripy.BVS('content', 8 * max_length)
     input = claripy.Concat(magic, length, body)
     constriants = [claripy.ULT(length, max_length + 1)]
