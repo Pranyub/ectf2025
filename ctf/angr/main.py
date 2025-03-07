@@ -18,7 +18,7 @@ class SearchForCrash(angr.ExplorationTechnique):
         return False
     
 def run_until(simgr):
-    return simgr.errored
+    return simgr.errored or simgr.found
 
 
 # returns the constraints to be added and the input
@@ -37,7 +37,8 @@ def main():
     for constraint in constraints:
         state.solver.add(constraint)
     simgr = proj.factory.simulation_manager(state)
-    simgr.use_technique(SearchForCrash())
+    simgr.stashes.setdefault('found', [])
+    # simgr.use_technique(SearchForCrash())
     # simgr.use_technique(SearchForInsane())
     simgr.run(until=run_until)
 
