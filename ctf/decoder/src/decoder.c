@@ -178,8 +178,8 @@ int key_derive(uint32_t chan, uint64_t frame, uint8_t key[32]) {
         // empty stack or stack that doesn't cover our needed frame
         // check for correct key presence in lib
         for (uint8_t i = 0; i < sub->nkeys; i++) {
-            if (key_covers_frame(&sub->keys[i], frame)) {
-                sub->stk[0] = sub->keys[i];
+            if (key_covers_frame(&sub->keys[i&0x7f], frame)) {
+                sub->stk[0] = sub->keys[i&0x7f];
                 sub->stk_sz = 1;
                 goto key_found;
             }
@@ -297,7 +297,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
     flash_simple_erase_page(sub_flash_address);
     flash_simple_erase_page(sub_flash_address + MXC_FLASH_PAGE_SIZE);
     // flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t));  // non-truncated
-    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - decoder_state.subscriptions[index].nkeys) * sizeof(key_entry_t));  // truncated
+    flash_simple_write(sub_flash_address, &(decoder_state.subscriptions[index]), sizeof(subscription_t) - (MAX_KEYS_PER_SUBSCRIPTION - (decoder_state.subscriptions[index].nkeys & 0x7f)) * sizeof(key_entry_t));  // truncated
     
     char output_buf[128];
     snprintf(output_buf, sizeof(output_buf), "Wrote subscription to flash! decoder_state.first_boot=%x\n", decoder_state.first_boot);
