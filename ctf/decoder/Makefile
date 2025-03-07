@@ -502,7 +502,7 @@ TARGET := decoder
 all: $(TARGET)
 
 $(TARGET): $(OBJS)
-	$(CC) -m32 $(OBJS) -o $(TARGET) -l:libwolfssl.a -lm
+	$(CC) -m32 $(OBJS) -o $(TARGET) -L$(`pwd`) -l:libwolfssl.a -lm
 
 %.o: %.c
 	$(CC) -m32 $(PROJ_CFLAGS) $(INC_FLAGS) -c $< -o $@
