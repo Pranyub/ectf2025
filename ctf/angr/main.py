@@ -13,9 +13,10 @@ class SearchForCrash(angr.ExplorationTechnique):
     def filter(self, simgr, state, **kwargs):
         if state.history.jumpkind in ('Ijk_SigSEGV', 'Ijk_SigILL', 'Ijk_SigFPE', 'Ijk_SigBUS', 'Ijk_Exception'):
             simgr.stashes['found'].append(state)
-            return False
-        return True
-
+            print("Found a crash")
+            return True
+        return False
+    
 def run_until(simgr):
     return simgr.errored
 
@@ -25,16 +26,16 @@ def main():
     inp = claripy.Concat(claripy.BVV(b'%'), claripy.BVS('input', 8 * input_size))
     state = proj.factory.entry_state(stdin=angr.SimFileStream('stdin', content=inp))
     simgr = proj.factory.simulation_manager(state)
-    # simgr.use_technique(SearchForCrash())
+    simgr.use_technique(SearchForCrash())
     # simgr.use_technique(SearchForInsane())
     simgr.run(until=run_until)
 
-    # if simgr.found:
-    #     crash_state = simgr.found[0]
-    #     print("Crash found!")
-    #     print("Input causing crash:", crash_state.posix.dumps(0))
-    # else:
-    #     print("No crash found.")
+    if simgr.found:
+        crash_state = simgr.found[0]
+        print("Crash found!")
+        print("Input causing crash:", crash_state.posix.dumps(0))
+    else:
+        print("Found nothing.")
 
     if simgr.errored:
         for error in simgr.errored:
@@ -42,7 +43,6 @@ def main():
             print("Crash found: ")
             print("\tState:", state)
             print("\tInput:", repr(simgr.posix.dumps(0)))
-
     
 
 main()
