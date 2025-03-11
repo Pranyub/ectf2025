@@ -282,14 +282,14 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
                 goto sub_found;
             }
         }
-        print_debug("Failed to update subscription - no available slots\n");
+        print_error("Failed to update subscription - no available slots\n");
         return -1;
 
       sub_found:
     }
 
     if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
-        print_debug("Error decrypting the subscription.\n");
+        print_error("Error decrypting the subscription.\n");
         return -1;
     }
 
