@@ -285,7 +285,7 @@ int update_subscription(uint16_t pkt_len, subscription_update_packet_t *update) 
         print_error("Failed to update subscription - no available slots\n");
         return -1;
 
-      sub_found:
+      sub_found: ;
     }
 
     if (decrypt_subscription_update(SUBSCRIPTION_KDK, update, sub) != SUCCESS) {
