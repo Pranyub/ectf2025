@@ -24,7 +24,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from loguru import logger
 
 
-def gen_secrets(channels: list[int]) -> bytes:
+def gen_secrets(channels: list[int]) -> tuple[bytes, str]:
     """Generate the contents secrets file
 
     This will be passed to the Encoder, ectf25_design.gen_subscription, and the build
@@ -90,7 +90,7 @@ const uint8_t EMERGENCY_KEY[] = { 0x" + ', 0x'.join(emergency_as_bytes) + " };\n
 #endif\n\
 "
 
-    return json.dumps(secrets).encode(), decoder_file
+    return json.dumps(secrets).encode(encoding='ascii'), decoder_file
 
 
 def parse_args():
