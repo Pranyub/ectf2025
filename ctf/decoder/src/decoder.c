@@ -21,11 +21,9 @@
 #include "secrets.h"
 #include "constants.h"
 
-#ifndef LINUX_BUILD
 #include "mxc_device.h"
 #include "mxc_delay.h"
 #include "board.h"
-#endif
 
 #include "status_led.h"
 #include "host_messaging.h"

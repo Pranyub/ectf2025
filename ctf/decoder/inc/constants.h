@@ -19,11 +19,6 @@
 // Calculate the flash address where we will store channel info as the 17th to last page available, with each subscription
 // taking up two pages, and the first page is reserved for teh flash boot canary
 #define FLASH_NUM_PAGES 20
-#ifdef LINUX_BUILD
-#define MXC_FLASH_MEM_BASE 0
-#define MXC_FLASH_MEM_SIZE 512000  // doesn't have to be the actual size of memory
-#define MXC_FLASH_PAGE_SIZE 0x2000
-#endif
 #define FLASH_FIRST_BOOT_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - (FLASH_NUM_PAGES * MXC_FLASH_PAGE_SIZE))
 #define FLASH_STATUS_ADDR ((MXC_FLASH_MEM_BASE + MXC_FLASH_MEM_SIZE) - ((FLASH_NUM_PAGES - 2) * MXC_FLASH_PAGE_SIZE))
 

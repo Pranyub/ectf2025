@@ -15,11 +15,7 @@
 #define __STATUS_LED__
 
 
-#ifdef LINUX_BUILD
-#include <stdio.h>
-#else
 #include "led.h"
-#endif
 
 /* These macros may be used to control the RGB LED on the MAX78000 fthr boards*/
 
