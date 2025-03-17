@@ -57,7 +57,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
  * @pre \p out is at least the same size as \p buf
  * @pre \p tag is a valid tag for the frame
  * @pre \p additional_data is the formatted additional data in the following order:
- *                 1 byte      8 bytes           12 bytes
+ *                 4 bytes     8 bytes           12 bytes
  *                ---------------------------------------------
  *                |       |               |                   |
  *                | CH. # |    FRAME #    |       NONCE       |
@@ -72,7 +72,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
-                         const uint8_t additional_data[sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t additional_data[sizeof(uint32_t) + sizeof(uint64_t) + NONCE_SIZE],
                          const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                          const uint8_t tag[TAG_LENGTH],
                          uint8_t* out);
@@ -92,7 +92,7 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
  * @return SUCCESS on success, and ERROR on general error, and TAG_ERROR on tag mismatch
  */
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
-                  uint8_t channel_no,
+                  uint32_t channel_no,
                   uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
                   const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
