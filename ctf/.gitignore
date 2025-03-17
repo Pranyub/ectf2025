@@ -337,6 +337,3 @@ wolfssl/
 msdk/
 *.secrets
 *.subscription
-flash_file.bin
-decoder/decoder
-pts
