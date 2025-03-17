@@ -32,7 +32,7 @@ typedef struct {
 
 // decrypted frame packet
 typedef struct {
-    uint8_t channel;
+    uint8_t channel;  // TODO: make 32 bits
     uint64_t frame_number;
     uint8_t nonce[NONCE_SIZE];
     uint8_t data[FRAME_SIZE + 1];
@@ -47,7 +47,7 @@ typedef struct {
 
 typedef struct {
     uint8_t signature[ECDSA_SIGNATURE_SIZE];  // signature of the entire update packet
-    uint8_t chan;
+    uint8_t chan;  // TODO: make 32 bit
     uint8_t nkeys;
     uint64_t frame_start;
     uint64_t frame_end;
