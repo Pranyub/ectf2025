@@ -17,7 +17,6 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
     }
 
     if (status == MAC_CMP_FAILED_E) {
-        print_debug("Tag error");
         return TAG_ERROR;
     }
 
@@ -25,11 +24,11 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
 }
 
 int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
-                         const uint8_t additional_data[sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE],
+                         const uint8_t additional_data[sizeof(uint32_t) + sizeof(uint64_t) + NONCE_SIZE],
                          const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
                          const uint8_t tag[TAG_LENGTH],
                          uint8_t* out) {
-    size_t ad_size = sizeof(uint8_t) + sizeof(uint64_t) + NONCE_SIZE;
+    size_t ad_size = sizeof(uint32_t) + sizeof(uint64_t) + NONCE_SIZE;
     return chacha20_decrypt(key,
                             encrypted_frame,
                             CRYPTO_FRAME_SIZE,
@@ -42,7 +41,7 @@ int decrypt_frame_ad_buf(const uint8_t key[CHACHA_KEY_SIZE],
 }
 
 int decrypt_frame(const uint8_t key[CHACHA_KEY_SIZE],
-                  uint8_t channel_no,
+                  uint32_t channel_no,
                   uint64_t frame_no,
                   const uint8_t nonce[NONCE_SIZE],
                   const uint8_t encrypted_frame[CRYPTO_FRAME_SIZE],
