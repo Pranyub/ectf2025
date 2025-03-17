@@ -105,7 +105,7 @@ def gen_subscription(
 
     nonce = token_bytes(12)
     # TODO: make channel 32 bit
-    meta_data = struct.pack('<BBQQ', channel, len(keys), start, end) + nonce
+    meta_data = struct.pack('<iBQQ', channel, len(keys), start, end) + nonce
     # encrypting the subscription using a key derived from the kdk
     subscription_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=nonce, info=device_id.to_bytes(4, byteorder='little')).derive(sub_kdk)  # might need to swap byteorder depending on linux or max
     # print(f"Subscription key: {subscription_key.hex()}\nKDK: {sub_kdk.hex()}\nDecoder ID: {device_id.to_bytes(4, byteorder='big').hex()}\nNonce: {nonce.hex()}\n")
@@ -116,15 +116,14 @@ def gen_subscription(
     
     # sign the subscription
     sig = private_key.sign(packed_data)
-    print(sig)
 
     """
-             64 bytes        1 byte   1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
-    --------------------------------------------------------------------------------------------------------------------------------------------------------
-    |                       |       |        |             |             |                 |                       |                                       |
-    |       Signature       | Ch. # | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
-    |                       |       |        |             |             |                 |                       |                                       |
-    --------------------------------------------------------------------------------------------------------------------------------------------------------
+             64 bytes          4 bytes    1 byte     8 bytes       8 bytes         12 bytes             16 bytes          # Keys x sizeof(key_entry_packet_t)
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------
+    |                       |           |        |             |             |                 |                       |                                       |
+    |       Signature       |   Ch. #   | # Keys |    Start    |     End     |      Nonce      |          Tag          |             Encrypted Keys            |
+    |                       |           |        |             |             |                 |                       |                                       |
+    ------------------------------------------------------------------------------------------------------------------------------------------------------------
     """
     # Pack the subscription. This will be sent to the decoder with ectf25.tv.subscribe
     # This aligns with subscription_update_packet_t

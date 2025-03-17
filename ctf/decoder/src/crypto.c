@@ -17,6 +17,7 @@ int chacha20_decrypt(const uint8_t key[CHACHA_KEY_SIZE],
     }
 
     if (status == MAC_CMP_FAILED_E) {
+        print_debug("Tag error");
         return TAG_ERROR;
     }
 
@@ -82,8 +83,8 @@ int decrypt_subscription_update(const uint8_t kdk[CHACHA_KEY_SIZE],
                                 update->encrypted_keys,
                                 update->nkeys * sizeof(key_entry_packet_t),
                                 update->tag,
-                                (uint8_t*)(&update->chan),
-                                30,
+                                (uint8_t*)(&(update->chan)),
+                                33,
                                 update->nonce,
                                 (uint8_t*)keys)) != SUCCESS) {
         return ret;

@@ -30,7 +30,8 @@ def encryptFrame(fNum, root_key, frame_data, channel_num):
     nonce = token_bytes(12)
     
     ad = b''
-    ad += struct.pack('<BQ', channel_num, fNum)
+    # TODO: make channel num 32 bit
+    ad += struct.pack('iQ', channel_num, fNum)
     ad += nonce
 
     # since this is a stream cipher, we must pad the plaintext to 64 bytes
