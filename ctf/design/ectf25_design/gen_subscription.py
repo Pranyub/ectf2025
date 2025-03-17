@@ -105,7 +105,7 @@ def gen_subscription(
 
     nonce = token_bytes(12)
     # TODO: make channel 32 bit
-    meta_data = struct.pack('<iBQQ', channel, len(keys), start, end) + nonce
+    meta_data = struct.pack('<IBQQ', channel, len(keys), start, end) + nonce
     # encrypting the subscription using a key derived from the kdk
     subscription_key = HKDF(algorithm=hashes.SHA256(), length=32, salt=nonce, info=device_id.to_bytes(4, byteorder='little')).derive(sub_kdk)  # might need to swap byteorder depending on linux or max
     # print(f"Subscription key: {subscription_key.hex()}\nKDK: {sub_kdk.hex()}\nDecoder ID: {device_id.to_bytes(4, byteorder='big').hex()}\nNonce: {nonce.hex()}\n")
