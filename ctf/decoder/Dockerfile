@@ -39,3 +39,4 @@ ENTRYPOINT ["bash", "-c", "python3 ./tools/gen_secret_h.py ../global.secrets && 
 
 # Sample run command:
 # docker run --rm -v ./build_out:/out -v ./:/decoder -v ./secrets:/secrets -e DECODER_ID=0xdeadbeef decoder
+# docker run --rm -v ./build_out:/out -v ./:/decoder -v ./../global.secrets:/global.secrets -e DECODER_ID=1234 decoder
