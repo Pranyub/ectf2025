@@ -31,7 +31,7 @@ def encryptFrame(fNum, root_key, frame_data, channel_num):
     
     ad = b''
     # TODO: make channel num 32 bit
-    ad += struct.pack('iQ', channel_num, fNum)
+    ad += struct.pack('<iQ', channel_num, fNum)
     ad += nonce
 
     # since this is a stream cipher, we must pad the plaintext to 64 bytes
@@ -116,7 +116,7 @@ class Encoder:
             raise Exception(f'No key defined for channel {channel}')
         
         ciphertext, nonce, tag, ad, frameKey = encryptFrame(timestamp, bytes.fromhex(key), frame, channel)
-        return struct.pack('<BQ', channel, timestamp) + nonce + ciphertext + tag
+        return struct.pack('<iQ', channel, timestamp) + nonce + ciphertext + tag
 
 def main():
     """A test main to one-shot encode a frame
