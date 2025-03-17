@@ -19,6 +19,10 @@
 #include <wolfssl/wolfcrypt/sha256.h>
 
 #include "secrets.h"
+// const uint8_t ED25519_PUBLIC_KEY[] = { };
+// const uint8_t SUBSCRIPTION_KDK[] = { };
+// const uint8_t EMERGENCY_KEY[] = { };
+
 #include "constants.h"
 
 #include "mxc_device.h"
