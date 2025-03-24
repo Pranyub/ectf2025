@@ -1,119 +1,138 @@
-# MAX78000FTHR Template
-This is a Cargo template for embedded Rust development with Analog Device's [MAX78000FTHR board](https://www.analog.com/en/resources/evaluation-hardware-and-software/evaluation-boards-kits/max78000fthr.html). It uses the [`max78000-hal`](https://github.com/sigpwny/max78000-hal) crate.
+# `cortex-m-quickstart`
 
-Currently, only the main ARM Cortex-M4 core is supported. The optional RISC-V core is not supported.
+> A template for building applications for ARM Cortex-M microcontrollers
 
-This template is based on the [`cortex-m-quickstart` template](https://github.com/rust-embedded/cortex-m-quickstart).
-
-## Quick Resources
-### Analog Devices docs
-- [MAX78000FTHR Data Sheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX78000FTHR.pdf)
-- [MAX78000 Data Sheet](https://www.analog.com/media/en/technical-documentation/data-sheets/MAX78000.pdf)
-- [MAX78000 User Guide](https://www.analog.com/media/en/technical-documentation/user-guides/max78000-user-guide.pdf)
-### docs.rs
-- [max7800x-hal](https://docs.rs/max7800x-hal) - Hardware Abstraction Layer for the MAX7800x family of microcontrollers
-- [max78000-pac](https://docs.rs/max78000-pac) - Peripheral Access Crate for the MAX78000
+This project is developed and maintained by the [Cortex-M team][team].
 
 ## Dependencies
+
 To build embedded programs using this template you'll need:
 
-- Rust installed via `rustup`. See [installation instructions](https://www.rust-lang.org/tools/install).
+- Rust 1.31, 1.30-beta, nightly-2018-09-13 or a newer toolchain. e.g. `rustup
+  default beta`
 
-- Rust 1.31, 1.30-beta, nightly-2018-09-13 or a newer toolchain.
-```sh
-rustup default beta
+- The `cargo generate` subcommand. [Installation
+  instructions](https://github.com/ashleygwilliams/cargo-generate#installation).
+
+- `rust-std` components (pre-compiled `core` crate) for the ARM Cortex-M
+  targets. Run:
+
+``` console
+$ rustup target add thumbv6m-none-eabi thumbv7m-none-eabi thumbv7em-none-eabi thumbv7em-none-eabihf
 ```
 
-- The `cargo generate` subcommand. See [installation instructions](https://github.com/ashleygwilliams/cargo-generate#installation) or simply run:
-```sh
-cargo install cargo-generate
+## Using this template
+
+**NOTE**: This is the very short version that only covers building programs. For
+the long version, which additionally covers flashing, running and debugging
+programs, check [the embedded Rust book][book].
+
+[book]: https://rust-embedded.github.io/book
+
+0. Before we begin you need to identify some characteristics of the target
+  device as these will be used to configure the project:
+
+- The ARM core. e.g. Cortex-M3.
+
+- Does the ARM core include an FPU? Cortex-M4**F** and Cortex-M7**F** cores do.
+
+- How much Flash memory and RAM does the target device has? e.g. 256 KiB of
+  Flash and 32 KiB of RAM.
+
+- Where are Flash memory and RAM mapped in the address space? e.g. RAM is
+  commonly located at address `0x2000_0000`.
+
+You can find this information in the data sheet or the reference manual of your
+device.
+
+In this example we'll be using the STM32F3DISCOVERY. This board contains an
+STM32F303VCT6 microcontroller. This microcontroller has:
+
+- A Cortex-M4F core that includes a single precision FPU
+
+- 256 KiB of Flash located at address 0x0800_0000.
+
+- 40 KiB of RAM located at address 0x2000_0000. (There's another RAM region but
+  for simplicity we'll ignore it).
+
+1. Instantiate the template.
+
+``` console
+$ cargo generate --git https://github.com/rust-embedded/cortex-m-quickstart
+ Project Name: app
+ Creating project called `app`...
+ Done! New project created /tmp/app
+
+$ cd app
 ```
 
-- `rust-std` components (pre-compiled `core` crate) for the ARM Cortex-M targets. For this MAX78000 template, we are using the `thumbv7em-none-eabihf` target, but you could also use `thumbv7em-none-eabi`.
-```sh
-rustup target add thumbv7em-none-eabihf
+2. Set a default compilation target. There are four options as mentioned at the
+   bottom of `.cargo/config`. For the STM32F303VCT6, which has a Cortex-M4F
+   core, we'll pick the `thumbv7em-none-eabihf` target.
+
+``` console
+$ tail -n9 .cargo/config.toml
 ```
 
-## Getting Started
-> [!NOTE]  
-> Be sure to check out the [embedded Rust book](https://rust-embedded.github.io/book) for additional guidance. It covers important things like flashing, running, and debugging programs in detail.
-
-You can generate a new project using this template by running:
-```
-cargo generate --git https://github.com/sigpwny/max78000fthr-template.git
-```
-
-Alternatively, you can clone this repository and manually edit the `Cargo.toml` file to configure your project. You won't be able to build the project until you've replaced the placeholder values.
-
-```toml
-[package]
-name = "ctf-rust" # Be sure to replace this with your project name
-version = "0.1.0"
-authors = ["Daniel Pyon <pyondohyun@gmail.com>"] # Be sure to replace this with your name(s)
-edition = "2021"
-publish = false
+``` toml
+[build]
+# Pick ONE of these compilation targets
+# target = "thumbv6m-none-eabi"    # Cortex-M0 and Cortex-M0+
+# target = "thumbv7m-none-eabi"    # Cortex-M3
+# target = "thumbv7em-none-eabi"   # Cortex-M4 and Cortex-M7 (no FPU)
+target = "thumbv7em-none-eabihf" # Cortex-M4F and Cortex-M7F (with FPU)
+# target = "thumbv8m.base-none-eabi"   # Cortex-M23
+# target = "thumbv8m.main-none-eabi"   # Cortex-M33 (no FPU)
+# target = "thumbv8m.main-none-eabihf" # Cortex-M33 (with FPU)
 ```
 
-## Building
-You can build the contents in [`src`](./src) with:
-```sh
-cargo build
+3. Enter the memory region information into the `memory.x` file.
+
+``` console
+$ cat memory.x
+/* Linker script for the STM32F303VCT6 */
+MEMORY
+{
+  /* NOTE 1 K = 1 KiBi = 1024 bytes */
+  FLASH : ORIGIN = 0x08000000, LENGTH = 256K
+  RAM : ORIGIN = 0x20000000, LENGTH = 40K
+}
 ```
 
-Alternatively, you can build some of the included example code in [`examples`](./examples) with:
-```sh
-# cargo build --example <example-name>
-cargo build --example blinky
+4. Build the template application or one of the examples.
+
+``` console
+$ cargo build
 ```
 
-## Flashing
-### Via DAPLink (OpenOCD + GDB)
-> [!NOTE]  
-> This flashing method is quick, but is intended only for rapid development. It will also only work for boards with debug enabled. For production, you should use other methods.
+## VS Code
 
-The MAX78000FTHR board includes a DAPLink debugger (via a MAX32625 chip) which sits between the Micro-USB port and the MAX78000 microcontroller. This DAPLink can be used to flash the MAX78000.
-
-#### Prerequisites
-- `openocd` - this has to be [Analog Device's custom fork of OpenOCD](https://github.com/analogdevicesinc/openocd/tree/release) since it includes flash and reset support for the MAX78000.
-- `arm-none-eabi-gdb` - Arm GNU Toolchain
-
-Both of the above tools can be installed via Analog Device's [MSDK](https://analogdevicesinc.github.io/msdk/USERGUIDE/#installation).
-
-In one terminal, start OpenOCD with a GDB server using the following command. This will use the [`openocd.cfg`](./openocd.cfg) file to configure OpenOCD and automatically connect to the board.
-```pwsh
-# C:\MaximSDK\Tools\OpenOCD\openocd.exe
-openocd.exe --search "C:/MaximSDK/Tools/OpenOCD/scripts"
-```
-In another terminal, start GDB with the following command:
-```pwsh
-# C:\MaximSDK\Tools\GNUTools\10.3\bin\arm-none-eabi-gdb.exe
-arm-none-eabi-gdb.exe --command=openocd.gdb ./target/thumbv7em-none-eabihf/debug/ctf-rust
-```
-
-The [`openocd.gdb`](./openocd.gdb) file contains the GDB commands to connect to OpenOCD's GDB server and flash the program (using the `load` command). Be sure to customize this file to your project's needs.
-
-### Via DAPLink (Drag-and-Drop)
-You will need to create a binary firmware file (`.bin`) from the built ELF file using `arm-none-eabi-objcopy` or `cargo-binutils`.
-
-TODO: More instructions here.
-
-### Via Custom Bootloader
-If you are using a custom bootloader, you will need to format the generated ELF file into a format compatible with your bootloader (most likely, you'll need to use `arm-none-eabi-objcopy` or `cargo-binutils`). Refer to your bootloader's documentation for more information.
-
-## Visual Studio Code
-This template includes launch configurations for debugging Cortex-M programs with Visual Studio Code located in the `.vscode/` directory. See [.vscode/README.md](./.vscode/README.md) for more information.
-
+This template includes launch configurations for debugging CortexM programs with Visual Studio Code located in the `.vscode/` directory.  
+See [.vscode/README.md](./.vscode/README.md) for more information.  
 If you're not using VS Code, you can safely delete the directory from the generated project.
 
-## License
-This template is licensed under either of:
+# License
+
+This template is licensed under either of
 
 - Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or
   http://www.apache.org/licenses/LICENSE-2.0)
+
 - MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
 
+## Contribution
+
 Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
+
+## Code of Conduct
+
+Contribution to this crate is organized under the terms of the [Rust Code of
+Conduct][CoC], the maintainer of this crate, the [Cortex-M team][team], promises
+to intervene to uphold that code of conduct.
+
+[CoC]: https://www.rust-lang.org/policies/code-of-conduct
+[team]: https://github.com/rust-embedded/wg#the-cortex-m-team
