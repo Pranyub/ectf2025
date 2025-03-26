@@ -1,36 +1,20 @@
 [package]
-authors = ["Daniel Pyon <pyondohyun@gmail.com>"]
-edition = "2018"
-readme = "README.md"
 name = "ctf-rust"
-version = "0.1.0"
+authors = ["Daniel Pyon <pyondohyun@gmail.com>"]
+edition = "2021"
+publish = false
+
+[package.metadata.docs.rs]
+targets = ["thumbv7em-none-eabihf"]
 
 [dependencies]
-cortex-m = { version = "0.7.6", features = ["critical-section-single-core"] }
-cortex-m-rt = "0.7"
-cortex-m-semihosting = "0.5"
+cortex-m = { version = "0.7.7", features = ["critical-section-single-core"] }
+cortex-m-rt = { version = "0.7.5", features = ["set-sp", "set-vtor"] }
+embedded-hal-nb = "1.0.0"
+embedded-io = "0.6.1"
+max7800x-hal = "0.6.0"
 panic-halt = "1.0.0"
+rand = { version = "0.8.5", default-features = false }
 
-# Uncomment for the panic example.
-# panic-itm = "0.4.1"
-
-# Uncomment for the allocator example.
-# embedded-alloc = "0.6.0"
-
-# Uncomment for the device example.
-# Update `memory.x`, set target to `thumbv7em-none-eabihf` in `.cargo/config`,
-# and then use `cargo build --example device` to build it.
-# [dependencies.stm32f3]
-# features = ["stm32f303", "rt"]
-# version = "0.7.1"
-
-# this lets you use `cargo fix`!
-[[bin]]
-name = "ctf-rust"
-test = false
-bench = false
-
-[profile.release]
-codegen-units = 1 # better optimizations
-debug = true # symbols are nice and they don't increase the size on Flash
-lto = true # better optimizations
+# Uncomment if you want to use semihosting
+# cortex-m-semihosting = "0.5"
