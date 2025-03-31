@@ -1,0 +1,11 @@
+/Users/danielpyon/MaximSDK/Tools/OpenOCD/aarch64/bin/openocd --search ~/MaximSDK/MaximSDK/Tools/OpenOCD/scripts/
+
+arm-none-eabi-gdb --command=openocd.gdb ./target/thumbv7em-none-eabihf/release/ctf-rust
+
+TODO
+- [ ] read input and dispatch to correct functions
+  - [ ] figure out UART
+- [ ] create subscription data structure
+- [ ] update subscriptions
+- [ ] load subs on init()
+
