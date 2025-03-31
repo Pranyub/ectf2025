@@ -6,6 +6,7 @@ use hal::gpio::Pin;
 pub use hal::pac;
 pub use hal::entry;
 use hal::uart::BuiltUartPeripheral;
+use host_driver::HostDriver;
 use panic_halt as _;
 
 mod host_driver;
@@ -38,6 +39,9 @@ fn main() -> ! {
         .clock_pclk(&clks.pclk)
         .parity(hal::uart::ParityBit::None)
         .build();
+    
+    let mut host = HostDriver::new(console);
+    host.free();
     
     loop {
         

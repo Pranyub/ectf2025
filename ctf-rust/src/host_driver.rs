@@ -1,3 +1,5 @@
+use core::convert::Infallible;
+
 use bincode::serde::DecodeError;
 
 pub const MAX_MESSAGE_SIZE: usize = 0x100;
@@ -60,6 +62,36 @@ impl Message {
       data: [0u8; MAX_MESSAGE_SIZE]
     }
   }
+  pub fn list() -> Self {
+    Self {
+      header: MessageHeader {
+        opcode: MessageType::List,
+        length: 0,
+      },
+      data: [0u8; MAX_MESSAGE_SIZE],
+    }
+  }
 }
 
+pub struct HostDriver<Serial, SerialError = Infallible>
+  where Serial: embedded_hal_nb::serial::Read<u8, Error = SerialError> + embedded_hal_nb::serial::Write<u8, Error = SerialError>
+{
+  uart: Serial,
+  state: UartState
+}
 
+impl<Serial, SerialError> HostDriver<Serial, SerialError>
+where
+    Serial: embedded_hal_nb::serial::Read<u8, Error = SerialError> + embedded_hal_nb::serial::Write<u8, Error = SerialError>,
+{
+  pub fn new(uart: Serial) -> Self {
+    Self {
+      uart,
+      state: UartState::None
+    }
+  }
+  // drop uart obj
+  pub fn free(self) -> Serial {
+    self.uart
+  }
+}
